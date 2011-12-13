@@ -1,0 +1,7 @@
+*.tmp
+*.bak
+*~
+svn
+bin
+build
+lib
