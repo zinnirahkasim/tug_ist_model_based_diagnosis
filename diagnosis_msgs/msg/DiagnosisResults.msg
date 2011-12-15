@@ -1,0 +1,2 @@
+string[] good
+string[] bad

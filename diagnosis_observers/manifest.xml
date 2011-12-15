@@ -1,0 +1,22 @@
+<package>
+  <description brief="diagnosis_observers">
+
+     diagnosis_observers
+
+  </description>
+  <author>Safdar Zaman</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/diagnosis_observers</url>
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="rospy"/>
+  <depend package="rosgraph"/>
+  <depend package="std_msgs"/>
+  <depend package="diagnosis_msgs"/>
+  <depend package="rostopic"/>
+  <depend package="diagnostic_msgs"/>
+ 
+</package>
+
+

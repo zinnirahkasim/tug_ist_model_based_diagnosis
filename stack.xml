@@ -1,0 +1,11 @@
+<stack>
+  <description brief="model_based_diagnosis">model_based_diagnosis</description>
+  <author>Maintained by Graz University of Technology - Institute for Software Technology </author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/model_based_diagnosis</url>
+  <depend stack="common_msgs" /> <!-- diagnostic_msgs -->
+  <depend stack="ros" /> <!-- roslib -->
+  <depend stack="ros_comm" /> <!-- rospy, std_msgs, roscpp, rosgraph, rostopic -->
+
+</stack>

@@ -1,0 +1,15 @@
+<package>
+  <description brief="diagnosis_msgs">
+
+     diagnosis_msgs
+
+  </description>
+  <author>Safdar Zaman</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/diagnosis_msgs</url>
+<!--  <depend package="std_msgs"/> -->
+
+</package>
+
+

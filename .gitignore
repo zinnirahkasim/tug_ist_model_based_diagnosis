@@ -1,7 +1,7 @@
 *.tmp
 *.bak
 *~
-svn
+.svn
 bin
 build
 lib
