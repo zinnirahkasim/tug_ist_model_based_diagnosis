@@ -101,7 +101,17 @@ class Multiple_Observer_Triggered(object):
 								print "Topic:[" +self.args[2]+ "] does not exist."
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 
+def report_error():
+		print """
+rosrun diagnosis_observers MObs.py <Topic_Triggering> <Topic_ToBeTriggered> <Time_milisec>
+e.g rosrun diagnosis_observers MObs.py /Topic1 /Topic2 500
+"""
+		sys.exit(os.EX_USAGE)
+
 if __name__ == '__main__':
+			if len(sys.argv) < 4:
+					report_error()      
+
 			if sys.argv[1][0] != '/':
 				sys.argv[1] = "/%s" % (sys.argv[1])
 			if sys.argv[2][0] != '/':

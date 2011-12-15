@@ -27,10 +27,18 @@ class Property_Observer(object):
             #p = psutil.Process(os.getpid())
             #p.get_cpu_times()
             #p.get_cpu_percent(interval=1)
-            print "Memory Usage for user",int(self.stdout_list[0])
+            #print "Memory Usage for user",int(self.stdout_list[0])
             #print self.process.pid
-        
+
+def report_error():
+		print """
+rosrun diagnosis_observers PObs.py <Topic> <Mem/Cpu>
+e.g rosrun diagnosis_observers PObs.py /tf Mem
+"""
+		sys.exit(os.EX_USAGE)        
     
 if __name__ == '__main__':
+			if len(sys.argv) < 4: 
+				report_error()
 			pObs = Property_Observer(sys.argv)
 			pObs.start()

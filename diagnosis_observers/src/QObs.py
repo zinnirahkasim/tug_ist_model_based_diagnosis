@@ -191,9 +191,18 @@ class Qualitative_Observer(object):
 								t = 1
 								print "Topic:[" +string+ "] does not exist."
 						time.sleep(sleeptime) #sleep for a specified amount of time.		
-		
-				
+
+def report_error():
+		print """
+rosrun diagnosis_observers QObs.py <Topic> <Field_heirarichy> <WindowSize>
+e.g rosrun diagnosis_observers QObs.py /odom pose pose position x 1000
+NOTE: WindowSize is better to keep atleast 1000
+"""
+		sys.exit(os.EX_USAGE)
+			
 if __name__=="__main__":
+			if len(sys.argv) < 4:
+					report_error()
 
 			if sys.argv[1][0] != '/':
 					sys.argv[1] = "/%s" % (sys.argv[1])

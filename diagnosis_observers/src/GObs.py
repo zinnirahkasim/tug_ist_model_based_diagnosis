@@ -108,8 +108,17 @@ class General_Observer(object):
 								print "Topic:[" +string+ "] does not exist."
 								self.pub.publish(Observations(time.time(),['n_ok('+self.topic+'_Node)']))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
+
+def report_error():
+		print """
+rosrun diagnosis_observers Gobs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>
+e.g rosrun diagnosis_observers Gobs.py /scan 5 1 10
+"""
+		sys.exit(os.EX_USAGE)
         
 if __name__ == '__main__':
+      if len(sys.argv) < 5:
+         report_error()
       if sys.argv[1][0] != '/':
          sys.argv[1] = "/%s" % (sys.argv[1]) 
       GObs = General_Observer(sys.argv)

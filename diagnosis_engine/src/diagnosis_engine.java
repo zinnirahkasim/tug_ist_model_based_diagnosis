@@ -45,7 +45,6 @@ public class diagnosis_engine extends Thread implements NodeMain {
   private boolean processObs = false;
 
  	private Publisher<org.ros.message.diagnosis_msgs.Diagnosis> publisher;
-  private Publisher<org.ros.message.std_msgs.String> publisher1;
   private Calendar now = Calendar.getInstance();
   public diagnosis_engine()
   {
@@ -57,41 +56,28 @@ public class diagnosis_engine extends Thread implements NodeMain {
         IllegalUserInput{
   try {
       this.node = node;
-           
-      PROP = readFileAsString("/home/szaman/my_packages/diagnosis_engine/Propositions.txt");
-      SD = readFileAsString("/home/szaman/my_packages/diagnosis_engine/SystemDescription.txt");
+      String path=null;
+      try{
+           path=new java.io.File(".").getCanonicalPath();
+         }
+          catch(java.io.IOException e){}    
+      PROP = readFileAsString(path+"/Propositions.txt");
+      SD = readFileAsString(path+"/SystemDescription.txt");
       final Log log = node.getLog();
-      
-      publisher1 = node.newPublisher("in_diagEngine", "std_msgs/String");
       
       publisher = node.newPublisher("/Diagnosis", "diagnosis_msgs/Diagnosis");
 
-      node.newSubscriber("/Diagnostic_Model", "diagnosis_msgs/SystemDescription",
-          new MessageListener<org.ros.message.diagnosis_msgs.SystemDescription>() {
-            @Override
-            public void onNewMessage(org.ros.message.diagnosis_msgs.SystemDescription sd_msg) {
-            try { System.out.println("AB"+sd_msg.AB+",NAB="+sd_msg.NAB+",Neg_Prefix="+sd_msg.neg_prefix);
-                }catch(Exception e) {System.out.println("new subscriber exception");}
-
-      }
-      }
-      );
-
-
-node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
+      node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>() {
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
               if(!processObs)
               { 
                String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
-               //System.out.println("length="+obs_msg.length);
                for(int m=0; m<obs_msg.length; m++)
                  { String s = obs_msg[m];
-                  //System.out.println("length"+msg_list.size()+"item="+obs_msg[0]);
                   boolean found = false;
-       						//for(int i=0; i < msg_list.size(); i++)
-                  for(String st : msg_list)
+       						for(String st : msg_list)
                    if(s.equals(st))
              					{
                					found = true;
@@ -122,14 +108,8 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
          							} // if(!found)
      
                 } // for int i
-             //String out_str="[";
-             //for(int i=0;i<msg_list.size();i++)
-                 //out_str=out_str+msg_list.get(i)+".";
-             //System.out.println(out_str+"]");
-             //sendObs.signal();
-             //log.info("I heard: \"" + obs_msg.out_time + "\"");
+             
             } // if(!processObs)
-            //else System.out.println("Halted");
            } //onMessage   
           });
 
@@ -209,8 +189,7 @@ void find_diag(org.ros.message.std_msgs.String message)
                 for(int j=0; j < minHittingSetsAsAss.size(); ++j)
                   if(j!=i)
                    good.add(minHittingSetsAsAss.get(j).toString());
-                //dmsg.data =  dmsg.data +"{"+good+bad+"}";
-                
+                       
                 
                 System.out.println(minHittingSetsAsAss.get(i));
 			       }
@@ -232,21 +211,16 @@ void find_diag(org.ros.message.std_msgs.String message)
 
    
 public void run() {
-   //lock.lock();
    try{
        while(true) {
          org.ros.message.std_msgs.String str = new org.ros.message.std_msgs.String();
-         //sendObs.await();
-         //System.out.println("I am a Thread ;-).");
          Thread.currentThread().sleep(1000);
          processObs = true;
          Thread.currentThread().sleep(1000);
          for(int i=0;i<msg_list.size();i++)
                  { str.data = str.data + msg_list.get(i) + ".";
                   }
-         //publisher1.publish(str);
          find_diag(str);
-         //Thread.currentThread().sleep(3000);
          processObs = false;
        }
    }
@@ -364,8 +338,8 @@ protected void generatePropNegationAxioms(String text, LogicParser parser,
         boolean useFaultModelsCB = true;
 
         if (useFaultModelsCB==true) {
-            String assAB = "AB"; //readAssAB();
-            String assNAB = "NAB"; //readAssNAB();
+            String assAB = "AB"; 
+            String assNAB = "NAB"; 
 
             if (assAB == null) {
                 throw new IllegalUserInput("Invalid AB assumption defined!");
