@@ -31,9 +31,6 @@ import java.util.*;
 import theoremprover.IllegalAssumption;
 
 import com.google.common.base.Preconditions;
-import org.ros.node.Node;
-import org.ros.node.NodeMain;
-import org.ros.node.topic.Publisher;
 
 /**
  * Manages a connection to the ATP server and handles client requests.
@@ -49,19 +46,9 @@ import org.ros.node.topic.Publisher;
  *
  *
  */
-public class Connection implements NodeMain {
+public class Connection {
 
-    /*char SD[]={'P','O','S','T',' ','s','e','s','s','i','o','n','A',' ','A','D','D','_','S','E','N','T','E','N','C','E','S',' ',
-    BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));         'S','D',' ','A','T','P','\r','\n',
-             'N','u','m','b','e','r','-','R','u','l','e','s',':',' ','2','\r','\n',
-             '\r','\n',
-             'N','A','B','(','A',')',' ','-','>',' ','a','.','\r','\n',
-             'N','A','B','(','B',')',' ','-','>',' ','b','.','\r','\n',
-             '\r','\n',
-             '\r','\n'};
-     */
-    String SD = "POST sessionA ADD_SENTENCES SD ATP\r\nNumber-Rules: 3\r\n\r\nNAB(A) -> a.\r\nNAB(B) -> b.\r\nNAB(C) -> c.\r\n\r\n\r\n";
-    private Node node;
+   
     private int loc = -1;
     // These are the states of the connection.
     protected final static int STATE_WAIT_FIRST_POST = 0;  // init state: wait for first POST
@@ -103,44 +90,7 @@ public class Connection implements NodeMain {
      * Parameter openSessions: see Server.openSessions
      */
 
-   @Override
-    public void main(Node node) { 
-	    Preconditions.checkState(this.node == null);
-        this.node = node;
-        openSessions = Collections.synchronizedMap(new TreeMap());
-             
-
-        try {
-      Publisher<org.ros.message.std_msgs.String> publisher =
-          node.newPublisher("chatter", "std_msgs/String");
-      int seq = 0;
-      //while (true) {
-        org.ros.message.std_msgs.String str = new org.ros.message.std_msgs.String();
-        str.data = "data! " + seq;
-        //str.data = "Hello world! " + seq;
-        publisher.publish(str);
-        node.getLog().info("Hello! " + seq);
-        
-        seq++;
-        Thread.sleep(1000);
-        //System.out.println("start");
-        start();
-        //System.out.println("end");
-      //}
-    } catch (Exception e) {
-      if (node != null) {
-        node.getLog().fatal(e);
-      } else {
-        e.printStackTrace();
-      } // else
-    } // catch
-   } //main
-
-   @Override
-   public void shutdown() {
-    node.shutdown();
-    node = null;
-  }
+   
 
    public Connection(Map openSessions, boolean verboseOutput) {
         
@@ -176,13 +126,12 @@ public class Connection implements NodeMain {
         try {
             // create input and output streams; allocate collections for header/body
 
-            //InputStream inStream = socket.getInputStream();
-            //BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
-            BufferedReader reader = new BufferedReader(new StringReader(SD));
+            InputStream inStream = socket.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
             
-            //OutputStream outStream = socket.getOutputStream();
-            //outputStream = new DataOutputStream(new BufferedOutputStream(outStream));
-            outputStream = new DataOutputStream(new FileOutputStream("test1.txt"));
+             OutputStream outStream = socket.getOutputStream();
+            outputStream = new DataOutputStream(new BufferedOutputStream(outStream));
+            
             boolean expectHeader = true;  // true if next input belongs to header
             boolean expectBody = false;   // true if next input belongs to body
             boolean lastLineEmpty = false;   // true if the last entered line was empty
@@ -191,26 +140,7 @@ public class Connection implements NodeMain {
             
             // the loop which runs until a CLOSE is received
             while (state != STATE_CLOSED) {               
-                //System.out.println("start while");
-                //String line = "";
-                //char c = '0';
-                //line = "POST sessionA ADD_SENTENCES SD ATP";
-                //System.out.println(line);
-								//if(SD[loc+2]!='\n')
-                /*if(loc<(SD.length-1))
-                  { 
-                   do {
-                      loc = loc + 1;
-                      line = line + SD[loc];
-                      //System.out.println("while");
-                      } while(SD[loc]!='\n');
-                  }*/
-                 //}
-                //System.out.println(line);
-                //if(line.equals("\r\n")){
-                  //line =null;
-                  //System.out.println("line empty");}
-         
+                         
                 String line = reader.readLine();
                 
                 // if nothing received: taka a nap :-)
@@ -272,15 +202,15 @@ public class Connection implements NodeMain {
             }  // while (state != STATE_CLOSED)
             
             // clean-up of socket
-            //socket.close();
+            socket.close();
             
         } catch (IOException e) {
             System.err.println("IOException in connection: " + e.getMessage());
-            /*if (!socket.isClosed()) {
+            if (!socket.isClosed()) {
                 try {
                      socket.close();
                     } catch (IOException eIO) {}
-            }*/
+            }
         } catch (Throwable eUnknown) {
             System.err.println("Unexpected error during request processing:");
             System.err.println(eUnknown.getMessage());

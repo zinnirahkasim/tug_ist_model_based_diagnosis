@@ -3,7 +3,7 @@
 # and publishes trend of the message wehether value increases, decreases or remains constant.
 # It publishes this trned of the vaule overs /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs topic name, vaule name in the message with all fields seperated by space, window size(miliseconds).
-# Author : szaman@ist.tugraz.at (Safdar Zaman)
+# @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 
 import roslib; roslib.load_manifest('diagnosis_observers')
 import rospy

@@ -3,7 +3,7 @@
 # A property could be CPU usage , Memory usage or any other resourse.
 # It publishes this property over /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs topic name, proerty name.
-# Author : szaman@ist.tugraz.at (Safdar Zaman)
+# @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 
 import roslib; roslib.load_manifest('diagnosis_observers')
 import rospy

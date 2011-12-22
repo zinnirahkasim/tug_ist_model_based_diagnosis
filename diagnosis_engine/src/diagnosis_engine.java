@@ -18,10 +18,10 @@ import utils.*;
 import dfengine.*;
 
 /**
- * This is a Diagnosic Engine of the Diagnostics. It assumes an
+ * This is a diagnosic_engine class of the Model Based Diagnostics. It assumes an
  * external roscore is already running.
  * 
- * @author szaman@ist.tugraz.at (Safdar Zaman)
+ * @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
  */
 
 class IllegalUserInput extends Exception {
@@ -39,40 +39,80 @@ public class diagnosis_engine extends Thread implements NodeMain {
   private String OBS;
   private String AB;
   private String NAB;
+  private String neg_prefix;
   
   private Node node;
   private ArrayList<String> msg_list = new ArrayList<String>();
   private boolean processObs = false;
+  //private boolean gotSD = false;
 
  	private Publisher<org.ros.message.diagnosis_msgs.Diagnosis> publisher;
   private Calendar now = Calendar.getInstance();
   public diagnosis_engine()
   {
        super("FetchResult"+1);
-        start();
+       AB = "";
+       NAB = "";
+       neg_prefix = "";
+       
   }
   @Override
-  public void main(Node node) throws ParseError,
+  public void onStart(Node node){ 
+    try{
+        main_engine(node);
+        }catch(Exception e){}
+  }
+  public void main_engine(Node node) throws ParseError,
         IllegalUserInput{
   try {
       this.node = node;
       String path=null;
-      try{
-           path=new java.io.File(".").getCanonicalPath();
-         }
-          catch(java.io.IOException e){}    
-      PROP = readFileAsString(path+"/Propositions.txt");
-      SD = readFileAsString(path+"/SystemDescription.txt");
       final Log log = node.getLog();
       
+      System.out.println("Diagnosis Engine is up.......");
       publisher = node.newPublisher("/Diagnosis", "diagnosis_msgs/Diagnosis");
 
-      node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
+      node.newSubscriber("/Diagnostic_Model", "diagnosis_msgs/SystemDescription",
+          new MessageListener<org.ros.message.diagnosis_msgs.SystemDescription>() {
+            @Override
+            public void onNewMessage(org.ros.message.diagnosis_msgs.SystemDescription sd_msg) {
+            try { 
+                 String[] rules = (String[]) sd_msg.rules.toArray(new String[0]);
+                 String[] props = (String[]) sd_msg.props.toArray(new String[0]);
+                 //System.out.println("Subscriber got up");
+                 //System.out.println("Time="+sd_msg.out_time+",AB="+sd_msg.AB+",NAB="+sd_msg.NAB+",Neg_Prefix="+sd_msg.neg_prefix+", No of  				 Rules:"+rules.length+", No of Props:"+props.length);
+                  String s="";
+                  for(int m=0; m<rules.length; m++)
+                  {  s = s + rules[m];
+                  }
+                  SD = s;
+                 //System.out.println("Rules:"+s);
+                 s="";
+                 for(int m=0; m<props.length; m++)
+                  {  s = s + props[m];
+                  }
+                 //System.out.println("Propos:"+s);
+                 PROP = s;
+                 String AB1 = sd_msg.AB;
+                 String NAB1 = sd_msg.NAB;
+                 String neg_prefix1 = sd_msg.neg_prefix;
+                 //System.out.println("AB="+AB1+",NAB="+NAB1+",Neg_Prefix="+neg_prefix1+", Rules:"+SD+", Props:"+ PROP);
+                 start();
+                }catch(Exception e) 
+                 {System.out.println("Error");System.out.println(e);
+                  }
+          
+      }
+      }
+      );
+
+
+node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>() {
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
               if(!processObs)
-              { 
+              {
                String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
                for(int m=0; m<obs_msg.length; m++)
                  { String s = obs_msg[m];
@@ -110,6 +150,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
                 } // for int i
              
             } // if(!processObs)
+            //else System.out.println("Halted");
            } //onMessage   
           });
 
@@ -124,10 +165,6 @@ public class diagnosis_engine extends Thread implements NodeMain {
       }
     }
         
-
-
-
-    
 
   } //main
 
@@ -189,7 +226,7 @@ void find_diag(org.ros.message.std_msgs.String message)
                 for(int j=0; j < minHittingSetsAsAss.size(); ++j)
                   if(j!=i)
                    good.add(minHittingSetsAsAss.get(j).toString());
-                       
+                
                 
                 System.out.println(minHittingSetsAsAss.get(i));
 			       }
@@ -206,12 +243,12 @@ void find_diag(org.ros.message.std_msgs.String message)
      }catch (Exception e) {
        System.out.println("File Read Error!"+e);
        }
-       //log.info("Observations: \"" + message.data + "\"");
+       
 }// function
 
    
 public void run() {
-   try{
+  try{
        while(true) {
          org.ros.message.std_msgs.String str = new org.ros.message.std_msgs.String();
          Thread.currentThread().sleep(1000);
@@ -220,6 +257,7 @@ public void run() {
          for(int i=0;i<msg_list.size();i++)
                  { str.data = str.data + msg_list.get(i) + ".";
                   }
+         //System.out.println(str.data);
          find_diag(str);
          processObs = false;
        }
@@ -240,24 +278,7 @@ public void run() {
         return result;
     }
 
- private static String readFileAsString(String filePath)
-    throws java.io.IOException{
-        StringBuffer fileData = new StringBuffer(1000);
-        BufferedReader reader = new BufferedReader(
-                new FileReader(filePath));
-        char[] buf = new char[1024];
-        int numRead=0;
-        while((numRead=reader.read(buf)) != -1){
-            String readData = String.valueOf(buf, 0, numRead);
-            fileData.append(readData);
-            buf = new char[1024];
-        }
-        reader.close();
-        return fileData.toString();
-    }
-
-
-  protected LSentence parseSD() throws ParseError,
+ protected LSentence parseSD() throws ParseError,
         IllegalUserInput{
 
         LogicParser parser = new LogicParser();
@@ -285,10 +306,9 @@ protected void generatePropNegationAxioms(String text, LogicParser parser,
         IllegalUserInput
         {
 
-        //String text = propTextArea.getText();
         StringTokenizer tokenizer = new StringTokenizer(text, "\n");
 
-        String negationPrefix = "n_";
+        String negationPrefix = neg_prefix; //"n_";
 
         while(tokenizer.hasMoreTokens()) {
             String prop = tokenizer.nextToken().trim();
@@ -338,8 +358,8 @@ protected void generatePropNegationAxioms(String text, LogicParser parser,
         boolean useFaultModelsCB = true;
 
         if (useFaultModelsCB==true) {
-            String assAB = "AB"; 
-            String assNAB = "NAB"; 
+            String assAB = AB; 
+            String assNAB = NAB; 
 
             if (assAB == null) {
                 throw new IllegalUserInput("Invalid AB assumption defined!");
@@ -379,8 +399,9 @@ protected void generatePropNegationAxioms(String text, LogicParser parser,
     }
 
   @Override
-  public void shutdown() {
+  public void onShutdown(Node node) {
     node.shutdown();
     node = null;
   }
+
 }

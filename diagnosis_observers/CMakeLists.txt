@@ -40,3 +40,4 @@ include_directories(/usr/include/python2.6)
 rosbuild_add_executable(DObs src/DiagnosticObserver.cpp)
 
 
+

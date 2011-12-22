@@ -28,9 +28,6 @@ import java.io.IOException;
 import java.util.*;
 
 import com.google.common.base.Preconditions;
-import org.ros.node.Node;
-import org.ros.node.NodeMain;
-import org.ros.node.topic.Publisher;
 
 
 /**
@@ -53,15 +50,14 @@ import org.ros.node.topic.Publisher;
  *
  *
  */
-public class Server implements NodeMain{
+public class Server{
 
     /** The IP address this server binds to. */
     protected InetAddress ip;
 
     /** The port this server binds to. */
     protected int port;
-    private Node node;
-
+    
     /** 
      * A container of the sessions which are open at the moment.
      *
@@ -95,37 +91,8 @@ public class Server implements NodeMain{
      * server loop by calling run().
      */
     
-    //public static void main(String[] args) {
-    @Override
-    public void main(Node node) { 
-        Preconditions.checkState(this.node == null);
-        this.node = node;
-
-        try {
-      Publisher<org.ros.message.std_msgs.String> publisher =
-          node.newPublisher("chatter", "std_msgs/String");
-      int seq = 0;
-      //while (true) {
-        org.ros.message.std_msgs.String str = new org.ros.message.std_msgs.String();
-        str.data = "MBD_Server! " + seq;
-        //str.data = "Hello world! " + seq;
-        publisher.publish(str);
-        node.getLog().info("MBD_Server! " + seq);
-        //node.getLog().info("Hello, world! " + seq);
-        seq++;
-        Thread.sleep(1000);
-      //}
-    } catch (Exception e) {
-      if (node != null) {
-        node.getLog().fatal(e);
-      } else {
-        e.printStackTrace();
-      }
-    }
-
-       node.getLog().info("MBD_Server! ");
-
-        /*System.err.println();
+    public static void main(String[] args) {
+        System.err.println();
 
         System.out.println();
         System.out.println("ATP (Assumption-based Theorem prover Protocol) Server");
@@ -158,11 +125,11 @@ public class Server implements NodeMain{
           
         Server server = new Server(ip, port.intValue(), args, 2, args.length - 1);
 
-        server.run();    */    
+        server.run();        
     }
 
     /** Constructor getting the IP address and the port. */
-   /*public Server(InetAddress ip, int port, String[] options, int firstOptionIndex, int lastOptionIndex) {
+   public Server(InetAddress ip, int port, String[] options, int firstOptionIndex, int lastOptionIndex) {
         this.ip = ip;
         this.port = port;
         
@@ -170,7 +137,7 @@ public class Server implements NodeMain{
 
         openSessions = Collections.synchronizedMap(new TreeMap());
 
-    }*/
+    }
 
     protected void parseOptions(String[] args, int startIndex, int endIndex) {
         for (int iArgs = startIndex; iArgs <= endIndex; ++iArgs) {
@@ -246,9 +213,5 @@ public class Server implements NodeMain{
         }
     }  // run()
 
-   @Override
-   public void shutdown() {
-    node.shutdown();
-    node = null;
-  }
+   
 }

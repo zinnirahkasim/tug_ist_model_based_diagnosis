@@ -2,7 +2,7 @@
 # The Multiple Observer observers two topics(Triggering and Triggered)
 # and provides /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs three parameters Trigerring topic, trigerred topic and time (ms).
-# Author : szaman@ist.tugraz.at (Safdar Zaman)
+# @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 
 import roslib; roslib.load_manifest('diagnosis_observers')
 import rospy

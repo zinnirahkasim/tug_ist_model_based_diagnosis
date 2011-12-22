@@ -3,7 +3,7 @@
 # The General Observer observers any topic of any node
 # and provides /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs three parameters Required frequency, frequency deviation and window size.
-# Author : szaman@ist.tugraz.at (Safdar Zaman)
+# @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 
 import roslib; roslib.load_manifest('diagnosis_observers')
 import rospy
