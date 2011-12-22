@@ -35,6 +35,7 @@ In model_based_diagnosis repositroy, there are three packages
 TESTING:
 --------
 Following are the two examples. One simple just for quick check and the other is practical one:
+NOTE: Use the current version of the rosjava from the https://rosjava.googlecode.com/hg given on http://www.ros.org/wiki/rosjava.
 -------------------------------------
 Simple EXAMPLE
 -------------------------------------
@@ -101,6 +102,8 @@ If /scan and /odom gives the ok observation then diagnosis will be consistent ot
 Thanks.
 LATER Version is under preparation.
 -----------------------------------
-      
+
+
+
 
 
