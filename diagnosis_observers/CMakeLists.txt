@@ -32,7 +32,7 @@ include_directories(/usr/include/python2.6)
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
-rosbuild_add_executable(sd_node src/sd_node.cpp)
+
 
 
 
