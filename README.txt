@@ -19,17 +19,36 @@ In model_based_diagnosis repositroy, there are three packages
   - Contains Observers which monitors the state of the node, topic or a specific value of a message.
   - Observers are
     a) General Observer (GObs)
+    This Observer observers the topic, if it is running with required frequency.
+       Syntax:  rosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>
+       e.g:     rosrun diagnosis_observers GObs.py /scan 5 1 10
+    
     b) Diagnostic Observer (DObs)
-    c) Qualitative Observer (QObs)
-    d) Multiple Observer (MObs)
-    e) Property Observer (PObs)
-  - GObs, QObs, MObs and PObs are Python based while DObs is C++ based.
+    This Observer observes data published on "/diagnostics" topic (ROS Diagnostics).
+       Syntax: rosrun diagnosis_observers DObs.py <device_node_name>
+       e.g:    rosrun diagnosis_observers DObs.py hokuyo_node
+       "hokuyo_node" is the device node name being published on /diagnositcs topic.
 
-3. diagnosis_engine
+    c) Qualitative Observer (QObs)
+    This Observer observers the pattern(Inc, Dec, Const) of some value published on the topic. 
+       syntax: rosrun diagnosis_observers QObs.py <Topic> <Field_heirarichy> <WindowSize>
+       e.g:    rosrun diagnosis_observers QObs.py /odom pose pose position x 1000
+
+    d) Multiple Observer (MObs)
+    This Observer observers trigging of a topic. It checks if the topic triggers in specific time interval when it gets triggered.
+       syntax: rosrun diagnosis_observers MObs.py <Topic_Triggering> <Topic_ToBeTriggered> <Time_milisec>
+       e.g:    rosrun diagnosis_observers MObs.py /Topic1 /Topic2 500
+
+    e) Property Observer (PObs)
+    This Observer observes the properties like (Memory, CPU usage) by a particular topic/node.
+       syntax: rosrun diagnosis_observers PObs.py <Topic/Node> <Mem/Cpu>
+       e.g: Under work.
+
+
+3. Diagnosis Engine
   - Contains the java files relevant to diagnosis
   - Contains java packages for set of connected files.
   - diagnosis_engine node for execution
-
 
 --------
 TESTING:
@@ -44,15 +63,22 @@ Simple EXAMPLE
 2.  $ rosrun diagnosis_observers Triggering.py  
       (Triggering.py publishes on topic /Topic1)
 
-3.  $ rosrun model_based_diagnosis GObs.py Topic1 5 1 10
+3.  $ rosrun diagnosis_observers GObs.py /Topic1 1 1 10     (For not ok)
 
 4.  $ rosrun rosjava_bootstrap run.py diagnosis_engine diagnosis_engine __name:=my_daig_engine 
-      (subscribes /Diagnostic_Model for model)
-5.  $ rostopic pub -1 /Diagnostic_Model diagnosis_msgs/SystemDescription '{out_time: 11.1, rules: ["NAB(USB),NAB(Node)->ok(Topic1_Frequency).\r\n","AB(USB)->n_ok(Topic1_Frequency).\r\n\r\n\r\n"], props: ["ok(Topic1_Frequency)\r\n\r\n\r\n"], AB: "AB", NAB: "NAB", neg_prefix: "n_"}'
+      (subscribes topic /Diagnostic_Model for System Description Model)
+
+5.  $ rostopic pub -1 /Diagnostic_Model diagnosis_msgs/SystemDescription '{out_time: 11.1, rules: ["NAB(USB),NAB(Node1)->ok(Topic1_Frequency)","AB(USB)->n_ok(Topic1_Frequency)"], props: ["ok(Topic1_Frequency)"], AB: "AB", NAB: "NAB", neg_prefix: "n_"}'
+
+OR
+
+5.  $ rosrun diagnosis_observers SD_Node.py
+			(This reads "diagnosis_observers/SD.yaml" file and publishes System Description Model on topic /Diagnostic_Model)
 
 Output:
-Consistent if the observation from GObs.py is ok().
-Diagnosis results if observation from GObs.py is n_ok().
+Consistent if the observation from GObs.py is ok.
+Not consistent if observation from GObs.py is not ok.
+Result is published on topic /Diagnosis
 
 ------------------------------------------------------------
 PRACTICAL EXAMPLE
@@ -65,10 +91,10 @@ Step1. A publisher node must be up for diagnosis. (For test you may run Triggeri
        i.e $rosrun sicktoolbox_wrapper sicklms  (publishes on topic /scan)
            $rosrun ROSARIA RosAria              (publishes on topic /odom)
 
-Step2. Run an observer. Each observer has its own requirments. In order to observe a topic, you need General Observer so run GObs.
+Step2. Run the observer. Each observer has its own requirments. In order to observe a topic, you need General Observer so run GObs.
        The observations are published on the /Diagnostic_Observation with message type [diagnosis_msgs/Observations].
-       i.e $rosrun model_based_diagnosis GObs.py /scan 5 1 10
-           $rosrun model_based_diagnosis GObs.py /odom 10 2 12
+       i.e $rosrun diagnosis_observers GObs.py /scan 5 1 10
+           $rosrun diagnosis_observers GObs.py /odom 10 2 12
 
            where 5,10 are the frequencies to be observerd, 1,2 are the frequency deviations and 10,12 are the window sizes.  
 
@@ -77,12 +103,12 @@ Step3. Now run the diagnosis engine to get the diagnosis of the system. Engine s
        i.e $rosrun rosjava_bootstrap run.py diagnosis_engine diagnosis_engine __name:=my_daig_engine
         
 
-Step4. diagnosis_engine takes model on /Diagnostic_Model so we have to provide it System model.
-       If System Model look like this:
+Step4. diagnosis_engine takes model on /Diagnostic_Model so we have to provide it System Description Model.
+       If System Model looks like this:
        rules: 
-             NAB(Usb),NAB(Laser)->ok(scan_Frequency).
-			       NAB(Usb),NAB(Aria)->ok(odom_Frequency).
-             AB(Usb)->n_ok(scan_Frequency).
+             NAB(Usb),NAB(Laser)->ok(scan_Frequency)
+			       NAB(Usb),NAB(Aria)->ok(odom_Frequency)
+             AB(Usb)->n_ok(scan_Frequency)
              AB(Usb)->n_ok(odom_Frequency)
        props:
              ok(scan_Frequency)
@@ -92,12 +118,30 @@ Step4. diagnosis_engine takes model on /Diagnostic_Model so we have to provide i
        neg_prefix: n_
 
 then you can simply publish this information using following command:
-$rostopic pub -1 /Diagnostic_Model diagnosis_msgs/SystemDescription '{out_time: 11.1, rules: ["NAB(Usb),NAB(Laser)->ok(scan_Frequency).\r\n","NAB(Usb),NAB(Aria)->ok(odom_Frequency).\r\n","AB(Usb)->n_ok(scan_Frequency).\r\n","AB(Usb)->n_ok(odom_Frequency).\r\n\r\n\r\n"], props: ["ok(scan_Frequency)\r\n","ok(odom_Frequency)\r\n\r\n\r\n"], AB: "AB", NAB: "NAB", neg_prefix: "n_"}'
+$ rostopic pub -1 /Diagnostic_Model diagnosis_msgs/SystemDescription '{out_time: 11.1, rules: ["NAB(Usb),NAB(Laser)->ok(scan_Frequency)","NAB(Usb),NAB(Aria)->ok(odom_Frequency)","AB(Usb)->n_ok(scan_Frequency)","AB(Usb)->n_ok(odom_Frequency)"], props: ["ok(scan_Frequency)","ok(odom_Frequency)"], AB: "AB", NAB: "NAB", neg_prefix: "n_"}'
 
 OR
 
+Step5. Give the following Model in the "diagnosis_observers/SD.yaml" file :
 
-If /scan and /odom gives the ok observation then diagnosis will be consistent otherwise it will give diagnostic data.
+ab: "AB"
+nab: "NAB"
+neg_prefix: "n_" 
+props:
+ prop1: ok(scan_Frequency)
+ prop2: ok(odom_Frequency)
+rules:
+ rule1: NAB(Usb),NAB(Laser)->ok(scan_Frequency)
+ rule2: NAB(Usb),NAB(Aria)->ok(odom_Frequency)
+ rule3: AB(Usb)->n_ok(scan_Frequency)
+ rule4: AB(Usb)->n_ok(odom_Frequency)
+
+Step6. No run SD_Node.py which reads the Model from SD.yaml and publishes it on topic /Diagnostic_Model.
+      i.e $rosrun diagnosis_observers SD.py
+
+
+OUTPUT: If /scan and /odom gives the ok observation then diagnosis will be consistent otherwise not consistent.
+
 -----------------------------------
 Thanks.
 LATER Version is under preparation.

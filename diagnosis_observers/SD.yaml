@@ -4,14 +4,11 @@ neg_prefix: "not_"
 
 props:
  prop1: ok(Topic1_Frequency)
- prop2: ok(Topic2_Frequency)
-
+ 
 rules:
  rule1: NAB(USB),NAB(Node1)->ok(Topic1_Frequency)
- rule2: NAB(USB),NAB(Node2)->ok(Topic2_Frequency)
- rule3: AB(USB)->not_ok(Topic1_Frequency)
- rule4: AB(USB)->not_ok(Topic2_Frequency)
-
+ rule2: AB(USB)->not_ok(Topic1_Frequency)
+ 
 
 
 

@@ -32,12 +32,7 @@ include_directories(/usr/include/python2.6)
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
-#rosbuild_add_executable(GObs src/GeneralObserver.cpp)
-#rosbuild_add_executable(temp src/temp.cpp)
-#rosbuild_add_compile_flags(temp "-m32")
-#target_link_libraries(temp /usr/include/python2.6/Python.h)
-#rosbuild_add_executable(base_gtk src/base_gtk.cpp)
-rosbuild_add_executable(DObs src/DiagnosticObserver.cpp)
+rosbuild_add_executable(sd_node src/sd_node.cpp)
 
 
 

@@ -30,18 +30,27 @@ class General_Observer(object):
           self.prev_t = time.time()
           self.circular_queu = [0 for i in xrange(self.ws)]
           self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+          rospy.set_param('topic', '/Topic1')
+          rospy.set_param('chk_frq', 10)
+          rospy.set_param('dev', 1)
+          rospy.set_param('wsize', 10)
           thread.start_new_thread(self.check_topic,(argv[1],2))
-         
-        
           
+                 
+        
         
     def start(self):
         rospy.init_node('General_Observer_node', anonymous=True)
         caller_id = '/script'
         m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
         pubcode, statusMessage, topicList = m.getPublishedTopics(caller_id, "")
+        self.topic = rospy.get_param('topic');
+        self.freq =  rospy.get_param('chk_frq');
+        self.req_delta_freq = rospy.get_param('dev');
+        self.ws = rospy.get_param('wsize');
+        print rospy.get_param("topic")
         for item in topicList:
-				  if item[0] == self.args[1]:
+				  if item[0] == self.topic:
 					  self.topic = item[0]
 					  self.topic_type = item[1]
         msg_class = roslib.message.get_message_class(self.topic_type)
@@ -111,8 +120,8 @@ class General_Observer(object):
 
 def report_error():
 		print """
-rosrun diagnosis_observers Gobs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>
-e.g rosrun diagnosis_observers Gobs.py /scan 5 1 10
+rosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>
+e.g rosrun diagnosis_observers GObs.py /scan 5 1 10
 """
 		sys.exit(os.EX_USAGE)
         
