@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+int BUFF_SIZE;
 int sock, connected, bytes_recieved , True = 1;  
 char send_data[255] , recv_data[255];
 unsigned char nbuffer[255];
@@ -56,6 +57,7 @@ void send_boardSpecifications()
           *((float *)p) = max_vol;
           p+=4;
           }
+          BUFF_SIZE = 85;
           printf("\n SENT DATA from Server: delim = %i , command = %i , length = %i , Channels = %i " , nbuffer[0], nbuffer[1], nbuffer[2] , nbuffer[4]);
           offset = 5;
           for(int channel=0;channel<channels;channel++)
@@ -86,8 +88,6 @@ void send_boardMeasurments()
          *p=n;
           p++;
 
-          int offset = sizeof(delim)+sizeof(command)+sizeof(length)+sizeof(n);
-          
           for(int channel=0;channel<channels;channel++)
           {
           char on_off = board_info.on_off[channel];
@@ -100,13 +100,15 @@ void send_boardMeasurments()
           *((float *)p) = pr_vol;
           p+=4;
           }
+
+          BUFF_SIZE = 95;
           printf("\n SENT DATA from Server: delim = %i , command = %i , length = %i , Channels = %i " , nbuffer[0], nbuffer[1], nbuffer[2] , nbuffer[4]);
 
-          offset = 5;
+          int offset = 5;
           for(int channel=0;channel<channels;channel++)
           {
-           printf("\n Channel# : %d, On/Off= %i, Max_Vol= %f, Max_Cur= %f", channel,nbuffer[offset] ,*((float *)(nbuffer+offset)), *((float *)(nbuffer+offset+4)));
-           offset +=9;
+           printf("\n Channel# : %d, On/Off= %i, Present_Curr= %f, Present_Vol= %f", channel,nbuffer[offset] ,*((float *)(nbuffer+offset+1)), *((float *)(nbuffer+offset+5)));
+           offset+=9;
           }
           
 					
@@ -210,8 +212,7 @@ int main()
             while (1)
             { 
  
-              send(connected,(void*)&nbuffer,85, 0);
-    printf("SIZE=%d",sizeof(nbuffer));          
+              send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
               bytes_recieved = recv(connected,recv_data,255,0);
               //recv_data[bytes_recieved] = '\0';
              

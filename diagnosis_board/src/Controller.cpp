@@ -53,9 +53,9 @@ while(1)
      {
        bytes_recieved=recv(sock,buffer,4-counter,0);
        counter+=bytes_recieved;
-       printf("HBytes =%d",bytes_recieved);
+       //printf("HBytes =%d",bytes_recieved);
      }
-     printf("\nRECIEVED 4m Server:\delim = %i,command = %i,length = %i ", buffer[0], buffer[1], buffer[2]);
+     printf("\nRECIEVED:\ndelim = %i,command = %i,length = %i ", buffer[0], buffer[1], buffer[2]);
      char delim = buffer[0];
      char command = buffer[1];
      ushort data_length = buffer[2];
@@ -66,7 +66,6 @@ while(1)
        counter+=bytes_recieved;
        printf("DBytes =%d",bytes_recieved);
      }
-    printf("\nchannels = %i,max_c1 = %f, max_v1 = %f ", buffer[0], *((float *)(buffer+9)), *((float *)(buffer+13)));
     unsigned char * ptr;
     ptr = buffer;
     switch(command)
@@ -78,7 +77,8 @@ while(1)
       			msg = new MessageBroadCasting(delim,command,data_length,ptr);
       break;
       case 2:
-      			msg = new MessageMeasurments(delim,command,data_length,ptr);
+            printf("s2");
+      			msg = new MessageMeasurments(delim,command,data_length,ptr);printf("e2");
       break;
       case 3:
       			msg = new MessageRequest(delim,command,data_length);;
@@ -97,7 +97,7 @@ while(1)
 
 void Controller::send_Thread()
 { 
-  printf("send");
+  //printf("send");
 }
 
 
