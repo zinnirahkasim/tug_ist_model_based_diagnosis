@@ -89,10 +89,7 @@ while(1)
 
 void Controller::send_Thread()
 { 
-  while(1)
-   {
-    
-   }
+  
 }
 
 

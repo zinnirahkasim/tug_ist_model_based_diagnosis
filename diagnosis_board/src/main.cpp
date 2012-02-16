@@ -10,8 +10,10 @@ printf("Enter Choice: ");
 char d[2];
 gets(d);
 if(strcmp(d,"a")==0)
-       printf("\na given");
-      else if(strcmp(d,"b")==0)
-              printf("\nb given");
+   contl->SendCmd = 2;
+else if(strcmp(d,"b")==0)
+   contl->SendCmd = 3;
+else if(strcmp(d,"b")==0)
+   contl->SendCmd = 4;
     
 }

@@ -26,7 +26,7 @@ public:
    void send_Thread();
    void enable_Sending();
    void initController();
-   int Cmd#;
+   int SendCmd;
       
 private:
    void create_threads();
