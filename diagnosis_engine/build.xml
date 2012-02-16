@@ -9,6 +9,7 @@
   <property name="build.main" location="target/classes" />
 
   <property name="dist" location="target" />
+
   <property name="javac-source" value="1.6" />
   <property name="javac-target" value="1.6" />
   <property name="debuglevel" value="source,lines,vars" />
@@ -48,7 +49,7 @@
   </target>
 
   <target name="clean">
-    <delete dir="${build.main}" />
-    <delete dir="${dist}" />
+    <delete dir="${build.main}"/>
+    <delete dir="${dist}"/>
   </target>
 </project>

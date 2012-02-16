@@ -16,8 +16,10 @@ import thread
 
 class Multiple_Observer_Triggered(object):
 
-    def __init__(self, argv):
-					self.args = argv
+    def __init__(self):
+					rospy.init_node('Mobs_Node', anonymous=True)
+					self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
+					self.caller_id = '/script'
 					self.topic_in = ""
 					self.topic_type_in = ""
 					self.topic_out = ""
@@ -26,40 +28,54 @@ class Multiple_Observer_Triggered(object):
 					self.triggering = False
 					self.time_triggered = None
 					self.time_triggering = None
-					self.req_delta_t = float(self.args[3])/1000.0
 					self.started = False
 					self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
-					self.Topic1 = False
-					self.Topic2 = False
-					thread.start_new_thread(self.check_thread,(argv[1],2))
-
-
+					self.param_in_topic = rospy.get_param('~in_topic', '/Topic1')
+					self.param_out_topic = rospy.get_param('~out_topic', '/Topic2')
+					self.param_tm =  rospy.get_param('~tm', 500)
+					self.req_delta_t = float(self.param_tm)/1000.0
+					thread.start_new_thread(self.check_topic,(self.param_in_topic,2))
+					
     def start(self):
-        rospy.init_node('Mobs_triggered', anonymous=True)
-        caller_id = '/script'
-        m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
-        pubcode, statusMessage, topicList = m.getPublishedTopics(caller_id, "")
-        if(self.Topic1 & self.Topic2):
-          for item in topicList:
-					  if item[0] == self.args[1]:
-						  self.topic_in = item[0]
-						  self.topic_type_in = item[1]
-					  if item[0] == self.args[2]:
-					        self.topic_out = item[0]
-					        self.topic_type_out = item[1]
-          msg_class_in = roslib.message.get_message_class(self.topic_type_in)
-          msg_class_out = roslib.message.get_message_class(self.topic_type_out)
-          rospy.Subscriber(self.topic_in, msg_class_in, self.callback_Triggering)
-          rospy.Subscriber(self.topic_out, msg_class_out, self.callback_Triggered)
-          rospy.spin()
+				pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+				if self.param_in_topic[0] != '/':
+					self.param_in_topic = "/%s" % (self.param_in_topic)
+				if self.param_out_topic[0] != '/':
+					self.param_out_topic = "/%s" % (self.param_out_topic)
+				top_in_found = False
+				top_out_found = False
+				for item in topicList:
+						if item[0] == self.param_in_topic:
+							self.topic_in = item[0]
+							self.topic_type_in = item[1]
+							top_in_found = True
+						if item[0] == self.param_out_topic:
+							self.topic_out = item[0]
+							self.topic_type_out = item[1]
+							top_out_found = True
+				if top_in_found == True:
+						msg_class_in = roslib.message.get_message_class(self.topic_type_in)
+				else:
+						self.report_error()
+				if top_in_found == True:
+						msg_class_out = roslib.message.get_message_class(self.topic_type_out)
+				else:
+						self.report_error()
+				rospy.Subscriber(self.topic_in, msg_class_in, self.callback_Triggering)
+				rospy.Subscriber(self.topic_out, msg_class_out, self.callback_Triggered)
+				rospy.spin()
+					
         
     def callback_Triggering(self,data):
 						self.time_triggering = time.time()
 						self.triggering = True
-						print "Triggering time", self.time_triggering
-						#print
+						
+						
 				
     def callback_Triggered(self,data):
+						topic = self.param_out_topic
+						if topic[0] == '/':
+							topic = topic[1:len(topic)]
 						self.time_triggered = time.time()
 						self.triggered = True
 						obs_msg = []
@@ -67,54 +83,48 @@ class Multiple_Observer_Triggered(object):
 								self.triggering = False
 								diff_t = self.time_triggered - self.time_triggering
 								if diff_t <= self.req_delta_t:
-											obs_msg.append('Ok(Triggered_'+self.args[2]+')')
-											print "In Time Triggered after seconds : ", diff_t
+											obs_msg.append('ok('+topic+'_Triggered)')
+											print "\nIn Time Triggered after seconds : ", diff_t
+											print 'ok('+topic+'_Triggered)'
 											self.pub.publish(Observations(time.time(),obs_msg))
 								else:
-											obs_msg.append('~Ok(Triggered_'+self.args[2]+')')
+											obs_msg.append('~ok('+topic+'_Triggered)')
 											self.pub.publish(Observations(time.time(),obs_msg))
 											print "Late Triggered after seconds : ", diff_t
+											print '~ok('+topic+'_Triggered)'
 								self.triggered = True
 						else:
-								obs_msg.append('~Ok(Triggered_'+self.args[2]+')')
+								print '~ok('+topic+'_Triggered)'
+								obs_msg.append('~ok('+topic+'_Triggered)')
 								self.pub.publish(Observations(time.time(),obs_msg))
 						
 
-    def check_thread(self,string,sleeptime,*args):
+    def check_topic(self,string,sleeptime,*args):
 				while True:
 						t1 = 0
 						t2 = 0
-						caller_id = '/script'
-						m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
-						pubcode, statusMessage, topicList = m.getPublishedTopics(caller_id, "")
+						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
-							if item[0] == self.args[1]:
-									self.Topic1 = True
+							if item[0] == self.param_in_topic:
 									t1 = 1
-							if item[0] == self.args[2]:
-									self.Topic2 = True
-									t2 = 2
+							if item[0] == self.param_out_topic:
+									t2 = 1
 									
 						if t1 == 0:
-								print "Topic:[" +self.args[1]+ "] does not exist."
+								t1 = 1
+								print "Topic:[" +self.param_in_topic+ "] does not exist."
 						if t2 == 0:
-								print "Topic:[" +self.args[2]+ "] does not exist."
+								t2 = 1
+								print "Topic:[" +self.param_out_topic+ "] does not exist."
+								self.pub.publish(Observations(time.time(),['~Ok('+self.param_out_topic[1:len(self.param_out_topic)]+'_Triggered)']))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 
-def report_error():
-		print """
-rosrun diagnosis_observers MObs.py <Topic_Triggering> <Topic_ToBeTriggered> <Time_milisec>
-e.g rosrun diagnosis_observers MObs.py /Topic1 /Topic2 500
-"""
-		sys.exit(os.EX_USAGE)
+    def report_error(self):
+				print 'rosrun diagnosis_observers MObs.py <Topic_Triggering> <Topic_ToBeTriggered> <Time_milisec>'
+				print 'e.g rosrun diagnosis_observers MObs.py _in_topic:=Topic1 _out_topic:=Topic2 _tm:=500'
+				sys.exit(os.EX_USAGE)
+
 
 if __name__ == '__main__':
-			if len(sys.argv) < 4:
-					report_error()      
-
-			if sys.argv[1][0] != '/':
-				sys.argv[1] = "/%s" % (sys.argv[1])
-			if sys.argv[2][0] != '/':
-				sys.argv[2] = "/%s" % (sys.argv[2])
-			MObs_trg = Multiple_Observer_Triggered(sys.argv)
-			MObs_trg.start()
+			MObs = Multiple_Observer_Triggered()
+			MObs.start()

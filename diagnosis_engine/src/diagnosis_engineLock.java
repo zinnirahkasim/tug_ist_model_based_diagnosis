@@ -12,6 +12,9 @@ import java.lang.System;
 import org.ros.message.diagnosis_msgs.Diagnosis;
 import org.ros.message.diagnosis_msgs.Observations;
 import org.ros.message.diagnostic_msgs.DiagnosticArray;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import hittingsetalg.*;
 import theoremprover.*;
@@ -25,15 +28,15 @@ import dfengine.*;
  * @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
  */
 
-class IllegalUserInput extends Exception {
+/*class IllegalUserInput extends Exception {
 
     public IllegalUserInput(String msg) {
         super(msg);
     }
 
-}
+}*/
 
-public class diagnosis_engine extends Thread implements NodeMain {
+public class diagnosis_engineLock extends Thread implements NodeMain {
  
   private String PROP;
   private String SD;
@@ -44,22 +47,25 @@ public class diagnosis_engine extends Thread implements NodeMain {
   
   private Node node;
   private ArrayList<String> msg_list = new ArrayList<String>();
-  private boolean processObs;
-  private boolean threadRunning;
+  private boolean processObs = false;
+  //private boolean gotSD = false;
  	private Publisher<org.ros.message.diagnosis_msgs.Diagnosis> publisher;
   private Publisher<org.ros.message.diagnostic_msgs.DiagnosticArray> d_pub;
 
   private Calendar now = Calendar.getInstance();
 
-	public diagnosis_engine()
+	final Lock lock =  new ReentrantLock();
+  final Condition callDiag = lock.newCondition();
+  final Condition callDiagDone = lock.newCondition();
+  public static Object o = new Object();
+
+  public diagnosis_engineLock()
   {
        super("FetchResult"+1);
        AB = "";
        NAB = "";
        neg_prefix = "";
-			 processObs = false;
-			 threadRunning =  false;
-       
+			 //start();
   }
   @Override
   public void onStart(Node node){ 
@@ -88,26 +94,22 @@ public class diagnosis_engine extends Thread implements NodeMain {
                  //System.out.println("Subscriber got up");
                  System.out.println("Time="+sd_msg.out_time+",AB="+sd_msg.AB+",NAB="+sd_msg.NAB+",Neg_Prefix="+sd_msg.neg_prefix+", No of  				 Rules:"+rules.length+", No of Props:"+props.length);
                   String s="";
-                  for(int m=0; m<rules.length-1; m++)
-                  {  s = s + rules[m] + ".\r\n";
+                  for(int m=0; m<rules.length; m++)
+                  {  s = s + rules[m];
                   }
-                  s = s + rules[rules.length-1] + ".\r\n\r\n\r\n";
                   SD = s;
+                 //System.out.println("Rules:"+s);
                  s="";
-                 for(int m=0; m<props.length-1; m++)
-                  {  s = s + props[m] + "\r\n";
+                 for(int m=0; m<props.length; m++)
+                  {  s = s + props[m];
                   }
-								 s = s + props[props.length-1] + "\r\n\r\n\r\n";
+                 //System.out.println("Propos:"+s);
                  PROP = s;
                  AB = sd_msg.AB;
                  NAB = sd_msg.NAB;
                  neg_prefix = sd_msg.neg_prefix;
                  System.out.println("AB="+AB+",NAB="+NAB+",Neg_Prefix="+neg_prefix+", Rules:"+SD+", Props:"+ PROP);
-                 if(!threadRunning){
-	                    start();
-											threadRunning = true;
-                     }
-                 
+                 start();
                 }catch(Exception e) 
                  {System.out.println("Error");System.out.println(e);
                   }
@@ -121,15 +123,15 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>() {
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
-              if(!processObs)
-              {
-							String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
+              //if(!processObs)
+              //{
+							System.out.println("1");
+							lock.lock();
+							System.out.println("2");
+              String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
                for(int m=0; m<obs_msg.length; m++)
-                 { 
-                  String s = obs_msg[m];
+                 { String s = obs_msg[m];
                   boolean found = false;
-                  if(s.charAt(0)=='~')
-									  s = neg_prefix + s.substring(1);
        						for(String st : msg_list)
                    if(s.equals(st))
              					{
@@ -139,26 +141,39 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
                     
       						if(!found)
          						{ String sub_str="";
-           						String str = s;
+           						String str = obs_msg[m];
           						int p;
-          						p = str.indexOf('(') - 1;
+          						if(str.charAt(2)=='(')
+            							p = 1;
+          						else
+            							p = 3;
           						while(str.charAt(p)!='_')
             						sub_str = sub_str + str.charAt(++p);
           						String ostr = "ok" + sub_str + "Frequency)" ;
-          						String nstr = neg_prefix + "ok" + sub_str + "Frequency)";
+          						String nstr = "n_ok" + sub_str + "Frequency)";
           						for(int i=0;i<msg_list.size();i++)
             							if(ostr.equals(msg_list.get(i)) || nstr.equals(msg_list.get(i)) )
                 						{
                               msg_list.remove(i);
                  							continue;
                 						}
-												msg_list.add(str);
-												                 
+												msg_list.add(str);System.out.println("3");
+												
+												/*try{
+												System.out.println("3");
+												if(str.charAt(0)=='n')
+														//callDiag.signal();
+														//callDiagDone.await();
+												}catch(Exception e){
+													}*/                        
          							} // if(!found)
-                     
-                } // for int m
+											System.out.println("3");
+                      callDiag.signal();
+     									lock.unlock();
+											System.out.println("4");
+                } // for int i
              
-            } // if(!processObs)
+           // } // if(!processObs)
            } //onMessage   
           });
 
@@ -177,19 +192,13 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
   } //main
 
 
-//void find_diag(org.ros.message.std_msgs.String message,ArrayList<String> obs_list)
-void find_diag()
+void find_diag(org.ros.message.std_msgs.String message)
     {   
 
     try{ 
-     //String OBS1 = new String(message.data);
-    OBS="";
-    //ArrayList<String> obs_list = new ArrayList<String>();
-    for(int j=0; j <  msg_list.size(); ++j)
-       {
-        OBS = OBS +  msg_list.get(j).toString() + ".";
-       }
-    System.out.println("SIZE="+ msg_list.size()+" and String OBS="+OBS);
+     OBS = new String(message.data);
+          
+    
 
     LSentence sd = parseSD();
     LSentence obs = parseOBS();
@@ -233,34 +242,28 @@ void find_diag()
           }//while
          
         final Diagnosis dmsg = node.getMessageFactory().newMessage("diagnosis_msgs/Diagnosis");
-
-        
-
+        org.ros.message.diagnosis_msgs.DiagnosisResults diag_result =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
          ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>	diagArr = new                    				     ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
          
-        
+        ArrayList<String> good = new ArrayList<String>();  
+        ArrayList<String> bad = new ArrayList<String>();
 
         boolean consistent = checkConsistency(indepModel);
         String gd="",bd="";
         if (consistent) {
-            org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_c =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
-						ArrayList<String> good = new ArrayList<String>();  
-            ArrayList<String> bad = new ArrayList<String>();
             result = new ArrayList();
             result.add("Consistent!");
             System.out.println("Consistent!");
             for(int j=0; j < components.size(); ++j)
                  {
                   gd= gd+"'"+components.get(j).toString()+"'";
-                  good.add(components.get(j).toString());
                  }
-            
-                diag_result_c.good = good;
-         				diag_result_c.bad  = bad;
+                good.add(gd);
+                diag_result.good = good;
+         				diag_result.bad  = bad;
          				dmsg.o_time =  now.getTimeInMillis();
-         				diagArr.add(diag_result_c);
+         				diagArr.add(diag_result);
          				dmsg.diag = diagArr;
-                
          				publisher.publish(dmsg);
 
         } else {  // inconsistent
@@ -278,40 +281,35 @@ void find_diag()
 			    boolean hasMoreDiags = (computationResult != MinHittingSets.CS_ALL_MIN_DIAGS_COMPUTED);
 			    ArrayList minHittingSetsAsAss = hsFM.getMinHS();
 			    ArrayList conflictsAsAss = hsFM.getConflictsAsAss();
-        
+         
         for (int i = 0; i < minHittingSetsAsAss.size(); ++i) 
-			       { 
-							 org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_ic =  new org.ros.message.diagnosis_msgs.DiagnosisResults();           
-               ArrayList<String> good1 = new ArrayList<String>();  
-        			 ArrayList<String> bad1 = new ArrayList<String>();
-							 gd="";bd="";
-							 String res = minHittingSetsAsAss.get(i).toString();  
+			       {                  
                for(int j=0; j < components.size(); ++j)
                  {
-                  String comp = components.get(j).toString();
-									boolean inComponents = res.indexOf(comp) > 0;
-									if(!inComponents)
-                      good1.add(comp);
+                  String res = minHittingSetsAsAss.get(i).toString();
+             			boolean b = res.indexOf(components.get(j).toString()) > 0;
+             			if(!b)
+              		 gd= gd+"'"+components.get(j).toString()+"'";
                   else
-                   bad1.add(comp);
-                  
-							} // for j
-								
-                             
-          System.out.println(minHittingSetsAsAss.get(i));
-					diag_result_ic.good = good1;
-          diag_result_ic.bad  = bad1;
-         	diagArr.add(diag_result_ic);	       
-       }// for i
+                   bd= bd+"'"+components.get(j).toString()+"'"; 
+                 }
+                 good.add(gd);
+                 bad.add(bd);
+                 
+                System.out.println(minHittingSetsAsAss.get(i));
+			       }
          
+         diag_result.good = good;
+         diag_result.bad  = bad;
          dmsg.o_time =  now.getTimeInMillis();
-         //diagArr.add(diag_result);
+         diagArr.add(diag_result);
          dmsg.diag = diagArr;
          publisher.publish(dmsg);
         final DiagnosticArray d_arr_msg = node.getMessageFactory().newMessage("diagnostic_msgs/DiagnosticArray");
 			  d_arr_msg.header.frame_id = "Engine";
+        //d_arr_msg.header.stamp = now.getTime();
         d_pub.publish(d_arr_msg);
-       } // else inconsistent
+        } // else inconsistent
 
      }catch (Exception e) {
        System.out.println("File Read Error!"+e);
@@ -324,18 +322,28 @@ public void run() {
   try{
        while(true) {
          org.ros.message.std_msgs.String str = new org.ros.message.std_msgs.String();
-         Thread.currentThread().sleep(1000);
-         processObs = true;
-         Thread.currentThread().sleep(1000);
-         /*for(int i=0;i<msg_list.size();i++)
+         //Thread.currentThread().sleep(1000);
+         //processObs = true;
+         //Thread.currentThread().sleep(1000);
+				System.out.println("11");
+				/*synchronized(msg_list){
+        */try{
+        callDiag.await();
+				}catch(IllegalMonitorStateException e){System.out.println("ERORRR:"+e);}
+				System.out.println("12");
+        lock.lock();
+				System.out.println("13");
+         for(int i=0;i<msg_list.size();i++)
                  { str.data = str.data + msg_list.get(i) + ".";
-                   
-                  }*/
-         //find_diag(str,obs_list);
-         find_diag();
-				 processObs = false;
-         
-        } // while true
+                  }
+         find_diag(str);
+				System.out.println("14");
+				 lock.unlock();
+				System.out.println("15");
+				 //callDiagDone.signal();
+         //processObs = false;
+       //} // synchronized
+       }// while true
    }
    catch(Exception e) {
          System.out.println(e);

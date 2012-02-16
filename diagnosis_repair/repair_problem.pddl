@@ -1,0 +1,18 @@
+(define (problem repair_problem)(:domain repair_domain)
+    (:requirements :strips)
+  	(:objects odom scan aria laser usb)
+(:init(comp aria)
+    (comp laser)
+    (comp usb)
+    (top odom)
+    (top scan)
+		(n_ok odom)
+		(n_ok scan)
+    (ab usb)
+		(ab aria)
+    (ab laser)
+	)
+	(:goal 
+    (and (nab aria) (nab laser) (nab usb)))
+)
+

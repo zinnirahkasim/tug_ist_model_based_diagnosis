@@ -14,7 +14,6 @@
   <export>
     <rosjava-src location="src" />
     <rosjava-pathelement location="target/" groupId="graz.tu" artifactId="graz.tu.ist.saf" version="0.0.0" built="true" />
-
   </export>
 
 </package>

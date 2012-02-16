@@ -19,44 +19,41 @@ import re
 
 class General_Observer(object):
 
-    def __init__(self, argv):    #space bar
-          self.args = argv
-          self.req_freq = float(argv[2])
-          self.req_delta_freq = float(argv[3])
-          self.ws = int(argv[4])
-          self.topic = ""
-          self.obs_msg = []
-          self.topic_type = ""
-          self.prev_t = time.time()
-          self.circular_queu = [0 for i in xrange(self.ws)]
-          self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
-          rospy.set_param('topic', '/Topic1')
-          rospy.set_param('chk_frq', 10)
-          rospy.set_param('dev', 1)
-          rospy.set_param('wsize', 10)
-          thread.start_new_thread(self.check_topic,(argv[1],2))
-          
-                 
+    def __init__(self):
+				rospy.init_node('GObs_Node', anonymous=True)
+				self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
+				self.caller_id = '/script'
+				self.obs_msg = []
+				self.topic_type = ""
+				self.prev_t = time.time()
+				self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+				self.param_topic = rospy.get_param('~topic', '/Topic1')
+				self.param_frq =  rospy.get_param('~frq', 10)
+				self.param_dev = rospy.get_param('~dev', 1)
+				self.param_ws = rospy.get_param('~ws', 10)
+				self.circular_queu = [0 for i in xrange(self.param_ws)]
+				thread.start_new_thread(self.check_topic,(self.param_topic,2))
         
         
-    def start(self):
-        rospy.init_node('General_Observer_node', anonymous=True)
-        caller_id = '/script'
-        m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
-        pubcode, statusMessage, topicList = m.getPublishedTopics(caller_id, "")
-        self.topic = rospy.get_param('topic');
-        self.freq =  rospy.get_param('chk_frq');
-        self.req_delta_freq = rospy.get_param('dev');
-        self.ws = rospy.get_param('wsize');
-        print rospy.get_param("topic")
-        for item in topicList:
-				  if item[0] == self.topic:
-					  self.topic = item[0]
-					  self.topic_type = item[1]
-        msg_class = roslib.message.get_message_class(self.topic_type)
-        rospy.Subscriber(self.topic, msg_class, self.callback)
-        rospy.spin()
-        
+    def start(self):         
+				pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+				if self.param_topic[0] != '/':
+					self.param_topic = "/%s" % (self.param_topic) 
+				#print self.param_topic, self.param_frq, self.param_dev, self.param_ws
+				topic_found = False
+				for item in topicList:
+					if item[0] == self.param_topic:
+						self.param_topic = item[0]
+						self.topic_type = item[1]
+						topic_found = True
+				if topic_found == True:
+					msg_class = roslib.message.get_message_class(self.topic_type)
+					rospy.Subscriber(self.param_topic, msg_class, self.callback)
+					rospy.spin()
+				else:
+					self.report_error()
+					
+
     def callback(self,data):
 						self.circular_queu.pop(0)
 						curr_t = time.time()
@@ -64,71 +61,55 @@ class General_Observer(object):
 						self.circular_queu.append(delta_t)
 						avg_delta_t = self.average_delta_t()
 						calculated_freq = 1/avg_delta_t
-						diff_freq = abs(self.req_freq - calculated_freq )
-						print '\nRequired_Frequency : ', self.req_freq
-						print 'Delta_Frequency : ', self.req_delta_freq
+						diff_freq = abs(self.param_frq - calculated_freq )
+						print '\nRequired_Frequency : ', self.param_frq
+						print 'Delta_Frequency : ', self.param_dev
 						print 'Calculated Frequency : ', calculated_freq
-						print 'Window Size :', self.ws
+						print 'Window Size :', self.param_ws
 						self.make_output(diff_freq)
 						self.prev_t = curr_t
 						
-         		
-        		
 
     def make_output(self,diff_freq):
-						if self.topic[0] == '/':
-							self.topic = self.topic[1:len(self.topic)]
-						#print 'Differnce :', self.topic[1:len(self.topic)]
-						#obs_msg = [time.time(),["hello","good"]]
+						if self.param_topic[0] == '/':
+							self.param_topic = self.param_topic[1:len(self.param_topic)]
 						obs_msg = []
-						if self.req_delta_freq > diff_freq:
-							print '[ok('+self.topic+'_Frequency)]'
-							obs_msg.append('ok('+self.topic+'_Frequency)')
+						if self.param_dev > diff_freq:
+							print '[ok('+self.param_topic+'_Frequency)]'
+							obs_msg.append('ok('+self.param_topic+'_Frequency)')
 							self.pub.publish(Observations(time.time(),obs_msg))
-							#self.pub.publish(obs_msg)
-							self.pub.publish(Observations(time.time(),['ok('+self.topic+'_Frequency)']))
+							self.pub.publish(Observations(time.time(),['ok('+self.param_topic+'_Frequency)']))
 						else:
-							print '[n_ok('+self.topic+'_Frequency)]'
-							obs_msg.append('n_ok('+self.topic+'_Frequency)')
+							print '[~ok('+self.param_topic+'_Frequency)]'
+							obs_msg.append('~ok('+self.param_topic+'_Frequency)')
 							self.pub.publish(Observations(time.time(),obs_msg))
-							#self.pub.publish(obs_msg)
-							#self.pub.publish(Observations(time.time(),['~Ok('+self.topic+'_Frequency)']))
+							
 
     def average_delta_t(self):
         s = 0
         for val in self.circular_queu:
             s = s + val
-        return s/self.ws
+        return s/self.param_ws
 
     def check_topic(self,string,sleeptime,*args):
-				#loop =  True
 				while True:
 						t = 0
-						caller_id = '/script'
-						m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
-						pubcode, statusMessage, topicList = m.getPublishedTopics(caller_id, "")
+						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
 							if item[0] == string:
-									self.Topic = True
 									t = 1
 									break
 						if t == 0:
 								t = 1
 								print "Topic:[" +string+ "] does not exist."
-								self.pub.publish(Observations(time.time(),['n_ok('+self.topic+'_Node)']))
+								self.pub.publish(Observations(time.time(),['~ok('+self.param_topic+'_Frequency)']))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 
-def report_error():
-		print """
-rosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>
-e.g rosrun diagnosis_observers GObs.py /scan 5 1 10
-"""
-		sys.exit(os.EX_USAGE)
+    def report_error(self):
+				print '\nrosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>'
+				print 'e.g rosrun diagnosis_observers GObs.py _topic:=scan _frq:=10 _dev:=1 _ws:=10'
+				sys.exit(os.EX_USAGE)
         
 if __name__ == '__main__':
-      if len(sys.argv) < 5:
-         report_error()
-      if sys.argv[1][0] != '/':
-         sys.argv[1] = "/%s" % (sys.argv[1]) 
-      GObs = General_Observer(sys.argv)
+      GObs = General_Observer()
       GObs.start()

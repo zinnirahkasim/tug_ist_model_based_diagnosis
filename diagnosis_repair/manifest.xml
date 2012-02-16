@@ -1,0 +1,21 @@
+<package>
+  <description brief="diagnosis_repair">
+
+     diagnosis_repair
+
+  </description>
+  <author>Safdar Zaman</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/repair_engine</url>
+  <depend package="rosjava"/>
+  <depend package="diagnosis_msgs"/>
+ <export>
+    <rosjava-src location="src" />
+    <rosjava-pathelement location="target/" groupId="graz.tu" artifactId="target" version="0.0.0" built="true" />
+    <rosjava-pathelement location="/home/szaman/pddl4j.jar" />"
+ </export>
+
+</package>
+
+

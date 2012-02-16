@@ -1,0 +1,1 @@
+(define (problem prob)(:domain repair_domain)(:requirements :strips)(:objects USB Node1 Node2 Topic2_Frequency Topic1_Frequency )(:init (component USB)(nab USB)(component Node1)(nab Node1)(component Node2)(ab Node2)(topic Topic2_Frequency)(not_ok Topic2_Frequency)(topic Topic1_Frequency)(ok Topic1_Frequency))(:goal (and (nab USB)(nab Node1)(nab Node2))))
