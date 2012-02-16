@@ -13,7 +13,7 @@
  <export>
     <rosjava-src location="src" />
     <rosjava-pathelement location="target/" groupId="graz.tu" artifactId="target" version="0.0.0" built="true" />
-    <rosjava-pathelement location="/home/szaman/pddl4j.jar" />"
+    <rosjava-pathelement location="./jar/pddl4j.jar" />"
  </export>
 
 </package>

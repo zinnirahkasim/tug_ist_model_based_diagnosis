@@ -92,9 +92,12 @@ private:
      for(int chnl=0;chnl<channels;chnl++)
       { printf("\n Channel# : %d, ON/Off= %i, Present_Curr= %f, Present_Vol= %f", chnl,*buf,*((float *)(buf+1)), *((float *)(buf+5)));
         Measurment m;
-        m.set(chnl,*buf,*((float *)(buf+1)),*((float *)(buf+5)));
+        m.setChannel(chnl);
+        m.setChannelState(*buf);
+        m.setCurrent(*((float *)(buf+1)));
+        m.setVoltage(*((float *)(buf+5)));
         msr_vector.push_back(m);
-        printf("\n Channel# : %d, ON/Off= %i, Present_Curr= %f, Present_Vol= %f", chnl,m.getChannel(),m.getCurrent(), m.getVoltage());
+        printf("\n Channel# : %d, ON/Off= %i, Present_Curr= %f, Present_Vol= %f", m.getChannel(),m.getChannelState(),m.getCurrent(), m.getVoltage());
         buf+=9;
         
       }

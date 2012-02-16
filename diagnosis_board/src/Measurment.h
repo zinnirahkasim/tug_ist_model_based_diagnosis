@@ -8,10 +8,13 @@ public:
     Measurment();
     ~Measurment();
    int getChannel();
-   char getChannleState();
+   char getChannelState();
    float getCurrent();
    float getVoltage();
-   void set(int,char,float,float);
+   void setChannel(int);
+   void setChannelState(char);
+   void setCurrent(float);
+   void setVoltage(float);
    
 private:
    int channel;

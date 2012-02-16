@@ -14,7 +14,7 @@ int Measurment::getChannel()
 return channel;
 }
 
-char Measurment::getChannleState()
+char Measurment::getChannelState()
 {
 return onOff;
 }
@@ -29,11 +29,22 @@ float Measurment::getVoltage()
 return voltage;
 }
 
-void Measurment::set(int chnl,char onOff,float cur,float vol)
+void Measurment::setChannel(int chnl)
 {
   channel = chnl;
-  onOff   = onOff;
-  current = cur;
-  voltage = vol;
 }
 
+void Measurment::setChannelState(char state)
+{
+  onOff   = state;
+}
+
+void Measurment::setCurrent(float cur)
+{
+  current = cur;
+}
+
+void Measurment::setVoltage(float vol)
+{
+  voltage = vol;
+}

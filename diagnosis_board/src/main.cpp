@@ -5,7 +5,7 @@ int main( int argc, char **argv)
 {
 contl = new Controller();
 contl->initController();	
-printf("a. Specifications\nb. Request Measurments\n\n ");
+printf("a. BroadCasting\nb. Request Measurments\nc. Switch On/Off channel\n ");
 printf("Enter Choice: ");
 char d[2];
 gets(d);

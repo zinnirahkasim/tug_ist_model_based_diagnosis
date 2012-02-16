@@ -207,8 +207,8 @@ int main()
             printf("\n I got a connection from (%s , %d)",
                    inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port));
 
-            send_boardSpecifications();
-            //send_boardMeasurments();
+            //send_boardSpecifications();
+            send_boardMeasurments();
             while (1)
             { 
  

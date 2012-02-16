@@ -5,8 +5,10 @@
 Controller::Controller()
 {
     host = gethostbyname("127.0.0.1");
+    //host = gethostbyname("192.168.0.70");
     server_addr.sin_family = AF_INET;     
     server_addr.sin_port = htons(5000);   
+    //server_addr.sin_port = htons(9760);   
     server_addr.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(server_addr.sin_zero),8);
     
@@ -73,18 +75,8 @@ while(1)
       case 0:
       			msg = new MessageSpefications(delim,command,data_length,ptr);
       break;
-      case 1:
-      			msg = new MessageBroadCasting(delim,command,data_length,ptr);
-      break;
       case 2:
-            printf("s2");
-      			msg = new MessageMeasurments(delim,command,data_length,ptr);printf("e2");
-      break;
-      case 3:
-      			msg = new MessageRequest(delim,command,data_length);;
-      break;
-      case 4:
-      			msg = new MessageChannelOnOff(delim,command,data_length,ptr);
+      			msg = new MessageMeasurments(delim,command,data_length,ptr);
       break;
       case 5:
       			msg = new MessageAcknowledgment(delim,command,data_length,ptr);
@@ -97,7 +89,10 @@ while(1)
 
 void Controller::send_Thread()
 { 
-  //printf("send");
+  while(1)
+   {
+    
+   }
 }
 
 
