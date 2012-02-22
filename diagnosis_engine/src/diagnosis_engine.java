@@ -61,6 +61,9 @@ public class diagnosis_engine extends Thread implements NodeMain {
 			 threadRunning =  false;
        
   }
+
+
+
   @Override
   public void onStart(Node node){ 
     try{

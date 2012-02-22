@@ -8,12 +8,15 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/repair_engine</url>
-  <depend package="rosjava"/>
+  <depend package="rosjava"/>  
+  <depend package="actionlib_java"/>
+  <depend package="actionlib_msgs"/>
   <depend package="diagnosis_msgs"/>
  <export>
     <rosjava-src location="src" />
     <rosjava-pathelement location="target/" groupId="graz.tu" artifactId="target" version="0.0.0" built="true" />
-    <rosjava-pathelement location="./jar/pddl4j.jar" />"
+    <rosjava-pathelement location="/home/gstein/build/model_based_diagnosis/jar/pddl4j.jar" />"
+    <rosjava-pathelement location="/home/gstein/.ros/rosjava/lib/org.ros.rosjava.actionlib_java-0.0.0.jar" />"
  </export>
 
 </package>
