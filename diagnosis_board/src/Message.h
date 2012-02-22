@@ -16,12 +16,15 @@ public:
     Message();
     Message(char dlm,char cmd,ushort len);
    ~Message();
-   void getBuffer(int length);
+    virtual unsigned char* getBuffer(int & buf_len){};
+    virtual unsigned char* parseBuffer(){};
+    virtual void parseBuffer(unsigned char *buf){};
    
-private:
+protected:
    char delim;
    char command;
    ushort length;
+   unsigned char *body;
    
 };
 
@@ -29,119 +32,72 @@ class MessageSpefications: public Message
 {
 public:
     MessageSpefications();
-    MessageSpefications(char dlm,char cmd,ushort len,unsigned char *body)
-    : Message(dlm,cmd,len)
-    {
-     parseBuffer(body,len);
-    }
-   ~MessageSpefications();
-
+    MessageSpefications(char dlm,char cmd,ushort len);
+    ~MessageSpefications();
+    void parseBuffer(unsigned char *buf);
+   
 private:
    vector<Specification> spf_vector;
    char channels;
-   void parseBuffer(unsigned char *buf, int length)
-   {
-     spf_vector.assign(length, Specification() );
-     channels = *buf;
-     buf++;
-     for(int chnl=0;chnl<channels;chnl++)
-      { Specification spf;
-        printf("\n Channel# : %d, Max_Curr= %f, Max_Vol= %f", chnl,*((float *)(buf)), *((float *)(buf+4)));
-        spf.setChannel(chnl);
-        spf.setCurrent(*((float *)(buf)));
-        spf.setVoltage(*((float *)(buf+4)));
-        spf_vector.push_back(spf);
-        printf("\n Spf.Channel# : %d, SPf.Max_Curr= %f, SPf.Max_Vol= %f", spf.getChannel(),spf.getCurrent(),spf.getVoltage());
-        
-        buf+=8;
-      }
-   }
+   
 };
 
 class MessageBroadCasting: public Message
 {
 public:
     MessageBroadCasting();
-    MessageBroadCasting(char dlm,char cmd,ushort len,unsigned char *bdy)
-    : Message(dlm,cmd,len)
-    {
-     
-    }
-   ~MessageBroadCasting();
+    MessageBroadCasting(char frq);
+    ~MessageBroadCasting();
+    unsigned char* getBuffer(int & buf_len);
+
 private:
+   char frequency;
+
 };
 
 class MessageMeasurments: public Message
 {
 public:
     MessageMeasurments();
-    MessageMeasurments(char dlm,char cmd,ushort len,unsigned char *buf)
-    : Message(dlm,cmd,len)
-    {
-     parseBuffer(buf,len);
-    }
+    MessageMeasurments(char dlm,char cmd,ushort len);
    ~MessageMeasurments();
+   void parseBuffer(unsigned char *buf);
 private:
    vector<Measurment> msr_vector;
    char channels;
-   void parseBuffer(unsigned char *buf, int length)
-   {
-     msr_vector.assign(length, Measurment() );
-     channels = *buf;
-     buf++;
-     for(int chnl=0;chnl<channels;chnl++)
-      { printf("\n Channel# : %d, ON/Off= %i, Present_Curr= %f, Present_Vol= %f", chnl,*buf,*((float *)(buf+1)), *((float *)(buf+5)));
-        Measurment m;
-        m.setChannel(chnl);
-        m.setChannelState(*buf);
-        m.setCurrent(*((float *)(buf+1)));
-        m.setVoltage(*((float *)(buf+5)));
-        msr_vector.push_back(m);
-        printf("\n Channel# : %d, ON/Off= %i, Present_Curr= %f, Present_Vol= %f", m.getChannel(),m.getChannelState(),m.getCurrent(), m.getVoltage());
-        buf+=9;
-        
-      }
-   }
 };
 
 class MessageRequest: public Message
 {
 public:
     MessageRequest();
-    MessageRequest(char dlm,char cmd,ushort len)
-    : Message(dlm,cmd,len)
-    {
-    }
    ~MessageRequest();
+   unsigned char* getBuffer(int & buf_len);
+    
 };
 
 class MessageChannelOnOff: public Message
 {
 public:
     MessageChannelOnOff();
-    MessageChannelOnOff(char dlm,char cmd,ushort len,unsigned char *bdy)
-    : Message(dlm,cmd,len)
-    {
-
-    }
+    MessageChannelOnOff(char chnl,char st);
    ~MessageChannelOnOff();
+    unsigned char* getBuffer(int & buf_len);
+private:
+  char channel;
+  char state;
 };
 
 class MessageAcknowledgment: public Message
 {
 public:
     MessageAcknowledgment();
-    MessageAcknowledgment(char dlm,char cmd,ushort len,unsigned char *bdy)
-    : Message(dlm,cmd,len)
-    {
-    }
+    MessageAcknowledgment(char dlm,char cmd,ushort len);
    ~MessageAcknowledgment();
+   void parseBuffer(unsigned char *p);
 private:
    char ecode;
-   void parseBuffer(unsigned char *p, int length)
-   {
-     ecode = *p;
-   }
+ 
 };
 
 #endif //_MESSAGE_

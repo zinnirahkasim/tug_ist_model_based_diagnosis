@@ -8,6 +8,10 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/diagnosis_board</url>
+  <depend package="roscpp"/>
+  <depend package="diagnosis_msgs"/>
+  <depend package="actionlib_msgs"/>
+  <depend package="actionlib"/>
 
 </package>
 

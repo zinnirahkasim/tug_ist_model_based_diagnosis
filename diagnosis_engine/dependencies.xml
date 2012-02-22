@@ -3,13 +3,13 @@
       xmlns:ac="antlib:net.sf.antcontrib"
 >
 
-  <path id="maven-ant-tasks.classpath" path="/home/johannes/robotics/tug-ist-ros-pkg/externals/hg/rosjava_bootstrap/scripts/maven-ant-tasks-2.1.3.jar" />
+  <path id="maven-ant-tasks.classpath" path="/home/szaman/my_electric_pkgs/external_packages/hg/rosjava_bootstrap/scripts/maven-ant-tasks-2.1.3.jar" />
   <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
            uri="antlib:org.apache.maven.artifact.ant"
            classpathref="maven-ant-tasks.classpath" />
   <typedef resource="net/sf/antcontrib/antlib.xml"
            uri="antlib:net.sf.antcontrib"
-           classpath="/home/johannes/robotics/tug-ist-ros-pkg/externals/hg/rosjava_bootstrap/scripts/ant-contrib-1.0b3.jar"/>
+           classpath="/home/szaman/my_electric_pkgs/external_packages/hg/rosjava_bootstrap/scripts/ant-contrib-1.0b3.jar"/>
 
   <artifact:dependencies filesetId="dependency.osgi">
     <artifact:remoteRepository id="org.ros.release" url="http://robotbrains.hideho.org/nexus/content/groups/ros-public" />

@@ -1,4 +1,4 @@
-/* tcpserver.c */
+/* Diagnosis Board Server*/
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -26,7 +26,7 @@ struct board
 struct board board_info; 
 struct sockaddr_in server_addr,client_addr;    
 int sin_size;
-void send_boardSpecifications()
+void take_boardSpecifications()
 {          
           p = nbuffer;
 					channels = 10;
@@ -67,7 +67,7 @@ void send_boardSpecifications()
           }
 }                
 
-void send_boardMeasurments()
+void take_boardMeasurments()
 {         
           p = nbuffer;
 					channels = 10;
@@ -114,35 +114,42 @@ void send_boardMeasurments()
 					
 }
 
+bool check_Command(unsigned char *buf)
+{ 
+  
+  printf("\n RECIEVED from Client:\ndelim = %i , command = %i , length = %d" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]),*((float *)(nbuffer+5)));
+}
+void send_Ack()
+{         
+          //bool correctCommand=check_Command();
+          p = nbuffer;
+					char delim = 2;
+          char command = 5;
+          ushort length = 1;
+          
+          *p = delim;
+          p++;
+          *p = command;
+          p++;
+          *((ushort *)p) = length;
+          p+=2;
+
+          char ecode = 0;
+          
+         *p=ecode;
+          
+          BUFF_SIZE = 5;
+          send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
+          printf("\n ACK from Server: delim = %i , command = %i , length = %i , ecode = %i " , nbuffer[0], nbuffer[1], nbuffer[2] , nbuffer[4]);
+         
+}
+
 void switch_OnOffChannel(char channel, char status)
 {
 printf("%i channel to %c ",channel,status);
-if(channel=='0')
-   {
-    board_info.on_off[0] = status;
-    printf("%c",board_info.on_off[0]);
-    }
-else if(channel=='1')
-   board_info.on_off[1] = status;
-else if(channel=='2')
-   board_info.on_off[2] = status;
-else if(channel=='3')
-   board_info.on_off[3] = status;
-else if(channel=='4')
-   board_info.on_off[4] = status;
-else if(channel=='5')
-   board_info.on_off[5] = status;
-else if(channel=='6')
-   board_info.on_off[6] = status;
-else if(channel=='7')
-   board_info.on_off[7] = status;
-else if(channel=='8')
-   board_info.on_off[8] = status;
-else if(channel=='9')
-   board_info.on_off[9] = status;
-else
-  printf("%c channel does not exist",channel);
-
+int ch;
+ch = (int) channel;
+board_info.on_off[ch] = status;
 }
 
 int main()
@@ -207,28 +214,33 @@ int main()
             printf("\n I got a connection from (%s , %d)",
                    inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port));
 
-            //send_boardSpecifications();
-            send_boardMeasurments();
+            take_boardSpecifications();
+            char command=0;
             while (1)
             { 
- 
+              if(command!=4)
               send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
               bytes_recieved = recv(connected,recv_data,255,0);
-              //recv_data[bytes_recieved] = '\0';
-             
-              if (strcmp(recv_data , "q") == 0 || strcmp(recv_data , "Q") == 0)
-              {
-                close(connected);
-                break;
-              }
-              printf("\n RECIEVED from Client:\ndelim = %i , command = %i , length = %d" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]));
               
-             
-              char command = recv_data[1];
+                   
+              command = recv_data[1];
               if(command==3)
-                 {send_boardMeasurments(); printf("8");}
+                 { printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %i " ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]), *(&recv_data[5]));
+                   send_Ack();
+                   take_boardMeasurments();
+                 }
               else if(command==4)
-                   {switch_OnOffChannel(*(&recv_data[4]),*(&recv_data[5]));printf("8");}
+                   {
+                     switch_OnOffChannel(*(&recv_data[4]),*(&recv_data[5]));
+                     printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %d,channel = %i, State = %i " ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]), *(&recv_data[5]));
+                    send_Ack();
+                   }
+              else if(command==1)
+                   {
+                    printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %d, BroadCastFrequency = %i" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]));
+                    take_boardMeasurments();
+                   }
+                    
  
               fflush(stdout);
 
