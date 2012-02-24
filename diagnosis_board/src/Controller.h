@@ -13,12 +13,10 @@
 #include <vector>
 #include <queue>
 #include "Message.h"
-#include <actionlib/server/simple_action_server.h>
-#include <diagnosis_board/BoardAction.h>
 #include <diagnosis_msgs/DBoardMeasurments.h>
 #include <diagnosis_msgs/Channel.h>
 
-typedef actionlib::SimpleActionServer<diagnosis_board::BoardAction> boardServer;
+//typedef actionlib::SimpleActionServer<diagnosis_board::BoardAction> boardServer;
 
 using namespace std;
 typedef queue<Message> MSGQUEUE;
@@ -33,19 +31,16 @@ class Controller
 {
 public:
    Controller();
-   Controller(ros::NodeHandle);
+   Controller(char);
    ~Controller();
    friend void* run_recv_Thread(void*);
-   friend void* run_send_Thread(void*);
    void recv_Thread();
-   void send_Thread();
-   void enable_Sending();
    void initController();
    void CallMessageBroadCasting(char);
    void CallMessageRequest();
    void CallMessageChannelOnOff(char,char);
    void processBuffer(unsigned char *,char);
-   void executeAction(const diagnosis_board::BoardGoalConstPtr& goal, boardServer* as);
+   //void executeAction(const diagnosis_board::BoardGoalConstPtr& goal, boardServer* as);
    bool ControlExit;
       
 private:
@@ -61,7 +56,6 @@ private:
    struct sockaddr_in server_addr;
    Message *msg;
    MSGQUEUE rcvQueue;            
-   diagnosis_board::BoardFeedback feedback_;
-   diagnosis_board::BoardResult result_;
+   char initFrq;
    
 };

@@ -1,8 +1,8 @@
 /* Controller Class */
 #include "Controller.h"
 
-Controller::Controller()
-{
+Controller::Controller(char frq)
+{  
     ControlExit = false;
     host = gethostbyname("127.0.0.1");
     //host = gethostbyname("192.168.0.70");
@@ -12,6 +12,7 @@ Controller::Controller()
     server_addr.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(server_addr.sin_zero),8);
     pub_board_msr_ = n_.advertise<diagnosis_msgs::DBoardMeasurments>("/board_measurments",1);
+    initFrq = frq;
     
 }
 
@@ -19,6 +20,12 @@ Controller::~Controller()
 {
 
 }
+
+/*void Controller::executeAction(const diagnosis_board::BoardGoalConstPtr& goal, boardServer* as)
+{
+  as->setSucceeded();
+
+}*/
 
 void Controller::initController()
 {
@@ -32,20 +39,16 @@ void Controller::initController()
     }
   ControlExit = true;
   create_threads();
+  CallMessageBroadCasting(initFrq);
 }
 
 void* run_recv_Thread(void* contrl_ptr){
     static_cast<Controller*>(contrl_ptr)->recv_Thread();
 }
 
-void* run_send_Thread(void* contrl_ptr){
-    static_cast<Controller*>(contrl_ptr)->send_Thread();
-}
-
 void Controller::create_threads(){
-    pthread_t r_thread, c_thread;
+    pthread_t r_thread;
     r_thread=pthread_create(&r_thread, NULL, run_recv_Thread, this);
-    c_thread=pthread_create(&c_thread, NULL, run_send_Thread, this);
 }  
 
 void Controller::processBuffer(unsigned char *buf,char command)
@@ -127,30 +130,18 @@ while(1)
 }// recv_Thread
 
 
-
-void Controller::send_Thread()
-{ 
-char d[2];
- while(ControlExit)
+void Controller::CallMessageBroadCasting(char frq)
 {
-printf("\na. BroadCasting\nb. Request Measurments\nc. Switch On/Off channel\n ");
-printf("Enter Choice: ");
-d[0]=' ';
-gets(d);
-if(strcmp(d,"a")==0)
-  {  char s;
-     printf("\nBradCasting Start/Stop(0=Stop,n=Start (milisecond)) :");
-     scanf("%i",&s);
      unsigned char *p;
-     msg = new MessageBroadCasting(s);
+     msg = new MessageBroadCasting(frq);
      int buf_len;
      p = msg->getBuffer(buf_len);
      send(sock,p,buf_len, 0);
      delete p;
-     
-  }
-else if(strcmp(d,"b")==0)
-   { 
+}
+
+void Controller::CallMessageRequest()
+{
      unsigned char *p;
      msg = new MessageRequest();
      int buf_len;
@@ -158,24 +149,16 @@ else if(strcmp(d,"b")==0)
      send(sock,p,buf_len, 0);
      printf("d=%i,c=%i,l=%i,size=%d",*p,*(p+1),*(p+2),buf_len);
      delete p;
-   }
-else if(strcmp(d,"c")==0)
-   {
-    char c[2],s;
-    printf("\nEnter Channel#");
-    gets(c);
-    printf("\nEnter Status you want (0=Off,1=On)#");
-    scanf("%i",&s);
-    printf("\nREAD channel=%c,Status=%i",c[0],s);
+}
+
+void Controller::CallMessageChannelOnOff(char chnl, char status)
+{
     unsigned char *p;
-    msg = new MessageChannelOnOff(c[0]-48,s);
+    msg = new MessageChannelOnOff(chnl,status);
     int buf_len;
     p = msg->getBuffer(buf_len);
     send(sock,p,buf_len, 0);
     printf("d=%i,c=%i,l=%i,channel=%i, state=%i, size=%d",*p,*(p+1),*(p+2),*(p+4),*(p+5),buf_len);
     delete p;
-  }
 }
-}
-
 
