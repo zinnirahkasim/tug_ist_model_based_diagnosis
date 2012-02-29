@@ -1,5 +1,4 @@
 /* Diagnosis Board Server*/
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -9,27 +8,31 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <boost/thread.hpp>
+
 int BUFF_SIZE;
 int sock, connected, bytes_recieved , True = 1;  
 char send_data[255] , recv_data[255];
 unsigned char nbuffer[255];
 unsigned char * p;
 int channels;
+int MAX_channels = 8;
 struct board
 {
-         char on_off[10];
-         float max_vol[10];
-         float max_cur[10];
-         float pr_vol[10];
-         float pr_cur[10];
+         char on_off[8];
+         float max_vol[8];
+         float max_cur[8];
+         float pr_vol[8];
+         float pr_cur[8];
 };
 struct board board_info; 
 struct sockaddr_in server_addr,client_addr;    
 int sin_size;
+
 void take_boardSpecifications()
 {          
           p = nbuffer;
-					channels = 10;
+					channels = MAX_channels;
           char delim = 2;
           char command = 0;
           ushort length = 8*channels+1;
@@ -57,7 +60,7 @@ void take_boardSpecifications()
           *((float *)p) = max_vol;
           p+=4;
           }
-          BUFF_SIZE = 85;
+          BUFF_SIZE = 4+1+8*channels;
           printf("\n SENT DATA from Server: delim = %i , command = %i , length = %i , Channels = %i " , nbuffer[0], nbuffer[1], nbuffer[2] , nbuffer[4]);
           offset = 5;
           for(int channel=0;channel<channels;channel++)
@@ -70,7 +73,7 @@ void take_boardSpecifications()
 void take_boardMeasurments()
 {         
           p = nbuffer;
-					channels = 10;
+					channels = 8;
           char delim = 2;
           char command = 2;
           ushort length = 9*channels+1;
@@ -101,7 +104,7 @@ void take_boardMeasurments()
           p+=4;
           }
 
-          BUFF_SIZE = 95;
+          BUFF_SIZE = 4+1+9*channels;
           printf("\n SENT DATA from Server: delim = %i , command = %i , length = %i , Channels = %i " , nbuffer[0], nbuffer[1], nbuffer[2] , nbuffer[4]);
 
           int offset = 5;
@@ -116,7 +119,6 @@ void take_boardMeasurments()
 
 bool check_Command(unsigned char *buf)
 { 
-  
   printf("\n RECIEVED from Client:\ndelim = %i , command = %i , length = %d" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]),*((float *)(nbuffer+5)));
 }
 void send_Ack()
@@ -152,10 +154,27 @@ ch = (int) channel;
 board_info.on_off[ch] = status;
 }
 
+void BoradcastWithFrq()
+{
+
+while(true)
+ {
+    
+    take_boardMeasurments(); 
+    send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
+    for(int i=0; i<=1000; i++);
+
+ }
+
+
+}
+
+
+
 int main()
 {
-        
-        for(int channel=0;channel<10;channel++)
+
+        for(int channel=0;channel<MAX_channels;channel++)
            {
              if((channel%2)==0)
                { 
@@ -167,7 +186,7 @@ int main()
               }
              else
                 {
-                 board_info.on_off[channel] = 1;
+                 board_info.on_off[channel] = 0;
                  board_info.max_vol[channel] = channel*5+0.1*channel;
                  board_info.max_cur[channel] = channel*8+0.1*channel;
                  board_info.pr_vol[channel] = channel+0.1*channel;
@@ -203,7 +222,7 @@ int main()
 		
 	      printf("\nTCPServer Waiting for client on port 5000");
         fflush(stdout);
-         
+        
         while(1)
         {  
 
@@ -224,7 +243,13 @@ int main()
               
                    
               command = recv_data[1];
-              if(command==3)
+              if(command==1)
+                   {
+                    printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %d, BroadCastFrequency = %i" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]));
+                    BoradcastWithFrq();//
+                    //take_boardMeasurments();
+                   }
+              else if(command==3)
                  { printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %i " ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]), *(&recv_data[5]));
                    send_Ack();
                    take_boardMeasurments();
@@ -235,11 +260,7 @@ int main()
                      printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %d,channel = %i, State = %i " ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]), *(&recv_data[5]));
                     send_Ack();
                    }
-              else if(command==1)
-                   {
-                    printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %d, BroadCastFrequency = %i" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]));
-                    take_boardMeasurments();
-                   }
+              
                     
  
               fflush(stdout);

@@ -4,6 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.std_msgs-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.m2/repository/dnsjava/org.ros.rosjava.dnsjava/2.1.1/org.ros.rosjava.dnsjava-2.1.1.jar"/>
+	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.actionlib_msgs-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.actionlib_java-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.m2/repository/org/apache/commons/com.springsource.org.apache.commons.httpclient/3.1.0/com.springsource.org.apache.commons.httpclient-3.1.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.m2/repository/org/apache/commons/com.springsource.org.apache.commons.net/2.0.0/com.springsource.org.apache.commons.net-2.0.0.jar"/>
@@ -13,12 +14,11 @@
 	<classpathentry kind="lib" path="/home/szaman/my_electric_pkgs/external_packages/hg/actionlib_java/target/org.ros.rosjava.actionlib_java-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.actionlib_tutorials-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/my_electric_pkgs/external_packages/hg/rosjava/target/org.ros.rosjava-0.0.0.jar"/>
-	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.actionlib_msgs-0.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/szaman/my_electric_pkgs/model_based_diagnosis/jar/pddl4j.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.test_ros-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/my_electric_pkgs/external_packages/hg/apache_commons_util/target/org.ros.rosjava.ws-commons-util-1.0.2.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.diagnosis_msgs-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.m2/repository/org/jboss/netty/netty/3.2.4.Final/netty-3.2.4.Final.jar"/>
-	<classpathentry kind="lib" path="/home/szaman/build/model_based_diagnosis/jar/pddl4j.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/target/target-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.roscpp-0.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.rosgraph_msgs-0.0.0.jar"/>

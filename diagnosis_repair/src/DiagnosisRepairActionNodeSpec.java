@@ -17,10 +17,10 @@ public class DiagnosisRepairActionNodeSpec
     ActionSpec<DiagnosisRepairAction, DiagnosisRepairActionFeedback, DiagnosisRepairActionGoal, DiagnosisRepairActionResult, DiagnosisRepairFeedback, DiagnosisRepairGoal, DiagnosisRepairResult> {
 
   public DiagnosisRepairActionNodeSpec() throws RosException {
-    super(DiagnosisRepairAction.class, "repair/DiagnosisRepairAction",
-        "repair/DiagnosisRepairActionFeedback", "repair/DiagnosisRepairActionGoal",
-        "repair/DiagnosisRepairActionResult", "repair/DiagnosisRepairFeedback",
-        "repair/DiagnosisRepairGoal", "repair/DiagnosisRepairResult");
+    super(DiagnosisRepairAction.class, "diagnosis_msgs/DiagnosisRepairAction",
+        "diagnosis_msgs/DiagnosisRepairActionFeedback", "diagnosis_msgs/DiagnosisRepairActionGoal",
+        "diagnosis_msgs/DiagnosisRepairActionResult", "diagnosis_msgs/DiagnosisRepairFeedback",
+        "diagnosis_msgs/DiagnosisRepairGoal", "diagnosis_msgs/DiagnosisRepairResult");
   }
 
   @Override

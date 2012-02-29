@@ -37,3 +37,4 @@ rosbuild_add_executable(BoardControllerServer src/main.cpp src/Message.cpp src/C
 rosbuild_add_executable(BoardServer src/Board.cpp)
 rosbuild_add_executable(BoardControllerClient src/BoardActionClient.cpp)
 rosbuild_add_executable(RepairActionServer src/RepairActionServer.cpp)
+rosbuild_add_executable(RepairActionClient src/RepairActionClient.cpp)

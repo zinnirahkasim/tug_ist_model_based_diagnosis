@@ -1,13 +1,58 @@
 #include "Controller.h"
 #include <actionlib/server/simple_action_server.h>
+#include <diagnosis_msgs/DiagnosisRepairAction.h>
 #include <diagnosis_msgs/BoardAction.h>
-typedef actionlib::SimpleActionServer<diagnosis_msgs::BoardAction> Server;
+#include <string>
+
+using namespace std;
+
+typedef actionlib::SimpleActionServer<diagnosis_msgs::BoardAction> boardServer;
+typedef actionlib::SimpleActionServer<diagnosis_msgs::DiagnosisRepairAction> switchServer;
 
 Controller *contl;
 
 
-void execute(const diagnosis_msgs::BoardGoalConstPtr& goal, Server* as)
+void power_up(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
 {
+ 
+  
+  char chnl = contl->get_chnl_from_map(goal->parameter[0].c_str());
+  ROS_INFO("\n Request for Power Up for dev %s on Channel %d is received.",goal->parameter[0].c_str(),chnl);
+  if(chnl!=-1)
+  {
+  char status;
+  //string str_goal = goal->parameter[0].c_str();
+  status = 1;
+  contl->CallMessageChannelOnOff(chnl,status);
+  ROS_INFO("\n Request for Power Up for dev %s on Channel %d is received.",goal->parameter[0].c_str(),chnl);
+  as->setSucceeded();
+  }else
+       ROS_INFO("\n Device does not exist.");
+}
+
+
+void shut_down(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
+{
+  char chnl = contl->get_chnl_from_map("PC");
+  if(chnl!=-1)
+  {
+  char status;
+  string str_goal = goal->parameter[0].c_str();
+  chnl = str_goal[7];
+  status = 0;
+  //contl->CallMessageChannelOnOff(chnl,status);
+  ROS_INFO("\n Request for Shut down for dev %s on Channel %c is received.",goal->parameter[0].c_str(),chnl);
+  as->setSucceeded();
+  }else
+      ROS_INFO("\n Device does not exist.");
+  contl->CallMessageRequest();
+}
+
+
+
+void execute(const diagnosis_msgs::BoardGoalConstPtr& goal, boardServer* as)
+{
+
   int i;
   i = goal->command;
   if(i==3)
@@ -33,49 +78,26 @@ void execute(const diagnosis_msgs::BoardGoalConstPtr& goal, Server* as)
 
 
 
+
 int main( int argc, char **argv)
 {
-ros::init(argc, argv,"board_server");
+ros::init(argc, argv,"board_controller");
 ros::NodeHandle n;
 ROS_INFO("Board Controller trying to Connect....");
 contl = new Controller(3);
 
-Server server(n, "board_server", boost::bind(&execute, _1, &server), false);
-server.start();
+boardServer bserver(n, "board_server", boost::bind(&execute, _1, &bserver), false);
+switchServer pserver(n, "power_up", boost::bind(&power_up, _1, &pserver), false);
+switchServer sserver(n, "shutdown", boost::bind(&shut_down, _1, &sserver), false);
+
+bserver.start();
+pserver.start();
+sserver.start();
+
+
 
 contl->initController();
-
+ROS_INFO("Board Connected.....");
 ros::spin();
-/*while(contl->ControlExit)
-{
-}*/
-//printf("Controller Exit!");
-/*
-contl->SendCmd = 1;
-printf("\na. BroadCasting\nb. Request Measurments\nc. Switch On/Off channel\n ");
-printf("Enter Choice: ");
-char d[2];
-gets(d);
-if(strcmp(d,"a")==0)
-  {  char s;
-     printf("\nBradCasting Start/Stop(0=Stop,n=Start (milisecond)) :");
-     scanf("%i",&s);
-     contl->sendCmd1(s); 
-  }
-else if(strcmp(d,"b")==0)
-   { 
-     contl->sendCmd3(); 
-   }
-else if(strcmp(d,"c")==0)
-   {char c[2],s;
-    printf("\nEnter Channel#");
-    gets(c);
-    printf("\nEnter Status you want (0=Off,1=On)#");
-    //scanf("%i",&s);
-    scanf("%i",&s);
-    //gets(s);
-    contl->sendCmd4(c[0],s);
 
-  }
-} */  
 }

@@ -54,9 +54,9 @@ public class diagnosis_engine extends Thread implements NodeMain {
 	public diagnosis_engine()
   {
        super("FetchResult"+1);
-       AB = "";
-       NAB = "";
-       neg_prefix = "";
+       AB = "AB";
+       NAB = "NAB";
+       neg_prefix = "not_";
 			 processObs = false;
 			 threadRunning =  false;
        
@@ -128,37 +128,43 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
               {
 							String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
                for(int m=0; m<obs_msg.length; m++)
-                 { 
-                  String s = obs_msg[m];
-                  boolean found = false;
-                  if(s.charAt(0)=='~')
-									  s = neg_prefix + s.substring(1);
-       						for(String st : msg_list)
-                   if(s.equals(st))
-             					{
-               					found = true;
-               					break;
-              				}
-                    
-      						if(!found)
-         						{ String sub_str="";
-           						String str = s;
-          						int p;
-          						p = str.indexOf('(') - 1;
-          						while(str.charAt(p)!='_')
-            						sub_str = sub_str + str.charAt(++p);
-          						String ostr = "ok" + sub_str + "Frequency)" ;
-          						String nstr = neg_prefix + "ok" + sub_str + "Frequency)";
-          						for(int i=0;i<msg_list.size();i++)
-            							if(ostr.equals(msg_list.get(i)) || nstr.equals(msg_list.get(i)) )
+                 { boolean found = false;
+                   String s = obs_msg[m];
+                   //for(String st : msg_list)
+                      //if(s.equals(st))
+                     for(int i=0;i<msg_list.size();i++)
+            					if( msg_list.get(i).contains(s))
+             					  {
+               					  found = true;
+               					  break;
+              				   }
+                            
+                  if(!found)
+         						{
+                      String ns = "123";  // Negating or oposite strings
+                      if(s.charAt(0)=='~')
+                           {
+                              ns = s.substring(1);
+                              s = neg_prefix + s.substring(1);
+                           }
+                          else
+                              ns = neg_prefix + s;
+
+											for(int i=0;i<msg_list.size();i++)
+            							if(msg_list.get(i).contains(ns))
                 						{
-                              msg_list.remove(i);
-                 							continue;
+                              msg_list.set(i,s);
+                              found = true;
+                 							break;
                 						}
-												msg_list.add(str);
-												                 
-         							} // if(!found)
-                     
+                      
+                     if(!found)
+											 msg_list.add(s);
+          				 } // if(!found)
+                  /*for(int i=0;i<msg_list.size();i++)
+                      System.out.println(","+msg_list.get(i).toString());
+                  System.out.println("SIZE="+msg_list.size());*/
+                
                 } // for int m
              
             } // if(!processObs)
@@ -180,7 +186,6 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
   } //main
 
 
-//void find_diag(org.ros.message.std_msgs.String message,ArrayList<String> obs_list)
 void find_diag()
     {   
 
@@ -236,8 +241,6 @@ void find_diag()
           }//while
          
         final Diagnosis dmsg = node.getMessageFactory().newMessage("diagnosis_msgs/Diagnosis");
-
-        
 
          ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>	diagArr = new                    				     ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
          
@@ -326,15 +329,9 @@ void find_diag()
 public void run() {
   try{
        while(true) {
-         org.ros.message.std_msgs.String str = new org.ros.message.std_msgs.String();
          Thread.currentThread().sleep(1000);
          processObs = true;
          Thread.currentThread().sleep(1000);
-         /*for(int i=0;i<msg_list.size();i++)
-                 { str.data = str.data + msg_list.get(i) + ".";
-                   
-                  }*/
-         //find_diag(str,obs_list);
          find_diag();
 				 processObs = false;
          

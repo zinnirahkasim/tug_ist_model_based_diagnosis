@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <vector>
 #include <queue>
+#include <map>
 #include "Message.h"
 #include <diagnosis_msgs/DBoardMeasurments.h>
 #include <diagnosis_msgs/Channel.h>
@@ -40,8 +41,9 @@ public:
    void CallMessageRequest();
    void CallMessageChannelOnOff(char,char);
    void processBuffer(unsigned char *,char);
-   //void executeAction(const diagnosis_board::BoardGoalConstPtr& goal, boardServer* as);
-   bool ControlExit;
+   void chnl2dev_mapping();
+   char get_chnl_from_map(string);
+
       
 private:
    void create_threads();
@@ -57,5 +59,6 @@ private:
    Message *msg;
    MSGQUEUE rcvQueue;            
    char initFrq;
+   map<char,string> chnl2dev_map;
    
 };

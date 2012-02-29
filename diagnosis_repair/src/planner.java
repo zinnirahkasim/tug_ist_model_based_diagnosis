@@ -17,16 +17,43 @@ import org.ros.message.MessageListener;
 import org.ros.message.diagnosis_msgs.Diagnosis;
 import org.ros.message.diagnosis_msgs.DiagnosisResults;
 import org.ros.message.diagnosis_msgs.Observations;
+import org.ros.actionlib.client.ActionClient;
+import org.ros.message.diagnosis_msgs.DiagnosisRepairGoal;
+
+import org.ros.actionlib.client.SimpleActionClient;
+import org.ros.actionlib.client.SimpleActionClientCallbacks;
+import org.ros.actionlib.state.SimpleClientGoalState;
+import org.ros.exception.RosException;
+
+import org.ros.message.diagnosis_msgs.DiagnosisRepairActionFeedback;
+import org.ros.message.diagnosis_msgs.DiagnosisRepairActionGoal;
+import org.ros.message.diagnosis_msgs.DiagnosisRepairActionResult;
+import org.ros.message.diagnosis_msgs.DiagnosisRepairFeedback;
+import org.ros.message.diagnosis_msgs.DiagnosisRepairGoal;
+import org.ros.message.diagnosis_msgs.DiagnosisRepairResult;
+
+import org.ros.node.DefaultNodeRunner;
+import java.util.concurrent.TimeUnit;
+
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 
 public class planner implements NodeMain{
     private String problem;
 		private Node node;
     private ArrayList<String> msg_list = new ArrayList<String>();
+    Map<String,Object> mp;
 
     public planner()
     {
-     problem = "define (problem prob)(:domain repair_domain)(:requirements :strips)(:objects ";
+     problem = "define (problem prob)(:domain repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects ";
+     mp = new HashMap<String,Object>();
     }
+ 
     @Override
     public void onShutdown(Node node) {
      node.shutdown();
@@ -42,6 +69,30 @@ public class planner implements NodeMain{
          Preconditions.checkState(this.node == null);
          this.node = node;
          int o_length=-1;
+         try{
+         
+         DiagnosisRepairActionNodeSpec spec = new DiagnosisRepairActionNodeSpec();
+         
+         mp.put("start_node",spec.buildSimpleActionClient("start_node"));
+         mp.put("stop_node",spec.buildSimpleActionClient("stop_node"));
+         mp.put("shutdown",spec.buildSimpleActionClient("shutdown"));
+         mp.put("power_up",spec.buildSimpleActionClient("power_up"));
+               
+         Set s=mp.entrySet();
+
+        Iterator it=s.iterator();
+
+        while(it.hasNext())
+        {
+            Map.Entry m =(Map.Entry)it.next();
+            DiagnosisRepairActionNodeSimpleClient obj = (DiagnosisRepairActionNodeSimpleClient)m.getValue();
+            obj.addClientPubSub(node);
+            
+        }
+
+ 
+      
+         
 
          node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
           new MessageListener<org.ros.message.diagnosis_msgs.Diagnosis>() {
@@ -74,21 +125,27 @@ public class planner implements NodeMain{
                }
             for(int i=0;i<msg_list.size();i++)
                {
-                 String topic = msg_list.get(i).substring(msg_list.get(i).indexOf("(")+1,msg_list.get(i).indexOf(")"));
-                 co_problem = co_problem + topic + " ";            
-                 if(msg_list.get(i).charAt(0)=='o')
-                      init = init + "(topic "+topic+")" + "(ok "+topic+")";
+                 String parameter = msg_list.get(i).substring(msg_list.get(i).indexOf("(")+1,msg_list.get(i).indexOf(")"));
+                 co_problem = co_problem + parameter + " ";            
+                 if(msg_list.get(i).charAt(0)=='~')
+                    {
+                      String predicate = msg_list.get(i).substring(1,msg_list.get(i).indexOf("("));
+                      init = init + "(component "+parameter+")" + "(not_"+predicate+" "+parameter+")";
+                    }
                  else
-                      init = init + "(topic "+topic+")" + "(not_ok "+topic+")";               
+                    {
+                      String predicate = msg_list.get(i).substring(0,msg_list.get(i).indexOf("("));
+                      init = init + "(component "+parameter+")" + "("+predicate+" "+parameter+")";               
+                    }               
 							 }
             co_problem = co_problem + ")";
             init = init + ")";
             goal=goal+"))";
             String prob = "(" + problem + co_problem + init + goal + ")";
-            //System.out.println(prob);
-            BufferedWriter out=new BufferedWriter(new FileWriter("prob.pddl"));
-            out.write(prob);
-            out.close();
+            System.out.println(prob);
+            //BufferedWriter out=new BufferedWriter(new FileWriter("prob.pddl"));
+            //out.write(prob);
+            //out.close();
 						String repair_domain = "/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/repair_domain.pddl";
             Properties options = Graphplan.getParserOptions();
                 if (!new File(repair_domain).exists()) {
@@ -114,82 +171,137 @@ public class planner implements NodeMain{
                     Plan plan = gplan.solve();
                     if (plan != Plan.FAILURE) {
                         System.out.println("ACTIONS for DIAGNOSIS :"+(d+1));
-                        Graphplan.printPlan(plan);
-												/*for (Set<AtomicFormula> layer : plan)
+                       //if(d>0)
+                       //{ 
+                        //Graphplan.printPlan(plan);
+                        org.ros.message.diagnosis_msgs.DiagnosisRepairGoal repairGoal =  new org.ros.message.diagnosis_msgs.DiagnosisRepairGoal();
+                        ArrayList<String> params = new ArrayList<String>();
+                        String actionServer=null;
+												for (Set<AtomicFormula> layer : plan)
                              for (AtomicFormula action : layer)
 											         { 
-                                System.out.print(action.getPredicate().toUpperCase());
-								                for (Term parameter : action) 
-                                  {
-                                     System.out.print(" " + parameter.getImage().toUpperCase());
+                                actionServer = action.getPredicate().toUpperCase();
+                                for (Term parameter : action) 
+                                  {  
+                                     params.add(parameter.getImage());
+                                     
                                   }
-															  System.out.println();
-                                }*/
-                    } else {
-                        System.out.println("\nno solution plan found\n");
-                    }
-                        System.out.printf("\n Nos of ACTIONS : %12d \n", gplan.a_tried);
-                    gplan = null;
-                    plan = null;
+                                 actionServer = action.getPredicate();
+                                 repairGoal.parameter = params;
+															   System.out.print("Call Action Server: "+actionServer+" for parameters:");
 
-               }
+                                 for(int j=0; j < params.size(); ++j)
+                 									{
+                  									System.out.print(params.get(j).toString()+",");
+                 									}
+                                  System.out.println();
+                                  if(mp.containsKey(actionServer)) 
+                                  {
+                                   DiagnosisRepairActionNodeSimpleClient sac = (DiagnosisRepairActionNodeSimpleClient)mp.get(actionServer);
+      
+                                   repairGoal.parameter = params;
+        
+                                   sac.sendGoal(repairGoal, new SimpleActionClientCallbacks<DiagnosisRepairFeedback, DiagnosisRepairResult>() {
+                                   @Override
+                                   public void feedbackCallback(DiagnosisRepairFeedback feedback) {
+                                    System.out.print("Client feedback\n\t");
+                                    System.out.println();
+        													 }
+
+        												  @Override
+        												  public void doneCallback(SimpleClientGoalState state, DiagnosisRepairResult result) {
+                    											System.out.println("Client done " + state);
+                                  }
+            
+        		        						  @Override
+        						        		  public void activeCallback() {
+          								          System.out.println("Client active");
+        								          }
+                               });
+                              } // if mp.contians()
+                                 else
+                                   System.out.print("No action serever ["+actionServer+"] exists.");
+
+      												// wait for the action to return
+      												/*System.out.println("[Test] Waiting for result.");
+      												boolean finished_before_timeout = sac.waitForResult(100, TimeUnit.SECONDS);
+
+      												if (finished_before_timeout) {
+        											SimpleClientGoalState state = sac.getState();
+        											System.out.println("[Test] Action finished: " + state.toString());
+
+                              DiagnosisRepairResult res = sac.getResult();	
+        
+                              System.out.println("Result Obtained Back. ");
+        						          System.out.println();
+      								        } else {
+        									      System.out.println("[Test] Action did not finish before the time out");
+      								          }*/
+                               //params.clear();
+                            } // for action
+                          // }// d>0
+                          } else {
+                            System.out.println("\nno solution plan found\n");
+                            }
+                           System.out.printf("\n Nos of ACTIONS : %12d \n", gplan.a_tried);
+                           gplan = null;
+                           plan = null;
+
+                        }
                
-            }// for d
-        } catch (Throwable t) {
-            System.err.println(t.getMessage());
-            t.printStackTrace(System.err);
-        }
-         } //block
-       });
+            						}// for d
+        							} catch (Throwable t) {
+            								System.err.println(t.getMessage());
+            								t.printStackTrace(System.err);
+        								}
+         							} //block
+       						});
 
 node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>() {
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
-              //if(!processObs)
-              //{
-							String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
+              String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
                for(int m=0; m<obs_msg.length; m++)
-                 { String s = obs_msg[m];
-                  boolean found = false;
-                  /*if(s.charAt(0)=='~')
-									  s = neg_prefix + s.substring(1);
-       						*/for(String st : msg_list)
-                   if(s.equals(st))
-             					{
-               					found = true;
-               					break;
-              				}
-                    
-      						if(!found)
-         						{ String sub_str="";
-           						String str = s;
-          						int p;
-          						p = str.indexOf('(') - 1;
-          						while(str.charAt(p)!='_')
-            						sub_str = sub_str + str.charAt(++p);
-          						String ostr = "ok" + sub_str + "Frequency)" ;
-          						//String nstr = neg_prefix + "ok" + sub_str + "Frequency)";
-                      String nstr = "~ok" + sub_str + "Frequency)";
-          						for(int i=0;i<msg_list.size();i++)
-            							if(ostr.equals(msg_list.get(i)) || nstr.equals(msg_list.get(i)) )
+                 { 
+                   boolean found = false;
+                   String s = obs_msg[m];
+                   
+                  for(int i=0;i<msg_list.size();i++)
+            					if( msg_list.get(i).contains(s))
+             					  {
+               					  found = true;
+               					  break;
+              				   }
+                   if(!found)
+         						{
+                      String ns = "123";  // Negating or oposite strings
+                   		if(s.charAt(0)=='~')
+                       		ns = s.substring(1);
+                   		else
+                       		ns = "~" + s;
+											for(int i=0;i<msg_list.size();i++)
+            							if(msg_list.get(i).contains(ns))
                 						{
-                              msg_list.remove(i);
-                 							continue;
+                              msg_list.set(i,s);
+                              found = true;
+                 							break;
                 						}
-												msg_list.add(str);
-												                 
-         							} // if(!found)
-                     
+                      
+                     if(!found)
+											 msg_list.add(s);
+                     }
                 } // for int m
-             /*for(int i=0;i<msg_list.size();i++)
-                 {
-                   System.out.println(msg_list.get(i).toString());
-                 }*/
-            //} // if(!processObs)
+             //System.out.println("END");
            } //onMessage   
           });
 
-    }// main
+ 
+  } catch (RosException e) {
+        e.printStackTrace();
+      } //catch (InterruptedException e) {
+         //e.printStackTrace();
+      //}
+ }// main
 
 }// class

@@ -176,17 +176,17 @@ class Qualitative_Observer(object):
 							self.topic = self.topic[1:len(self.topic)]
 				obs_msg = []
 				if Trend == +1 :
-						print 'Inc('+self.topic+'_'+self.param_field+')\n'
-						obs_msg.append('Inc('+self.topic+'_'+self.param_field+')')
+						print 'inc('+self.topic+'_'+self.param_field+')\n'
+						obs_msg.append('inc('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 						
 				elif Trend == -1 :
-						print 'Dec('+self.topic+'_'+self.param_field+')\n'
-						obs_msg.append('Dec('+self.topic+'_'+self.param_field+')')
+						print 'dec('+self.topic+'_'+self.param_field+')\n'
+						obs_msg.append('dec('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 				else:
-						print 'Con('+self.topic+'_'+self.param_field+')\n'
-						obs_msg.append('Con('+self.topic+'_'+self.param_field+')')
+						print 'con('+self.topic+'_'+self.param_field+')\n'
+						obs_msg.append('con('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))	
 		
     def check_thread(self,string,sleeptime,*args):

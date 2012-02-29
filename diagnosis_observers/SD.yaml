@@ -3,14 +3,11 @@ nab: "NAB"
 neg_prefix: "not_" 
 
 props:
- - ok(Topic1_Frequency)
- - ok(Topic2_Frequency)
+ - on(jaguar_platform)
 rules:
- - NAB(USB),NAB(Node1)->ok(Topic1_Frequency)
- - NAB(USB),NAB(Node2)->ok(Topic2_Frequency)
- - AB(USB)->not_ok(Topic1_Frequency)
- - AB(USB)->not_ok(Topic2_Frequency)
+ - NAB(jaguar_platform)->on(jaguar_platform)
+
  
 
-
+       
 

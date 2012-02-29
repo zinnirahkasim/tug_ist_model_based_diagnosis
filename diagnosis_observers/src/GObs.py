@@ -32,7 +32,7 @@ class General_Observer(object):
 				self.param_dev = rospy.get_param('~dev', 1)
 				self.param_ws = rospy.get_param('~ws', 10)
 				self.circular_queu = [0 for i in xrange(self.param_ws)]
-				thread.start_new_thread(self.check_topic,(self.param_topic,2))
+				thread.start_new_thread(self.check_topic,(self.param_topic,0.5))
         
         
     def start(self):         
@@ -75,13 +75,12 @@ class General_Observer(object):
 							self.param_topic = self.param_topic[1:len(self.param_topic)]
 						obs_msg = []
 						if self.param_dev > diff_freq:
-							print '[ok('+self.param_topic+'_Frequency)]'
-							obs_msg.append('ok('+self.param_topic+'_Frequency)')
+							print '[ok('+self.param_topic+')]'
+							obs_msg.append('ok('+self.param_topic+')')
 							self.pub.publish(Observations(time.time(),obs_msg))
-							self.pub.publish(Observations(time.time(),['ok('+self.param_topic+'_Frequency)']))
 						else:
-							print '[~ok('+self.param_topic+'_Frequency)]'
-							obs_msg.append('~ok('+self.param_topic+'_Frequency)')
+							print '[~ok('+self.param_topic+')]'
+							obs_msg.append('~ok('+self.param_topic+')')
 							self.pub.publish(Observations(time.time(),obs_msg))
 							
 
@@ -101,8 +100,10 @@ class General_Observer(object):
 									break
 						if t == 0:
 								t = 1
-								print "Topic:[" +string+ "] does not exist."
-								self.pub.publish(Observations(time.time(),['~ok('+self.param_topic+'_Frequency)']))
+								#print "Topic:[" +string+ "] does not exist."
+								print "Node does not exist."
+								#print '[~ok('+self.param_topic+')]'
+								self.pub.publish(Observations(time.time(),['~ok('+self.param_topic+')']))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 
     def report_error(self):

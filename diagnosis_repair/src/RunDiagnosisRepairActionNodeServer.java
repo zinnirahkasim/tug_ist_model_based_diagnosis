@@ -21,7 +21,7 @@ public class RunDiagnosisRepairActionNodeServer {
           spec.buildSimpleActionServer("diagnosis_repair_server_node", impl, true);
 
       NodeConfiguration configuration = NodeConfiguration.newPrivate();
-
+      configuration.setNodeName("RepairActionNodeServer");
       NodeRunner runner = DefaultNodeRunner.newDefault();
 
       runner.run(new NodeMain() {

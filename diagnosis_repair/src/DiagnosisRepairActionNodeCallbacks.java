@@ -7,6 +7,7 @@ import org.ros.message.diagnosis_msgs.DiagnosisRepairFeedback;
 import org.ros.message.diagnosis_msgs.DiagnosisRepairGoal;
 import org.ros.message.diagnosis_msgs.DiagnosisRepairResult;
 
+import java.util.ArrayList;
 
 public class DiagnosisRepairActionNodeCallbacks
     implements
@@ -21,8 +22,14 @@ public class DiagnosisRepairActionNodeCallbacks
           SimpleActionServer<DiagnosisRepairActionFeedback, DiagnosisRepairActionGoal, DiagnosisRepairActionResult, DiagnosisRepairFeedback, 
           DiagnosisRepairGoal, DiagnosisRepairResult> actionServer) {
 
+    String[] params = (String[]) goal.parameter.toArray(new String[0]);   
+    
+    
     System.out.println("BLOCKING GOAL CALLBACK");
-
+    System.out.print("Parameters Received:");
+    for(int i=0; i<params.length; i++)
+       System.out.print(" "+params[i]+" ");
+    System.out.println();
     DiagnosisRepairResult result = new DiagnosisRepairResult();
     result.result = 0;
     actionServer.setSucceeded(result, "");
