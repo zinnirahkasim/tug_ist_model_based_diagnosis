@@ -35,6 +35,10 @@ import org.ros.message.diagnosis_msgs.DiagnosisRepairResult;
 import org.ros.node.DefaultNodeRunner;
 import java.util.concurrent.TimeUnit;
 
+import pddl4j.exp.action.Action;
+import pddl4j.exp.action.ActionDef;
+import pddl4j.exp.action.ActionID;
+
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,7 +54,7 @@ public class planner implements NodeMain{
 
     public planner()
     {
-     problem = "define (problem prob)(:domain repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects ";
+     problem = "define (problem prob)(:domain test_repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects ";
      mp = new HashMap<String,Object>();
     }
  
@@ -69,16 +73,18 @@ public class planner implements NodeMain{
          Preconditions.checkState(this.node == null);
          this.node = node;
          int o_length=-1;
+				 
          try{
          
          DiagnosisRepairActionNodeSpec spec = new DiagnosisRepairActionNodeSpec();
          
-         mp.put("start_node",spec.buildSimpleActionClient("start_node"));
-         mp.put("stop_node",spec.buildSimpleActionClient("stop_node"));
-         mp.put("shutdown",spec.buildSimpleActionClient("shutdown"));
-         mp.put("power_up",spec.buildSimpleActionClient("power_up"));
-               
-         Set s=mp.entrySet();
+
+       mp.put("start_node",spec.buildSimpleActionClient("start_node"));
+       mp.put("stop_node",spec.buildSimpleActionClient("stop_node"));
+       mp.put("shutdown",spec.buildSimpleActionClient("shutdown"));
+       mp.put("power_up",spec.buildSimpleActionClient("power_up"));
+ 
+        Set s=mp.entrySet();
 
         Iterator it=s.iterator();
 
@@ -90,11 +96,7 @@ public class planner implements NodeMain{
             
         }
 
- 
-      
-         
-
-         node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
+node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
           new MessageListener<org.ros.message.diagnosis_msgs.Diagnosis>() {
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Diagnosis diag_msg) {
@@ -111,18 +113,7 @@ public class planner implements NodeMain{
             String co_problem="";
             String goal = "(:goal (and ";
             String init="(:init ";
-            for(int i=0;i<good.length;i++)
-               {
-               co_problem = co_problem + good[i] + " ";
-               init = init + "(component "+good[i]+")" + "(nab "+good[i]+")";
-               goal=goal+"(nab "+good[i]+")";
-               }
-            for(int i=0;i<bad.length;i++)
-               {
-               co_problem = co_problem + bad[i] + " ";
-               init = init + "(component "+bad[i]+")" + "(ab "+bad[i]+")";
-               goal=goal+"(nab "+bad[i]+")";
-               }
+            
             for(int i=0;i<msg_list.size();i++)
                {
                  String parameter = msg_list.get(i).substring(msg_list.get(i).indexOf("(")+1,msg_list.get(i).indexOf(")"));
@@ -138,23 +129,51 @@ public class planner implements NodeMain{
                       init = init + "(component "+parameter+")" + "("+predicate+" "+parameter+")";               
                     }               
 							 }
+            for(int i=0;i<good.length;i++)
+               {
+               //co_problem = co_problem + good[i] + " ";
+               //init = init + "(component "+good[i]+")" + "(nab "+good[i]+")";
+							 init = init + "(nab "+good[i]+")";
+               goal=goal+"(nab "+good[i]+")";
+               }
+            for(int i=0;i<bad.length;i++)
+               {
+               //co_problem = co_problem + bad[i] + " ";
+               //init = init + "(component "+bad[i]+")" + "(ab "+bad[i]+")";
+							 init = init + "(ab "+bad[i]+")";
+               goal=goal+"(nab "+bad[i]+")";
+               }
             co_problem = co_problem + ")";
             init = init + ")";
             goal=goal+"))";
             String prob = "(" + problem + co_problem + init + goal + ")";
             System.out.println(prob);
-            //BufferedWriter out=new BufferedWriter(new FileWriter("prob.pddl"));
-            //out.write(prob);
-            //out.close();
-						String repair_domain = "/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/repair_domain.pddl";
-            Properties options = Graphplan.getParserOptions();
-                if (!new File(repair_domain).exists()) {
-                    System.out.println("domain file " + repair_domain + " does not exist");
-                    System.exit(0);
-                }
-                Parser parser = new Parser(options);
-                PDDLObject domain = parser.parse(new File(repair_domain));
-                PDDLObject problem = parser.parse(new File("prob.pddl"));
+            BufferedWriter out=new BufferedWriter(new FileWriter("prob.pddl"));
+            out.write(prob);
+            out.close();
+
+					String repair_domain = "/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/test_repair_domain.pddl";
+  	      Properties options = Graphplan.getParserOptions();
+          
+					if (!new File(repair_domain).exists()) {
+            System.out.println("domain file " + repair_domain + " does not exist");
+            System.exit(0);
+          }
+
+					Parser parser = new Parser(options);
+
+          PDDLObject domain = parser.parse(new File(repair_domain));
+    			PDDLObject problem = parser.parse(new File("prob.pddl"));
+
+  //PDDLObject problem = parser.parse(new File("/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/test_repair_problem.pddl"));
+         	/*Iterator<ActionDef> i = domain.actionsIterator();
+       				while (i.hasNext()) {
+          				ActionDef a = i.next();
+           				Action ac = (Action) a;
+           				System.out.print("="+ac.getName());
+         					mp.put(ac.getName(),spec.buildSimpleActionClient(ac.getName()));
+              
+            }*/
                 PDDLObject pb = null;
                 if (domain != null && problem != null) {
                     pb = parser.link(domain, problem);
@@ -171,9 +190,8 @@ public class planner implements NodeMain{
                     Plan plan = gplan.solve();
                     if (plan != Plan.FAILURE) {
                         System.out.println("ACTIONS for DIAGNOSIS :"+(d+1));
-                       //if(d>0)
-                       //{ 
-                        //Graphplan.printPlan(plan);
+                    
+			
                         org.ros.message.diagnosis_msgs.DiagnosisRepairGoal repairGoal =  new org.ros.message.diagnosis_msgs.DiagnosisRepairGoal();
                         ArrayList<String> params = new ArrayList<String>();
                         String actionServer=null;
@@ -267,23 +285,17 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
                    boolean found = false;
                    String s = obs_msg[m];
                    
-                  for(int i=0;i<msg_list.size();i++)
-            					if( msg_list.get(i).contains(s))
-             					  {
-               					  found = true;
-               					  break;
-              				   }
-                   if(!found)
+                   if(!msg_list.contains(s))
          						{
-                      String ns = "123";  // Negating or oposite strings
+                      String ns = "@";  // Negating or oposite strings
                    		if(s.charAt(0)=='~')
                        		ns = s.substring(1);
                    		else
                        		ns = "~" + s;
-											for(int i=0;i<msg_list.size();i++)
-            							if(msg_list.get(i).contains(ns))
+											int k = msg_list.indexOf(ns);
+            							if(k!=-1)
                 						{
-                              msg_list.set(i,s);
+                              msg_list.set(k,s);
                               found = true;
                  							break;
                 						}
@@ -299,9 +311,7 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
  
   } catch (RosException e) {
         e.printStackTrace();
-      } //catch (InterruptedException e) {
-         //e.printStackTrace();
-      //}
+      } 
  }// main
 
 }// class

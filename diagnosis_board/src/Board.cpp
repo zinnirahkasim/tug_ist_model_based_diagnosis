@@ -162,7 +162,7 @@ while(true)
     
     take_boardMeasurments(); 
     send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
-    for(int i=0; i<=1000; i++);
+    for(int i=0; i<=10000; i++);
 
  }
 
@@ -186,7 +186,7 @@ int main()
               }
              else
                 {
-                 board_info.on_off[channel] = 0;
+                 board_info.on_off[channel] = 1;
                  board_info.max_vol[channel] = channel*5+0.1*channel;
                  board_info.max_cur[channel] = channel*8+0.1*channel;
                  board_info.pr_vol[channel] = channel+0.1*channel;

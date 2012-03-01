@@ -25,9 +25,10 @@ class General_Observer(object):
 				self.caller_id = '/script'
 				self.obs_msg = []
 				self.topic_type = ""
+				self.topic_name = ""
 				self.prev_t = time.time()
 				self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
-				self.param_topic = rospy.get_param('~topic', '/Topic1')
+				self.param_topic = rospy.get_param('~topic', '/Topic')
 				self.param_frq =  rospy.get_param('~frq', 10)
 				self.param_dev = rospy.get_param('~dev', 1)
 				self.param_ws = rospy.get_param('~ws', 10)
@@ -36,22 +37,28 @@ class General_Observer(object):
         
         
     def start(self):         
-				pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
 				if self.param_topic[0] != '/':
-					self.param_topic = "/%s" % (self.param_topic) 
+					self.param_topic = "/%s" % (self.param_topic)
+				self.topic_name = self.param_topic[1:len(self.param_topic)]
 				#print self.param_topic, self.param_frq, self.param_dev, self.param_ws
 				topic_found = False
-				for item in topicList:
-					if item[0] == self.param_topic:
-						self.param_topic = item[0]
-						self.topic_type = item[1]
-						topic_found = True
-				if topic_found == True:
-					msg_class = roslib.message.get_message_class(self.topic_type)
-					rospy.Subscriber(self.param_topic, msg_class, self.callback)
-					rospy.spin()
-				else:
-					self.report_error()
+				firstcheck = True
+				while firstcheck:
+					pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+					for item in topicList:
+						if item[0] == self.param_topic:
+							self.param_topic = item[0]
+							self.topic_type = item[1]
+							topic_found = True
+					if topic_found == True:
+						firstcheck = False
+						msg_class = roslib.message.get_message_class(self.topic_type)
+						rospy.Subscriber(self.param_topic, msg_class, self.callback)
+						rospy.spin()
+					else:
+						self.pub.publish(Observations(time.time(),['~ok('+self.topic_name+')']))
+					time.sleep(1)
+			
 					
 
     def callback(self,data):
@@ -68,19 +75,20 @@ class General_Observer(object):
 						print 'Window Size :', self.param_ws
 						self.make_output(diff_freq)
 						self.prev_t = curr_t
-						
+		
+					
 
     def make_output(self,diff_freq):
 						if self.param_topic[0] == '/':
 							self.param_topic = self.param_topic[1:len(self.param_topic)]
 						obs_msg = []
 						if self.param_dev > diff_freq:
-							print '[ok('+self.param_topic+')]'
-							obs_msg.append('ok('+self.param_topic+')')
+							print '[ok('+self.topic_name+')]'
+							obs_msg.append('ok('+self.topic_name+')')
 							self.pub.publish(Observations(time.time(),obs_msg))
 						else:
-							print '[~ok('+self.param_topic+')]'
-							obs_msg.append('~ok('+self.param_topic+')')
+							print '[~ok('+self.topic_name+')]'
+							obs_msg.append('~ok('+self.topic_name+')')
 							self.pub.publish(Observations(time.time(),obs_msg))
 							
 
@@ -101,9 +109,9 @@ class General_Observer(object):
 						if t == 0:
 								t = 1
 								#print "Topic:[" +string+ "] does not exist."
-								print "Node does not exist."
+								#print "Node does not exist."
 								#print '[~ok('+self.param_topic+')]'
-								self.pub.publish(Observations(time.time(),['~ok('+self.param_topic+')']))
+								self.pub.publish(Observations(time.time(),['~ok('+self.topic_name+')']))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 
     def report_error(self):

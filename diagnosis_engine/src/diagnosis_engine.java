@@ -124,16 +124,25 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>() {
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
-              if(!processObs)
+              //if(!processObs)
               {
 							String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
                for(int m=0; m<obs_msg.length; m++)
                  { boolean found = false;
                    String s = obs_msg[m];
+                   String ns = "@";
+                   if(s.charAt(0)=='~')
+                     { 
+                       ns = s.substring(1);
+                       s = neg_prefix + s.substring(1);
+                     }
+                    else
+                       ns = neg_prefix + s;
+
                    //for(String st : msg_list)
                       //if(s.equals(st))
-                     for(int i=0;i<msg_list.size();i++)
-            					if( msg_list.get(i).contains(s))
+                     //for(int i=0;i<msg_list.size();i++)
+                     if(msg_list.contains(s))
              					  {
                					  found = true;
                					  break;
@@ -141,28 +150,20 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
                             
                   if(!found)
          						{
-                      String ns = "123";  // Negating or oposite strings
-                      if(s.charAt(0)=='~')
-                           {
-                              ns = s.substring(1);
-                              s = neg_prefix + s.substring(1);
-                           }
-                          else
-                              ns = neg_prefix + s;
-
-											for(int i=0;i<msg_list.size();i++)
-            							if(msg_list.get(i).contains(ns))
+                      //for(int j=0;j<msg_list.size();j++)
+                         int k = msg_list.indexOf(ns);
+            							if(k!=-1)
                 						{
-                              msg_list.set(i,s);
+                              msg_list.set(k,s);
                               found = true;
                  							break;
                 						}
                       
-                     if(!found)
+                      if(!found)
 											 msg_list.add(s);
           				 } // if(!found)
-                  /*for(int i=0;i<msg_list.size();i++)
-                      System.out.println(","+msg_list.get(i).toString());
+                  /*for(int k=0;k<msg_list.size();k++)
+                      System.out.println(","+msg_list.get(k).toString());
                   System.out.println("SIZE="+msg_list.size());*/
                 
                 } // for int m
@@ -329,9 +330,9 @@ void find_diag()
 public void run() {
   try{
        while(true) {
-         Thread.currentThread().sleep(1000);
+         Thread.currentThread().sleep(50);
          processObs = true;
-         Thread.currentThread().sleep(1000);
+         Thread.currentThread().sleep(50);
          find_diag();
 				 processObs = false;
          
