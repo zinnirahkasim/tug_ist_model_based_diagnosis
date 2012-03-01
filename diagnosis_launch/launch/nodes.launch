@@ -1,0 +1,11 @@
+<launch>
+ <!-- master auto="start"/ -->
+ 
+ <node pkg="diagnosis_observers" type="jaguar_node.py" name="jaguar_node" output="screen">
+ </node>
+
+ <!--
+ <node pkg="diagnosis_observers" type="Triggered.py" name="triggered" output="screen">
+ </node>
+  -->
+ </launch>

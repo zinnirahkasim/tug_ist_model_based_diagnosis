@@ -1,0 +1,4 @@
+<launch>
+   <node pkg="diagnosis_observers" type="Triggering.py" name="triggering" output="log">
+   </node>
+</launch>
