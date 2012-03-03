@@ -222,6 +222,8 @@ int main()
 		
 	      printf("\nTCPServer Waiting for client on port 5000");
         fflush(stdout);
+
+        boost::thread broadcaster;
         
         while(1)
         {  
@@ -246,7 +248,8 @@ int main()
               if(command==1)
                    {
                     printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %d, BroadCastFrequency = %i" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *(&recv_data[4]));
-                    BoradcastWithFrq();//
+                    broadcaster.interrupt();
+                    broadcaster = boost::thread(BoradcastWithFrq);
                     //take_boardMeasurments();
                    }
               else if(command==3)
