@@ -49,12 +49,14 @@ import java.util.Set;
 
 public class planner implements NodeMain{
     private String problem;
+    private static boolean executing_plan;
 		private Node node;
     private ArrayList<String> msg_list = new ArrayList<String>();
     Map<String,Object> mp;
 
     public planner()
     {
+     executing_plan = false;
      problem = "define (problem prob)(:domain test_repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects ";
      mp = new HashMap<String,Object>();
     }
@@ -76,7 +78,8 @@ public class planner implements NodeMain{
 				 final Log log = node.getLog();
          int o_length=-1;
 				 
-         try{
+       try
+        {
          
          DiagnosisRepairActionNodeSpec spec = new DiagnosisRepairActionNodeSpec();
          
@@ -103,13 +106,21 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Diagnosis diag_msg) {
          try {
-						org.ros.message.diagnosis_msgs.DiagnosisResults diag_r =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
+
+	    if(executing_plan)
+      {
+	      return;
+	    }
+	    executing_plan = true;
+
+            org.ros.message.diagnosis_msgs.DiagnosisResults diag_r =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
+
             ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults> diag = new ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
             diag = diag_msg.diag;
             diag_r = diag.get(0);
 						String[] good = (String[]) diag_r.good.toArray(new String[0]);
             String[] bad = (String[]) diag_r.bad.toArray(new String[0]);
-            //log.info("START of CALLBACK");
+            log.info("START of CALLBACK");
             if(bad.length>0)
             {
              
@@ -267,11 +278,14 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                         }
                
             						}// for d
-        							} catch (Throwable t) {
+        							
+	    executing_plan = false;  
+	} catch (Throwable t) {
             								System.err.println(t.getMessage());
             								t.printStackTrace(System.err);
+														executing_plan = false;
         								}
-											//log.info("\nEND of Callback\n");
+											log.info("\nEND of Callback\n");
          							} //block
 									
        						});
@@ -299,13 +313,19 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
 												 msg_list.add(s);
                      }
                 } // for int m
-						
+               System.out.println("SIZE"+msg_list.size());
+               for(int i=0;i<msg_list.size();i++)
+									System.out.print(msg_list.get(i).toString()+",");
+
+
+
+						} // On New Mssage
           });
 
  
   } catch (RosException e) {
         e.printStackTrace();
-      } 
+    } 
  }// main
 
 }// class

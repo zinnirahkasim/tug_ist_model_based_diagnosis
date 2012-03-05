@@ -1,1 +1,1 @@
-(define (problem prob)(:domain test_repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects jaguar_node odometry )(:init (component jaguar_node)(not_running jaguar_node)(component odometry)(not_ok odometry)(ab jaguar_node))(:goal (and (nab jaguar_node))))
+(define (problem prob)(:domain test_repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects odometry jaguar_node )(:init (component odometry)(not_ok odometry)(component jaguar_node)(not_running jaguar_node)(ab jaguar_node))(:goal (and (nab jaguar_node))))
