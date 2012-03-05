@@ -5,9 +5,10 @@ import pddl4j.ErrorManager;
 import pddl4j.PDDLObject;
 import pddl4j.ErrorManager.Message;
 import pddl4j.Parser;
-
 import pddl4j.exp.term.Term;
 import pddl4j.exp.AtomicFormula;
+
+import org.apache.commons.logging.Log;
 import com.google.common.base.Preconditions;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
@@ -72,6 +73,7 @@ public class planner implements NodeMain{
     public void main_planner(Node node) {
          Preconditions.checkState(this.node == null);
          this.node = node;
+				 final Log log = node.getLog();
          int o_length=-1;
 				 
          try{
@@ -101,20 +103,23 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Diagnosis diag_msg) {
          try {
-            org.ros.message.diagnosis_msgs.DiagnosisResults diag_r =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
+						org.ros.message.diagnosis_msgs.DiagnosisResults diag_r =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
             ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults> diag = new ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
             diag = diag_msg.diag;
             diag_r = diag.get(0);
 						String[] good = (String[]) diag_r.good.toArray(new String[0]);
             String[] bad = (String[]) diag_r.bad.toArray(new String[0]);
-            
+            //log.info("START of CALLBACK");
             if(bad.length>0)
             {
              
-            System.out.println("DIAG SIZE = "+diag.size()+ " BAD SIZE"+bad.length+" GOOD SIZE"+good.length);
+            //System.out.println("DIAG SIZE = "+diag.size()+ " BAD SIZE"+bad.length+" GOOD SIZE"+good.length);
             
             String co_problem="";
-            String goal = "(:goal (and ";
+						String goal = "(:goal (and ";
+						//if(bad.length==1)
+            	//goal = "(:goal ";
+						
             String init="(:init ";
             
             for(int i=0;i<msg_list.size();i++)
@@ -148,13 +153,16 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                }
             co_problem = co_problem + ")";
             init = init + ")";
-            goal=goal+"))";
+            //if(bad.length==1)
+              //goal=goal+")";
+						//else
+              goal=goal+"))";
             String prob = "(" + problem + co_problem + init + goal + ")";
             System.out.println(prob);
             BufferedWriter out=new BufferedWriter(new FileWriter("prob.pddl"));
             out.write(prob);
             out.close();
-
+          log.info("Prob.pddl File made");
 					String repair_domain = "/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/test_repair_domain.pddl";
   	      Properties options = Graphplan.getParserOptions();
           
@@ -167,18 +175,8 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
 
           PDDLObject domain = parser.parse(new File(repair_domain));
     			PDDLObject problem = parser.parse(new File("prob.pddl"));
-
-  //PDDLObject problem = parser.parse(new File("/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/test_repair_problem.pddl"));
-         	/*Iterator<ActionDef> i = domain.actionsIterator();
-       				while (i.hasNext()) {
-          				ActionDef a = i.next();
-           				Action ac = (Action) a;
-           				System.out.print("="+ac.getName());
-         					mp.put(ac.getName(),spec.buildSimpleActionClient(ac.getName()));
-              
-            }*/
-                PDDLObject pb = null;
-                if (domain != null && problem != null) {
+          PDDLObject pb = null;
+          if (domain != null && problem != null) {
                     pb = parser.link(domain, problem);
                 }
                 ErrorManager mgr = parser.getErrorManager();
@@ -208,8 +206,8 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                                   }
                                  actionServer = action.getPredicate();
                                  repairGoal.parameter = params;
-															   System.out.print("Call Action Server: "+actionServer+" for parameters:");
-
+																 log.info("Call Action Server: "+actionServer+" for parameters:");
+															   
                                  for(int j=0; j < params.size(); ++j)
                  									{
                   									System.out.print(params.get(j).toString()+",");
@@ -217,7 +215,7 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                                   System.out.println();
                                   if(mp.containsKey(actionServer)) 
                                   {
-																	 System.out.println(actionServer+" from MAP CALLED");
+																	 log.info(actionServer+" from MAP CALLED");
                                    DiagnosisRepairActionNodeSimpleClient sac = (DiagnosisRepairActionNodeSimpleClient)mp.get(actionServer);
       
                                    repairGoal.parameter = params;
@@ -226,46 +224,43 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                                    sac.sendGoal(repairGoal, new SimpleActionClientCallbacks<DiagnosisRepairFeedback, DiagnosisRepairResult>() {
                                    @Override
                                    public void feedbackCallback(DiagnosisRepairFeedback feedback) {
-                                    System.out.print("Client feedback\n\t");
-                                    System.out.println();
+                                    log.info("Client feedback\n\t");
+                                    
         													 }
 
         												  @Override
         												  public void doneCallback(SimpleClientGoalState state, DiagnosisRepairResult result) {
-                    											System.out.println("Client done " + state);
+                    											log.info("Client done " + state);
                                   }
             
         		        						  @Override
         						        		  public void activeCallback() {
-          								          System.out.println("Client active");
+          								          log.info("Client active");
         								          }
                                });
+																
+															boolean finished_before_timeout = sac.waitForResult(100, TimeUnit.SECONDS);																 
+
+															if (finished_before_timeout) {
+        													SimpleClientGoalState state = sac.getState();
+        													log.info("[Test] Action finished: " + state.toString());
+
+        													DiagnosisRepairResult res = sac.getResult();
+        								          log.info("Result Obtained Back. ");
+     	 												 }// if finished_before
+																 else {
+		        														log.info("[Test] Action did not finish before the time out");
+			      										 }	
+														
                               } // if mp.contians()
                                  else
-                                   System.out.print("No action serever ["+actionServer+"] exists.");
+                                   log.info("No action serever ["+actionServer+"] exists.");
 
-      												// wait for the action to return
-      												/*System.out.println("[Test] Waiting for result.");
-      												boolean finished_before_timeout = sac.waitForResult(100, TimeUnit.SECONDS);
-
-      												if (finished_before_timeout) {
-        											SimpleClientGoalState state = sac.getState();
-        											System.out.println("[Test] Action finished: " + state.toString());
-
-                              DiagnosisRepairResult res = sac.getResult();	
-        
-                              System.out.println("Result Obtained Back. ");
-        						          System.out.println();
-      								        } else {
-        									      System.out.println("[Test] Action did not finish before the time out");
-      								          }*/
-                               //params.clear();
-                            } // for action
-                          // }// d>0
-                          } else {
-                            System.out.println("\nno solution plan found\n");
-                            }
-                           System.out.printf("\n Nos of ACTIONS : %12d \n", gplan.a_tried);
+                             } // for action
+                             // }// d>0
+                           } else {
+                             log.info("\nno solution plan found\n");
+                           }
                            gplan = null;
                            plan = null;
 
@@ -276,7 +271,9 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
             								System.err.println(t.getMessage());
             								t.printStackTrace(System.err);
         								}
+											//log.info("\nEND of Callback\n");
          							} //block
+									
        						});
 
 node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
@@ -302,8 +299,7 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
 												 msg_list.add(s);
                      }
                 } // for int m
-             //System.out.println("END");
-           } //onMessage   
+						
           });
 
  

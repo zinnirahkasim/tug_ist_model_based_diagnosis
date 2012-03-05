@@ -26,6 +26,7 @@ class General_Observer(object):
 				self.obs_msg = []
 				self.topic_type = ""
 				self.topic_name = ""
+				self.msg = ""
 				self.prev_t = time.time()
 				self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
 				self.param_topic = rospy.get_param('~topic', '/Topic')
@@ -56,7 +57,9 @@ class General_Observer(object):
 						rospy.Subscriber(self.param_topic, msg_class, self.callback)
 						rospy.spin()
 					else:
-						self.pub.publish(Observations(time.time(),['~ok('+self.topic_name+')']))
+						self.msg = '~ok('+self.topic_name+')'
+						rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+						self.pub.publish(Observations(time.time(),[self.msg]))
 					time.sleep(1)
 			
 					
@@ -83,12 +86,14 @@ class General_Observer(object):
 							self.param_topic = self.param_topic[1:len(self.param_topic)]
 						obs_msg = []
 						if self.param_dev > diff_freq:
-							rospy.loginfo('[ok('+self.topic_name+')]')
-							obs_msg.append('ok('+self.topic_name+')')
+							self.msg = 'ok('+self.topic_name+')'
+							rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+							obs_msg.append(self.msg)
 							self.pub.publish(Observations(time.time(),obs_msg))
 						else:
-							rospy.loginfo('[ok('+self.topic_name+')]')
-							obs_msg.append('~ok('+self.topic_name+')')
+							self.msg = '~ok('+self.topic_name+')'
+							rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+							obs_msg.append(self.msg)
 							self.pub.publish(Observations(time.time(),obs_msg))
 							
 
@@ -99,7 +104,7 @@ class General_Observer(object):
         return s/self.param_ws
 
     def check_topic(self,string,sleeptime,*args):
-				while True:
+				while not rospy.is_shutdown():
 						t = 0
 						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
@@ -112,8 +117,9 @@ class General_Observer(object):
 								t = 1
 								#print "Topic:[" +string+ "] does not exist."
 								#print "Node does not exist."
-								#print '[~ok('+self.param_topic+')]'
-								self.pub.publish(Observations(time.time(),['~ok('+self.topic_name+')']))
+								self.msg = '~ok('+self.topic_name+')'
+								rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+								self.pub.publish(Observations(time.time(),[self.msg]))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 
     def report_error(self):

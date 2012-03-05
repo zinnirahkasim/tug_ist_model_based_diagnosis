@@ -333,11 +333,12 @@ void find_diag()
 public void run() {
   try{
        while(true) {
-         //Thread.currentThread().sleep(50);
+         
          //processObs = true;
          //Thread.currentThread().sleep(50);
          find_diag();
-				 //processObs = false;
+				 Thread.currentThread().sleep(100);
+         //processObs = false;
          
         } // while true
    }

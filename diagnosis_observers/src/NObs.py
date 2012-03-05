@@ -18,6 +18,7 @@ class Node_Observer(object):
 					rospy.init_node('NObs', anonymous=True)
 					self.caller_id = '/script'
 					self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
+					self.msg = ""
 					self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
 					self.param_node_name = rospy.get_param('~node', '/NObs1')
 
@@ -25,7 +26,8 @@ class Node_Observer(object):
     def start(self):
 			print "NObs is up...."
 			self.param_node_name = "/%s" % (self.param_node_name)
-			while True:
+			r = rospy.Rate(10) # 10hz
+			while not rospy.is_shutdown():
 				found = False
 				code, statusMessage, sysState = self.m.getSystemState(self.caller_id)
 				for lst in sysState:
@@ -33,11 +35,20 @@ class Node_Observer(object):
 						for node in row[1]:
 							 if node == self.param_node_name:
 									found = True
-							 
+				obs_msg = []
 				if found == True:
-					self.pub.publish(Observations(time.time(),['running('+self.param_node_name[1:len(self.param_node_name)]+')']))
+					self.msg = 'running('+self.param_node_name[1:len(self.param_node_name)]+')'
+					rospy.loginfo('Observer='+rospy.get_name()+',Node='+self.param_node_name[1:len(self.param_node_name)]+','+self.msg)
+					obs_msg.append(self.msg)
+					self.pub.publish(Observations(time.time(),obs_msg))
+					rospy.sleep(1.0)
 				else:
-					self.pub.publish(Observations(time.time(),['~running('+self.param_node_name[1:len(self.param_node_name)]+')']))
+					self.msg = '~running('+self.param_node_name[1:len(self.param_node_name)]+')'
+					rospy.loginfo('Observer='+rospy.get_name()+',Node='+self.param_node_name[1:len(self.param_node_name)]+','+self.msg)
+					obs_msg.append(self.msg)
+					self.pub.publish(Observations(time.time(),obs_msg))
+					r.sleep()
+
 
 if __name__ == '__main__':
 			nObs = Node_Observer()
