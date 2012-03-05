@@ -101,6 +101,14 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Diagnosis diag_msg) {
          try {
+	    static boolean executing_plan = false;
+
+	    if(executing_plan)
+            {
+	      return;
+	    }
+	    executing_plan = true;
+
             org.ros.message.diagnosis_msgs.DiagnosisResults diag_r =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
             ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults> diag = new ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
             diag = diag_msg.diag;
@@ -272,11 +280,16 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                         }
                
             						}// for d
-        							} catch (Throwable t) {
+        							
+	    executing_plan = false;  
+	} catch (Throwable t) {
             								System.err.println(t.getMessage());
             								t.printStackTrace(System.err);
-        								}
-         							} //block
+        								executing_plan = false;
+	}
+         							
+		         
+	  } //block
        						});
 
 node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
