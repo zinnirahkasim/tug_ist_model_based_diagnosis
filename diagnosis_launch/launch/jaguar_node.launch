@@ -1,4 +1,4 @@
 <launch>
-   <node pkg="diagnosis_observers" type="jaguar_node.py" name="jaguar_node" output="log">
+   <node pkg="diagnosis_observers" type="jaguar_node.py" name="jaguar_node" output="screen">
    </node>
 </launch>

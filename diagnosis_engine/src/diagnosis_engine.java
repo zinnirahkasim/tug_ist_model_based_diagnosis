@@ -138,29 +138,31 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
                      }
                     else
                        ns = neg_prefix + s;
-
+                   //System.out.println("s="+s+"ns="+ns);
                    //for(String st : msg_list)
                       //if(s.equals(st))
                      //for(int i=0;i<msg_list.size();i++)
-                     if(msg_list.contains(s))
+                     /*if(msg_list.contains(s))
              					  {
                					  found = true;
                					  break;
-              				   }
+              				   }*/
                             
-                  if(!found)
+                  if(!msg_list.contains(s))
          						{
                       //for(int j=0;j<msg_list.size();j++)
                          int k = msg_list.indexOf(ns);
             							if(k!=-1)
                 						{
                               msg_list.set(k,s);
-                              found = true;
-                 							break;
+                              //found = true;
+                 							//break;
                 						}
-                      
-                      if(!found)
-											 msg_list.add(s);
+                          else 
+                            msg_list.add(s)
+                      //if(!found)
+                     
+											 ;
           				 } // if(!found)
                   /*for(int k=0;k<msg_list.size();k++)
                       System.out.println(","+msg_list.get(k).toString());
@@ -198,7 +200,7 @@ void find_diag()
        {
         OBS = OBS +  msg_list.get(j).toString() + ".";
        }
-    System.out.println("SIZE="+ msg_list.size()+" and String OBS="+OBS);
+    //System.out.println("SIZE="+ msg_list.size()+" and String OBS="+OBS);
 
     LSentence sd = parseSD();
     LSentence obs = parseOBS();
@@ -318,6 +320,7 @@ void find_diag()
         final DiagnosticArray d_arr_msg = node.getMessageFactory().newMessage("diagnostic_msgs/DiagnosticArray");
 			  d_arr_msg.header.frame_id = "Engine";
         d_pub.publish(d_arr_msg);
+        
        } // else inconsistent
 
      }catch (Exception e) {
@@ -330,11 +333,11 @@ void find_diag()
 public void run() {
   try{
        while(true) {
-         Thread.currentThread().sleep(50);
-         processObs = true;
-         Thread.currentThread().sleep(50);
+         //Thread.currentThread().sleep(50);
+         //processObs = true;
+         //Thread.currentThread().sleep(50);
          find_diag();
-				 processObs = false;
+				 //processObs = false;
          
         } // while true
    }

@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <string.h>
 #include <boost/thread.hpp>
+#include <stdlib.h>
 
 int BUFF_SIZE;
 int sock, connected, bytes_recieved , True = 1;  
@@ -162,7 +163,7 @@ while(true)
     
     take_boardMeasurments(); 
     send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
-    for(int i=0; i<=10000; i++);
+    sleep(1);
 
  }
 

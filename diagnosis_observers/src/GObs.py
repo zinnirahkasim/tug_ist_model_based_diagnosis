@@ -105,6 +105,8 @@ class General_Observer(object):
 						for item in topicList:
 							if item[0] == string:
 									t = 1
+									#if time.time() - self.prev_t > 3 :
+										#self.pub.publish(Observations(time.time(),['~ok('+self.topic_name+')']))
 									break
 						if t == 0:
 								t = 1

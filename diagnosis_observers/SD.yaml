@@ -3,8 +3,6 @@ nab: "NAB"
 neg_prefix: "not_" 
 
 props:
- - on(jaguar_platform)
  - ok(odometry)
 rules:
- - NAB(jaguar_platform)->on(jaguar_platform)
- - NAB(jaguar_node),on(jaguar_platform)->ok(odometry)
+ - NAB(jaguar_node)->ok(odometry)

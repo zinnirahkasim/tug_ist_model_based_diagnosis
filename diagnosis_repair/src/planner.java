@@ -104,11 +104,14 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
             org.ros.message.diagnosis_msgs.DiagnosisResults diag_r =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
             ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults> diag = new ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
             diag = diag_msg.diag;
-            for(int d=0; d<diag.size(); d++)
-            {
-            diag_r = diag.get(d);
-            String[] good = (String[]) diag_r.good.toArray(new String[0]);
+            diag_r = diag.get(0);
+						String[] good = (String[]) diag_r.good.toArray(new String[0]);
             String[] bad = (String[]) diag_r.bad.toArray(new String[0]);
+            
+            if(bad.length>0)
+            {
+             
+            System.out.println("DIAG SIZE = "+diag.size()+ " BAD SIZE"+bad.length+" GOOD SIZE"+good.length);
             
             String co_problem="";
             String goal = "(:goal (and ";
@@ -189,15 +192,14 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                     gplan.preprocessing();
                     Plan plan = gplan.solve();
                     if (plan != Plan.FAILURE) {
-                        System.out.println("ACTIONS for DIAGNOSIS :"+(d+1));
-                    
+                  
 			
                         org.ros.message.diagnosis_msgs.DiagnosisRepairGoal repairGoal =  new org.ros.message.diagnosis_msgs.DiagnosisRepairGoal();
-                        ArrayList<String> params = new ArrayList<String>();
                         String actionServer=null;
 												for (Set<AtomicFormula> layer : plan)
                              for (AtomicFormula action : layer)
 											         { 
+																ArrayList<String> params = new ArrayList<String>();
                                 actionServer = action.getPredicate().toUpperCase();
                                 for (Term parameter : action) 
                                   {  
@@ -215,9 +217,11 @@ node.newSubscriber("/Diagnosis", "diagnosis_msgs/Diagnosis",
                                   System.out.println();
                                   if(mp.containsKey(actionServer)) 
                                   {
+																	 System.out.println(actionServer+" from MAP CALLED");
                                    DiagnosisRepairActionNodeSimpleClient sac = (DiagnosisRepairActionNodeSimpleClient)mp.get(actionServer);
       
                                    repairGoal.parameter = params;
+																	
         
                                    sac.sendGoal(repairGoal, new SimpleActionClientCallbacks<DiagnosisRepairFeedback, DiagnosisRepairResult>() {
                                    @Override
@@ -282,7 +286,6 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
               String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
                for(int m=0; m<obs_msg.length; m++)
                  { 
-                   boolean found = false;
                    String s = obs_msg[m];
                    
                    if(!msg_list.contains(s))
@@ -293,15 +296,10 @@ node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
                    		else
                        		ns = "~" + s;
 											int k = msg_list.indexOf(ns);
-            							if(k!=-1)
-                						{
-                              msg_list.set(k,s);
-                              found = true;
-                 							break;
-                						}
-                      
-                     if(!found)
-											 msg_list.add(s);
+            					if(k!=-1)
+                				 msg_list.set(k,s);
+                      else
+												 msg_list.add(s);
                      }
                 } // for int m
              //System.out.println("END");
