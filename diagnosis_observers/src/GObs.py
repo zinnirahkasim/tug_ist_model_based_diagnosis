@@ -69,10 +69,10 @@ class General_Observer(object):
 						avg_delta_t = self.average_delta_t()
 						calculated_freq = 1/avg_delta_t
 						diff_freq = abs(self.param_frq - calculated_freq )
-						print '\nRequired_Frequency : ', self.param_frq
-						print 'Delta_Frequency : ', self.param_dev
-						print 'Calculated Frequency : ', calculated_freq
-						print 'Window Size :', self.param_ws
+						#print '\nRequired_Frequency : ', self.param_frq
+						#print 'Delta_Frequency : ', self.param_dev
+						#print 'Calculated Frequency : ', calculated_freq
+						#print 'Window Size :', self.param_ws
 						self.make_output(diff_freq)
 						self.prev_t = curr_t
 		
@@ -83,11 +83,11 @@ class General_Observer(object):
 							self.param_topic = self.param_topic[1:len(self.param_topic)]
 						obs_msg = []
 						if self.param_dev > diff_freq:
-							print '[ok('+self.topic_name+')]'
+							rospy.loginfo('[ok('+self.topic_name+')]')
 							obs_msg.append('ok('+self.topic_name+')')
 							self.pub.publish(Observations(time.time(),obs_msg))
 						else:
-							print '[~ok('+self.topic_name+')]'
+							rospy.loginfo('[ok('+self.topic_name+')]')
 							obs_msg.append('~ok('+self.topic_name+')')
 							self.pub.publish(Observations(time.time(),obs_msg))
 							
