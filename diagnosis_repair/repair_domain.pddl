@@ -1,35 +1,37 @@
-(define (domain test_repair_domain)
-   (:requirements :strips :typing :negative-preconditions)
-   (:types node hardware)
+(define (domain repair_domain)
+   (:requirements :strips :typing :equality :negative-preconditions :disjunctive-preconditions)
+   (:types software hardware)
+	 (:constants JB HN LAN - software 
+               J L LA - hardware)
    (:predicates
              (component ?c)
-             (nab ?c)
              (ab ?c)
-             (ok ?o)
-             (not_ok ?o)
-             (on ?o)
-             (not_on ?o)
-						 (running ?c)
-						 (not_running ?c)
+             (ok ?c)
+             (on ?c - hardware)
+             (running ?c - software)
     )
 
-   (:action power_up
-    :parameters (?c)
-                :precondition (and (not_on ?c)(ab ?c))
-                :effect (and  (on ?c) (nab ?c)))
+	(:action shutdown
+    :parameters (?x - hardware)
+		:precondition (on ?x)
+		:effect (not (on ?x)))
 
-   (:action shutdown
-    :parameters (?c)
-                :precondition (and (on ?c)(ab ?c))
-                :effect (not_on ?c))
-
+  (:action power_up
+    :parameters (?x - hardware)
+		:precondition (not (on ?x))
+		:effect (and  (on ?x) (not (ab ?x))))
+   
    (:action start_node
-    :parameters (?c)
-                :precondition (and (not_running ?c)(ab ?c))
-                :effect (and (running ?c)(nab ?c)))
+    :parameters (?x - software)
+		:precondition (and (not (running ?x))
+                       (or (and (= ?x JB)(on J)) (not (= ?x JB))) 
+                       (or (and (= ?x HN)(on L))  (not (= ?x HN)))
+                       (or (and (= ?x LAN)(on LA)) (not (= ?x LAN))) )
+		:effect (not (ab ?x)))
 
    (:action stop_node
-    :parameters (?c - node)
-                :precondition (and (running ?c)(ab ?c))
-                :effect (not_running ?c))
+    :parameters (?x - software)
+		:precondition (running ?x)
+		:effect (not (running ?x)))
 )
+

@@ -16,14 +16,42 @@
     <param name="ws" value="10" />
  </node>
 
+<node pkg="diagnosis_observers" type="GObs.py" name="Angle1Observer" output="log">
+    <param name="topic" value="/angle_1" />
+    <param name="frq" value="10" />
+    <param name="dev" value="1" />
+    <param name="ws" value="10" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="GObs.py" name="Angle2Observer" output="log">
+    <param name="topic" value="/angle_2" />
+    <param name="frq" value="10" />
+    <param name="dev" value="1" />
+    <param name="ws" value="10" />
+ </node>
+
+<node pkg="diagnosis_observers" type="GObs.py" name="StatusObserver" output="log">
+    <param name="topic" value="/status" />
+    <param name="frq" value="10" />
+    <param name="dev" value="1" />
+    <param name="ws" value="10" />
+ </node>
+
   
  <node pkg="diagnosis_observers" type="NObs.py" name="LaserNodeObserver" output="log">
     <param name="node" value="laser_node" />
  </node> 
 
-
- <node pkg="diagnosis_observers" type="NObs.py" name="JNodeObserver" output="log">
+ <node pkg="diagnosis_observers" type="NObs.py" name="JBaseObserver" output="log">
     <param name="node" value="jaguar_base" />
+ </node> 
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="LaserAlignmentNodeObserver" output="log">
+    <param name="node" value="laser_alignment_node" />
+ </node> 
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="MoveBaseObserver" output="log">
+    <param name="node" value="move_base" />
  </node> 
 
  <node pkg="diagnosis_observers" type="HObs.py" name="HardwareObserver" output="log">

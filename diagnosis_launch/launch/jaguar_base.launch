@@ -2,7 +2,9 @@
 <launch>
 
     <node pkg="DrRobotJaguar" type="DrRobotJaguar" name="jaguar_base" output="log">
-	      <param name="MaxTransVel" type="double" value="0.3"/>
+        <remap from="/jaguar/odom" to="/odometry" />
+
+	<param name="MaxTransVel" type="double" value="0.3"/>
         <param name="MaxRotVel" type="double" value="0.7854"/>
         <param name="WeelRadius" type="double" value="0.176"/>
         <param name="WeelDistance" type="double" value="0.52"/>
@@ -19,8 +21,6 @@
 
         <param name="RobotFrame" type="str" value="base_link"/>
         <param name="OdomFrame" type="str" value="odom"/>
-        <remap from="jaguar/odom" to="odometry" />
-
     </node>
 
 </launch>

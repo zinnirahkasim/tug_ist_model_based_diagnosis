@@ -35,11 +35,11 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_boost_directories()
 
-#rosbuild_add_executable(BoardControllerServer src/main.cpp src/Message.cpp src/Controller.cpp src/Measurment.cpp src/Specification.cpp)
+rosbuild_add_executable(BoardControllerServer src/main.cpp src/Message.cpp src/Controller.cpp src/Measurment.cpp src/Specification.cpp)
 #rosbuild_add_executable(BoardActionServer src/main.cpp src/Message.cpp src/Controller2.cpp src/Measurment.cpp src/Specification.cpp)
 
 rosbuild_add_executable(BoardServer src/Board.cpp)
 rosbuild_link_boost(BoardServer thread)
 
-#rosbuild_add_executable(NodeActionServer src/NodeActionServer.cpp)
-#rosbuild_add_executable(NodeActionClient src/NodeActionClient.cpp)
+rosbuild_add_executable(NodeActionServer src/NodeActionServer.cpp)
+rosbuild_add_executable(NodeActionClient src/NodeActionClient.cpp)

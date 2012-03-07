@@ -1,6 +1,6 @@
 <launch>
  <!-- master auto="start"/ -->
-
+ <!--
  <node pkg="rosjava_bootstrap" type="run.py" args="diagnosis_engine diagnosis_engine" name="diagnosis_engine" output="log"/> 
 
  <node pkg="rosjava_bootstrap" type="run.py" args="diagnosis_repair planner" name="planner" output="log"/> 
@@ -11,6 +11,7 @@
  <node pkg="diagnosis_board" type="BoardControllerServer" name="BoardController" output="log">
  </node>
 
+ -->
  <node pkg="diagnosis_observers" type="GObs.py" name="OdometryObserver" output="log">
     <param name="topic" value="/odometry" />
     <param name="frq" value="10" />
@@ -18,19 +19,8 @@
     <param name="ws" value="10" />
  </node>
 
- <node pkg="diagnosis_observers" type="GObs.py" name="LaserObserver" output="log">
-    <param name="topic" value="/scan" />
-    <param name="frq" value="20" />
-    <param name="dev" value="4" />
-    <param name="ws" value="10" />
- </node>
-
   <node pkg="diagnosis_observers" type="NObs.py" name="JNodeObserver" output="log">
     <param name="node" value="jaguar_base" />
- </node> 
-
- <node pkg="diagnosis_observers" type="NObs.py" name="LaserNodeObserver" output="log">
-    <param name="node" value="laser_scanning" />
  </node> 
 
  <node pkg="diagnosis_observers" type="HObs.py" name="HardwareObserver" output="log">
