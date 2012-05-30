@@ -163,7 +163,7 @@ while(true)
     
     take_boardMeasurments(); 
     send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
-    sleep(1);
+    sleep(0.8);
 
  }
 
@@ -179,7 +179,7 @@ int main()
            {
              if((channel%2)==0)
                { 
-                 board_info.on_off[channel] = 0;
+                 board_info.on_off[channel] = 1;
                  board_info.max_vol[channel] = channel*10+0.1*channel;
                  board_info.max_cur[channel] = channel*20+0.1*channel;
                  board_info.pr_vol[channel] = channel-1+0.1*channel;

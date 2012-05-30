@@ -1,11 +1,17 @@
 <launch>
  <!-- master auto="start"/ -->
  
- <node pkg="diagnosis_observers" type="jaguar_node.py" name="jaguar_node" output="screen">
+ <node pkg="diagnosis_observers" type="jaguar_node.py" name="jaguar_node">
  </node>
 
- <!--
- <node pkg="diagnosis_observers" type="Triggered.py" name="triggered" output="screen">
+ <node pkg="diagnosis_observers" type="laser_node.py" name="laser_node">
  </node>
-  -->
+
+ <node pkg="diagnosis_observers" type="kinect_node.py" name="kinect_node">
+ </node>
+
+ <node pkg="diagnosis_observers" type="sensor_head_node.py" name="sensor_head_node">
+ </node>
+
+ 
  </launch>

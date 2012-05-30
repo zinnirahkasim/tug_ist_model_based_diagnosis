@@ -1,17 +1,18 @@
 <launch>
  <!-- master auto="start"/ -->
  <!--
+ <node pkg="diagnosis_board" type="NodeActionServer" name="NodeActionServer" output="log">
+ </node>
+ 
+
  <node pkg="rosjava_bootstrap" type="run.py" args="diagnosis_engine diagnosis_engine" name="diagnosis_engine" output="log"/> 
 
  <node pkg="rosjava_bootstrap" type="run.py" args="diagnosis_repair planner" name="planner" output="log"/> 
 
- <node pkg="diagnosis_board" type="NodeActionServer" name="NodeActionServer" output="log">
- </node>
-
  <node pkg="diagnosis_board" type="BoardControllerServer" name="BoardController" output="log">
  </node>
 
- -->
+ 
  <node pkg="diagnosis_observers" type="GObs.py" name="OdometryObserver" output="log">
     <param name="topic" value="/odometry" />
     <param name="frq" value="10" />
@@ -20,12 +21,14 @@
  </node>
 
   <node pkg="diagnosis_observers" type="NObs.py" name="JNodeObserver" output="log">
-    <param name="node" value="jaguar_base" />
+    <param name="node" value="jaguar_node" />
  </node> 
 
  <node pkg="diagnosis_observers" type="HObs.py" name="HardwareObserver" output="log">
  </node>
+ -->
 
+ <node pkg="rosjava_bootstrap" type="run.py" args="diagnosis_engine diagnosis_engine" name="diagnosis_engine" output="screen"/>  
 
  </launch>
 

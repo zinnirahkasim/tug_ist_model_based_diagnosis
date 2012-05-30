@@ -63,7 +63,7 @@ public final class Plan implements Iterable<Set<AtomicFormula>> {
     /**
      * The list used to store the actions of the plan.
      */
-    private ArrayList<Set<AtomicFormula>> actions;
+    public ArrayList<Set<AtomicFormula>> actions;
     
     /**
      * Creates a new empty plan.

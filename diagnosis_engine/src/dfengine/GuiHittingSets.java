@@ -194,6 +194,10 @@ public class GuiHittingSets
         frame.setVisible(true);
     }
 
+    public GuiHittingSets() {
+
+    }
+   
     private GuiHittingSets(JFrame frame, String[] args) {
         this.frame = frame;
         frame.addWindowListener(this);

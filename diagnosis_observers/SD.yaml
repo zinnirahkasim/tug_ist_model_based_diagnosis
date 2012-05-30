@@ -3,31 +3,11 @@ nab: "NAB"
 neg_prefix: "not_" 
 
 props:
- - on(jaguar)
- - on(laser)
- - on(laser_alignment)
  - ok(odometry)
- - ok(scan)
- - running(jaguar_base)
- - running(laser_node)
- - running(laser_alignment_node)
- - running(move_base)
- - ok(angle_1)
- - ok(angle_2)
- - ok(status)
-
 rules:
- - NAB(jaguar)->on(jaguar)
- - NAB(laser)->on(laser)
- - NAB(laser_alignment)->on(laser_alignment)
+ - NAB(jaguar_node)->ok(odometry)
 
- - NAB(jaguar_baser)->running(jaguar_base)
- - NAB(laser_node)->running(laser_node)
- - NAB(laser_alignment_node)->running(laser_alignment_node)
- - NAB(move_base)->running(move_base)
+ 
 
- - NAB(jaguar_base),on(jaguar)->ok(odometry)
- - NAB(laser_node),on(jaguar)->ok(scan)
- - NAB(laser_alignment_node),on(laser_alignment_node)->ok(angle_1)
- - NAB(laser_alignment_node),on(laser_alignment_node)->ok(angle_2)
- - NAB(move_base),ok(scan),ok(odometry)->ok(status)
+       
+

@@ -16,14 +16,15 @@ import time
 
 class Hardware_Observer(object):
 
-    def __init__(self, top):
+    def __init__(self):
 					rospy.init_node('HObs', anonymous=True)
 					self.caller_id = '/script'
 					self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
-					self.top = top
+					#self.top = top
 					self.topic = ""
 					self.topic_type = ""
-					self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+					self.pub = rospy.Publisher('/observations', Observations)
+					self.top = rospy.get_param('~topic', '/board_measurments')
 					thread.start_new_thread(self.check_topic,(self.top,2))
          
     def start(self):
@@ -52,10 +53,10 @@ class Hardware_Observer(object):
 						while (j<len(att)):
 							if att[j].status == 1:
 									obs_msg.append('on('+att[j].dev_connected+')')
-									#print 'on('+att[j].dev_connected+')'
+									#rospy.loginfo('on('+att[j].dev_connected+')')
 							else:
 									obs_msg.append('~on('+att[j].dev_connected+')')
-									#print '~on('+att[j].dev_connected+')'
+									#rospy.loginfo('~on('+att[j].dev_connected+')')
 							j = j + 1
 						#print "------------------------"
 						self.pub.publish(Observations(time.time(),obs_msg))
@@ -84,5 +85,5 @@ class Hardware_Observer(object):
 
 
 if __name__ == '__main__':
-			hObs = Hardware_Observer("/board_measurments")
+			hObs = Hardware_Observer()
 			hObs.start()

@@ -29,7 +29,7 @@ class Multiple_Observer_Triggered(object):
 					self.time_triggered = None
 					self.time_triggering = None
 					self.started = False
-					self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+					self.pub = rospy.Publisher('/observations', Observations)
 					self.param_in_topic = rospy.get_param('~in_topic', '/Topic1')
 					self.param_out_topic = rospy.get_param('~out_topic', '/Topic2')
 					self.param_tm =  rospy.get_param('~tm', 500)

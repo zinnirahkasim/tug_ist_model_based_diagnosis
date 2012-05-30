@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/diagnosis_engine</url>
   <depend package="rosjava"/>
+  <depend package="actionlib_java"/>
   <depend package="diagnosis_msgs"/>
   <depend package="diagnostic_msgs"/>
   <export>

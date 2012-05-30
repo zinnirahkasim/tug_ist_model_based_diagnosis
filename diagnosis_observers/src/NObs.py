@@ -19,7 +19,7 @@ class Node_Observer(object):
 					self.caller_id = '/script'
 					self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
 					self.msg = ""
-					self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+					self.pub = rospy.Publisher('/observations', Observations)
 					self.param_node_name = rospy.get_param('~node', '/NObs1')
 
          
@@ -38,13 +38,14 @@ class Node_Observer(object):
 				obs_msg = []
 				if found == True:
 					self.msg = 'running('+self.param_node_name[1:len(self.param_node_name)]+')'
-					rospy.loginfo('Observer='+rospy.get_name()+',Node='+self.param_node_name[1:len(self.param_node_name)]+','+self.msg)
+					rospy.loginfo('running('+self.param_node_name[1:len(self.param_node_name)]+')')
 					obs_msg.append(self.msg)
 					self.pub.publish(Observations(time.time(),obs_msg))
-					rospy.sleep(1.0)
+					rospy.sleep(0.1)
 				else:
 					self.msg = '~running('+self.param_node_name[1:len(self.param_node_name)]+')'
-					rospy.loginfo('Observer='+rospy.get_name()+',Node='+self.param_node_name[1:len(self.param_node_name)]+','+self.msg)
+					#rospy.loginfo('Observer='+rospy.get_name()+',Node='+self.param_node_name[1:len(self.param_node_name)]+','+self.msg)
+					rospy.loginfo('~running('+self.param_node_name[1:len(self.param_node_name)]+')')
 					obs_msg.append(self.msg)
 					self.pub.publish(Observations(time.time(),obs_msg))
 					r.sleep()

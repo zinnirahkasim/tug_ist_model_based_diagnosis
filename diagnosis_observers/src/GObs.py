@@ -28,7 +28,7 @@ class General_Observer(object):
 				self.topic_name = ""
 				self.msg = ""
 				self.prev_t = time.time()
-				self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+				self.pub = rospy.Publisher('/observations', Observations)
 				self.param_topic = rospy.get_param('~topic', '/Topic')
 				self.param_frq =  rospy.get_param('~frq', 10)
 				self.param_dev = rospy.get_param('~dev', 1)
@@ -87,12 +87,12 @@ class General_Observer(object):
 						obs_msg = []
 						if self.param_dev > diff_freq:
 							self.msg = 'ok('+self.topic_name+')'
-							rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+							rospy.loginfo('ok('+self.topic_name+')')
 							obs_msg.append(self.msg)
 							self.pub.publish(Observations(time.time(),obs_msg))
 						else:
 							self.msg = '~ok('+self.topic_name+')'
-							rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+							rospy.loginfo('~ok('+self.topic_name+')')
 							obs_msg.append(self.msg)
 							self.pub.publish(Observations(time.time(),obs_msg))
 							
@@ -118,10 +118,11 @@ class General_Observer(object):
 								#print "Topic:[" +string+ "] does not exist."
 								#print "Node does not exist."
 								self.msg = '~ok('+self.topic_name+')'
-								rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+								#rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
+								rospy.loginfo('~ok('+self.topic_name+')')
 								self.pub.publish(Observations(time.time(),[self.msg]))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
-
+												
     def report_error(self):
 				print '\nrosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>'
 				print 'e.g rosrun diagnosis_observers GObs.py _topic:=scan _frq:=10 _dev:=1 _ws:=10'

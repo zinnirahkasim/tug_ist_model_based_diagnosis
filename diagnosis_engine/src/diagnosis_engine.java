@@ -1,3 +1,30 @@
+/*
+* Copyright (c).
+* All rights reserved.
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation 
+* and/or other materials provided with the distribution.
+* 3. Neither the name of the <ORGANIZATION> nor the names of its contributors
+* may be used to endorse or promote products derived from this software without
+* specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSE-
+* QUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+* GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+* OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+* DAMAGE.
+*/
+
 import com.google.common.base.Preconditions;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
@@ -13,6 +40,19 @@ import org.ros.message.diagnosis_msgs.Diagnosis;
 import org.ros.message.diagnosis_msgs.Observations;
 import org.ros.message.diagnostic_msgs.DiagnosticArray;
 
+import org.ros.actionlib.client.SimpleActionClient;
+import org.ros.actionlib.ActionSpec;
+import org.ros.message.diagnosis_msgs.SystemModelAction;
+import org.ros.message.diagnosis_msgs.SystemModelActionFeedback;
+import org.ros.message.diagnosis_msgs.SystemModelActionGoal;
+import org.ros.message.diagnosis_msgs.SystemModelActionResult;
+import org.ros.message.diagnosis_msgs.SystemModelFeedback;
+import org.ros.message.diagnosis_msgs.SystemModelGoal;
+import org.ros.message.diagnosis_msgs.SystemModelResult;
+import java.util.concurrent.TimeUnit;
+import org.ros.exception.RosException;
+
+
 import hittingsetalg.*;
 import theoremprover.*;
 import utils.*;
@@ -23,7 +63,6 @@ import dfengine.*;
  * external roscore is already running.
  * @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
  */
-
 class IllegalUserInput extends Exception {
 
     public IllegalUserInput(String msg) {
@@ -40,15 +79,15 @@ public class diagnosis_engine extends Thread implements NodeMain {
   private String AB;
   private String NAB;
   private String neg_prefix;
-  
   private Node node;
   private ArrayList<String> msg_list = new ArrayList<String>();
   private boolean processObs;
   private boolean threadRunning;
  	private Publisher<org.ros.message.diagnosis_msgs.Diagnosis> publisher;
   private Publisher<org.ros.message.diagnostic_msgs.DiagnosticArray> d_pub;
-
   private Calendar now = Calendar.getInstance();
+
+
 
 	public diagnosis_engine()
   {
@@ -76,52 +115,14 @@ public class diagnosis_engine extends Thread implements NodeMain {
       String path=null;
       final Log log = node.getLog();
       System.out.println("Diagnosis Engine is up.......");
-      publisher = node.newPublisher("/Diagnosis", "diagnosis_msgs/Diagnosis");
+      get_sys_model(node);
+      publisher = node.newPublisher("/diagnosis", "diagnosis_msgs/Diagnosis");
       d_pub = node.newPublisher("/diagnostics", "diagnostic_msgs/DiagnosticArray"); 
 
-    
-     // Subscriber for the /Diagnostic_Model topic
-
-      node.newSubscriber("/Diagnostic_Model", "diagnosis_msgs/SystemDescription",
-          new MessageListener<org.ros.message.diagnosis_msgs.SystemDescription>() {
-            @Override
-            public void onNewMessage(org.ros.message.diagnosis_msgs.SystemDescription sd_msg) {
-            try { 
-                 String[] rules = (String[]) sd_msg.rules.toArray(new String[0]);
-                 String[] props = (String[]) sd_msg.props.toArray(new String[0]);
-                 String s="";
-                 for(int m=0; m<rules.length-1; m++){
-                      s = s + rules[m] + ".\r\n";
-                 }
-                 s = s + rules[rules.length-1] + ".\r\n\r\n\r\n";
-                 SD = s;
-                 s="";
-                 for(int m=0; m<props.length-1; m++){
-                      s = s + props[m] + "\r\n";
-                 }
-								 s = s + props[props.length-1] + "\r\n\r\n\r\n";
-                 PROP = s;
-                 AB = sd_msg.AB;
-                 NAB = sd_msg.NAB;
-                 neg_prefix = sd_msg.neg_prefix;
-                 log.info("AB="+AB+",NAB="+NAB+",Neg_Prefix="+neg_prefix+", Rules:"+SD+", Props:"+ PROP);
-								 if(!threadRunning){
-	                    start();
-											threadRunning = true;
-                 }
-                 
-            }catch(Exception e){
-                   System.out.println("Error");System.out.println(e);
-              }
-          
-      } // OnNewMessage
-      } // MessageListener
-      );// newSubscriber 
-
-     
-     // Subscriber for the /Diagnostic_Observation topic     
- 
-			node.newSubscriber("/Diagnostic_Observation", "diagnosis_msgs/Observations",
+      /**
+      * Subscriber for the /observations topic.
+      */
+			node.newSubscriber("/observations", "diagnosis_msgs/Observations",
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>(){
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
@@ -162,7 +163,57 @@ public class diagnosis_engine extends Thread implements NodeMain {
 
   } //main
 
+  public void get_sys_model(Node node){
+        try
+           {
+     				ActionSpec<SystemModelAction, SystemModelActionFeedback, SystemModelActionGoal, SystemModelActionResult, SystemModelFeedback, 	SystemModelGoal, SystemModelResult> spec = new ActionSpec(SystemModelAction.class, "diagnosis_msgs/SystemModelAction", "diagnosis_msgs/SystemModelActionFeedback", "diagnosis_msgs/SystemModelActionGoal","diagnosis_msgs/SystemModelActionResult", "diagnosis_msgs/SystemModelFeedback",
+        "diagnosis_msgs/SystemModelGoal", "diagnosis_msgs/SystemModelResult");
 
+
+     SimpleActionClient<SystemModelActionFeedback, SystemModelActionGoal, SystemModelActionResult, SystemModelFeedback, SystemModelGoal, SystemModelResult> sac = new SimpleActionClient("diagnosis_model_server", spec);
+
+            
+           System.out.println("[Test] Waiting for system model action server to start!");
+           sac.addClientPubSub(node);
+           sac.waitForServer();
+           System.out.println("System Model Server started!!!!");
+           SystemModelGoal repairGoal= spec.createGoalMessage();
+           repairGoal.goal = 1;
+					 sac.sendGoal(repairGoal);
+          boolean finished_before_timeout = sac.waitForResult(10, TimeUnit.SECONDS);
+					if (finished_before_timeout) {
+              SystemModelResult res = (org.ros.message.diagnosis_msgs.SystemModelResult) sac.getResult();
+							String[] rules = (String[]) res.rules.toArray(new String[0]);
+              String[] props = (String[]) res.props.toArray(new String[0]);
+              String s="";
+              for(int m=0; m<rules.length-1; m++){
+                   s = s + rules[m] + ".\r\n";
+              }
+              s = s + rules[rules.length-1] + ".\r\n\r\n\r\n";
+              SD = s;
+              s="";
+              for(int m=0; m<props.length-1; m++){
+                  s = s + props[m] + "\r\n";
+              }
+							s = s + props[props.length-1] + "\r\n\r\n\r\n";
+              PROP = s;
+              AB = res.ab;
+              NAB = res.nab;
+              neg_prefix = res.neg_prefix;
+				
+              System.out.println("Result is back in time is.ab="+res.ab+",nab="+res.nab+",neg="+res.neg_prefix+"rules:"+rules[0]);
+              start();
+					}else{
+                System.out.println("[Test] Action did not finish before the time out");				
+			     }
+       }catch (RosException e){
+                  System.err.println(e.getMessage());
+                  e.printStackTrace(System.err);;
+        }catch(Throwable t){
+           			  System.err.println(t.getMessage());
+           				t.printStackTrace(System.err);
+         }
+  } // get_sys_model
 	void find_diagnosis(){   
     final Log log = node.getLog();
     try{ 
@@ -207,7 +258,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
          }//while
       final Diagnosis dmsg = node.getMessageFactory().newMessage("diagnosis_msgs/Diagnosis");
 
-      ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>	diagArr = new                    				     		ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
+      ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>	diagArr = new                    				     				 ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
 
         boolean consistent = checkConsistency(indepModel);
         String gd="",bd="";
@@ -215,8 +266,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
             org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_c =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
 						ArrayList<String> good = new ArrayList<String>();  
             ArrayList<String> bad = new ArrayList<String>();
-            result = new ArrayList();
-            result.add("Consistent!");
+            log.info("Consistent.");
             for(int j=0; j < components.size(); ++j) {
                   gd= gd+"'"+components.get(j).toString()+"'";
                   good.add(components.get(j).toString());
@@ -228,7 +278,8 @@ public class diagnosis_engine extends Thread implements NodeMain {
          		dmsg.diag = diagArr;
             publisher.publish(dmsg);
 
-        } else { 
+        } else {
+							 log.info("Start Diagnosis.");
                ArrayList diagnoses = new ArrayList();
 			         ArrayList conflictSets = new ArrayList();  
 			         MinHittingSetsFM  hsFM=null;
@@ -247,15 +298,18 @@ public class diagnosis_engine extends Thread implements NodeMain {
                		ArrayList<String> good1 = new ArrayList<String>();  
         			 		ArrayList<String> bad1 = new ArrayList<String>();
 							 		gd="";bd="";
-							 		String res = minHittingSetsAsAss.get(i).toString();  
+							 		String res = minHittingSetsAsAss.get(i).toString();
+									log.info(res);
                		for(int j=0; j < components.size(); ++j) {
                   		String comp = components.get(j).toString();
-											boolean inComponents = res.indexOf(comp) > 0;
+											boolean inComponents = res.indexOf("("+comp+")") > 0;
 											if(!inComponents)
                       		good1.add(comp);
-                  		else
+													
+                      else
                    				bad1.add(comp);
                   } // for j
+									log.info("Found Diagnosis.");
 									diag_result_ic.good = good1;
           				diag_result_ic.bad  = bad1;
          					diagArr.add(diag_result_ic);	       
@@ -281,8 +335,8 @@ public class diagnosis_engine extends Thread implements NodeMain {
   	try{
        final Log log = node.getLog();
        while(true){
-         find_diagnosis();
-         Thread.currentThread().sleep(100);
+				 find_diagnosis();
+         Thread.currentThread().sleep(900);
        }
    	}catch(Exception e){
            System.out.println(e);

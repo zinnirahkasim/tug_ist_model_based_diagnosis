@@ -117,7 +117,7 @@ class Qualitative_Observer(object):
 					self.topic_type = ""
 					self.data = None
 					self.queu = [[0.0 for i in xrange(100)],[0.0 for i in xrange(100)]]
-					self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+					self.pub = rospy.Publisher('/bservations', Observations)
 					self.started = True
 					self.curr_t = None
 					self.prev_t = time.time()

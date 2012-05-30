@@ -90,7 +90,8 @@ public class Connection {
      * Parameter openSessions: see Server.openSessions
      */
 
-   
+   public Connection() {        
+    }
 
    public Connection(Map openSessions, boolean verboseOutput) {
         

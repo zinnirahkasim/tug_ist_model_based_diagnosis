@@ -20,7 +20,7 @@ import yaml
 class System_Description(object):
 
     def __init__(self):
-				self.pub = rospy.Publisher('/Diagnostic_Model', SystemDescription)
+				#self.pub = rospy.Publisher('/Diagnostic_Model', SystemDescription)
 												
         
     def start(self):
@@ -39,30 +39,14 @@ class System_Description(object):
 						NAB = sd["nab"]
 						neg_prefix = sd["neg_prefix"]
 						r = sd["rules"]
-						p = str(sd["props"])
-						print r
-						no_of_rules = len(p) 
-						print no_of_rules
-						for i in xrange(no_of_rules):
- 							if i < no_of_rules-1:
-									rule = sd["rules"]["rule"]#+str(i+1)]
-									r_msg.append(rule)
-							else:
-									rule = sd["rules"]["rule"]#+str(i+1)]
-									r_msg.append(rule)
-						
-						no_of_props = p.count(':')
-						print no_of_props
-						for i in xrange(no_of_props):
- 							if i < no_of_props-1:
-									prop = sd["props"]["prop"]#+str(i+1)]
-									p_msg.append(prop)
-							else:
-									prop = sd["props"]["prop"]#+str(i+1)]
-									p_msg.append(prop)
-						#print r_msg
-						#print p_msg
-						self.pub.publish(SystemDescription(time.time(),r_msg,p_msg,AB,NAB,neg_prefix))
+						p = sd["props"]
+						print "Rules:\n",r
+						no_of_rules = len(r) 
+						print "Nos of Rules:",no_of_rules
+						print "Propositions:\n",p
+						no_of_props = len(p)
+						print "Nos of Props:",no_of_props
+						#self.pub.publish(SystemDescription(time.time(),r,p,AB,NAB,neg_prefix))
 						
     def report_error(self):
 				print '\nError:'
