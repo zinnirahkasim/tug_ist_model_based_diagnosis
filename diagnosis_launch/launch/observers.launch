@@ -2,61 +2,50 @@
  <!-- master auto="start"/ -->
 
  
- <node pkg="diagnosis_observers" type="GObs.py" name="OdometryObserver" output="log">
-    <param name="topic" value="/odometry" />
+ <node pkg="diagnosis_observers" type="GObs.py" name="odomObserver" >
+    <param name="topic" value="/odom" />
     <param name="frq" value="10" />
-    <param name="dev" value="1" />
+    <param name="dev" value="5" />
     <param name="ws" value="10" />
  </node>
-
- <node pkg="diagnosis_observers" type="GObs.py" name="LaserObserver" output="log">
+ <node pkg="diagnosis_observers" type="GObs.py" name="scanObserver" >
     <param name="topic" value="/scan" />
     <param name="frq" value="20" />
-    <param name="dev" value="4" />
+    <param name="dev" value="5" />
     <param name="ws" value="10" />
  </node>
-
-<node pkg="diagnosis_observers" type="GObs.py" name="Angle1Observer" output="log">
-    <param name="topic" value="/angle_1" />
-    <param name="frq" value="10" />
-    <param name="dev" value="1" />
+ <node pkg="diagnosis_observers" type="GObs.py" name="imageObserver" >
+    <param name="topic" value="/camera/rgb/image_color" />
+    <param name="frq" value="30" />
+    <param name="dev" value="5" />
     <param name="ws" value="10" />
  </node>
-
- <node pkg="diagnosis_observers" type="GObs.py" name="Angle2Observer" output="log">
-    <param name="topic" value="/angle_2" />
-    <param name="frq" value="10" />
-    <param name="dev" value="1" />
+ <node pkg="diagnosis_observers" type="GObs.py" name="imudataObserver" >
+    <param name="topic" value="/imu_data" />
+    <param name="frq" value="50" />
+    <param name="dev" value="5" />
     <param name="ws" value="10" />
  </node>
-
-<node pkg="diagnosis_observers" type="GObs.py" name="StatusObserver" output="log">
-    <param name="topic" value="/status" />
-    <param name="frq" value="10" />
-    <param name="dev" value="1" />
-    <param name="ws" value="10" />
- </node>
-
   
- <node pkg="diagnosis_observers" type="NObs.py" name="LaserNodeObserver" output="log">
-    <param name="node" value="laser_node" />
+ <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" >
+    <param name="node" value="jaguar_node" />
  </node> 
 
- <node pkg="diagnosis_observers" type="NObs.py" name="JBaseObserver" output="log">
-    <param name="node" value="jaguar_base" />
+ <node pkg="diagnosis_observers" type="NObs.py" name="hokuyoNObserver" >
+    <param name="node" value="hokuyo_node" />
  </node> 
 
- <node pkg="diagnosis_observers" type="NObs.py" name="LaserAlignmentNodeObserver" output="log">
-    <param name="node" value="laser_alignment_node" />
+ <node pkg="diagnosis_observers" type="NObs.py" name="kinectNObserver" >
+    <param name="node" value="kinect_node" />
  </node> 
 
- <node pkg="diagnosis_observers" type="NObs.py" name="MoveBaseObserver" output="log">
-    <param name="node" value="move_base" />
+ <node pkg="diagnosis_observers" type="NObs.py" name="imuNObserver" >
+    <param name="node" value="imu_node" />
  </node> 
 
- <node pkg="diagnosis_observers" type="HObs.py" name="HardwareObserver" output="log">
- </node>
-
+ <node pkg="diagnosis_observers" type="HObs.py" name="HObserver" >
+    <param name="topic" value="/board_measurments" />
+ </node> 
 
  </launch>
 

@@ -13,6 +13,7 @@ import os
 from diagnosis_msgs.msg import Observations
 import thread
 import time
+import traceback
 
 class Hardware_Observer(object):
 
@@ -63,7 +64,8 @@ class Hardware_Observer(object):
 						
 
     def check_topic(self,top,sleeptime,*args):
-				while True:
+			try:
+					while True:
 						t = 0
 						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
@@ -76,6 +78,11 @@ class Hardware_Observer(object):
 								print "Topic:[" +top+ "] does not exist."
 								#self.pub.publish(Observations(time.time(),['~ok('+self.param_dev_node+')']))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
+			except:
+					 	print "An unhandled exception occured, here's the traceback!"
+						traceback.print_exc()
+
+						
 
     					
     def report_error(self):
@@ -83,6 +90,8 @@ class Hardware_Observer(object):
 			print 'use [rosrun diagnosis_observers HObs.py]'
 			sys.exit(os.EX_USAGE)
 
+    def throws():
+								raise RuntimeError('this is the error message')
 
 if __name__ == '__main__':
 			hObs = Hardware_Observer()
