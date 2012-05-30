@@ -24,14 +24,15 @@ class Hardware_Observer(object):
 					#self.top = top
 					self.topic = ""
 					self.topic_type = ""
+					self.topicList = []
 					self.pub = rospy.Publisher('/observations', Observations)
 					self.top = rospy.get_param('~topic', '/board_measurments')
 					thread.start_new_thread(self.check_topic,(self.top,2))
          
     def start(self):
-				pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+				pubcode, statusMessage, self.topicList = self.m.getPublishedTopics(self.caller_id, "")
 				top_found = False
-				for item in topicList:
+				for item in self.topicList:
 					if item[0] == self.top:
 						self.topic = item[0]
 						self.topic_type = item[1]
@@ -67,8 +68,8 @@ class Hardware_Observer(object):
 			try:
 					while True:
 						t = 0
-						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
-						for item in topicList:
+						#pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+						for item in self.topicList:
 							if item[0] == top:
 									self.Topic = True
 									t = 1
