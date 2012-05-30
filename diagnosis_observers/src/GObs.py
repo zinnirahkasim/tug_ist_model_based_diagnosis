@@ -16,6 +16,7 @@ import time
 from array import array
 import thread
 import re
+import traceback
 
 class General_Observer(object):
 
@@ -104,7 +105,8 @@ class General_Observer(object):
         return s/self.param_ws
 
     def check_topic(self,string,sleeptime,*args):
-				while not rospy.is_shutdown():
+				try:
+					while not rospy.is_shutdown():
 						t = 0
 						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
@@ -122,6 +124,13 @@ class General_Observer(object):
 								rospy.loginfo('~ok('+self.topic_name+')')
 								self.pub.publish(Observations(time.time(),[self.msg]))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
+				except:
+						 	print "An unhandled exception occured, here's the traceback!"
+							traceback.print_exc()
+
+
+    def throws():
+								raise RuntimeError('this is the error message')
 												
     def report_error(self):
 				print '\nrosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>'
