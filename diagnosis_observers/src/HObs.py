@@ -20,7 +20,7 @@ class Hardware_Observer(object):
     def __init__(self):
 					rospy.init_node('HObs', anonymous=True)
 					self.caller_id = '/script'
-					self.m = xmlrpclib.ServerProxy(os.environ['http://192.168.0.101:11311'])
+					self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
 					#self.top = top
 					self.topic = ""
 					self.topic_type = ""
