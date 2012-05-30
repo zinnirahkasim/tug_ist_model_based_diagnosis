@@ -108,7 +108,8 @@ class General_Observer(object):
 				try:
 					while not rospy.is_shutdown():
 						t = 0
-						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+						m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
+						pubcode, statusMessage, topicList = m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
 							if item[0] == string:
 									t = 1
