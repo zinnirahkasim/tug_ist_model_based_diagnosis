@@ -1,0 +1,33 @@
+ab: "AB"
+nab: "NAB"
+neg_prefix: "not_" 
+
+props:
+ - on(jaguar_base)
+ - ok(odometry)
+ - on(laser)
+ - ok(scan)
+ - on(kinect)
+ - ok(image)
+ - on(sensor_head)
+ - ok(sensor_head_topic)
+rules:
+ - NAB(jaguar_base)->on(jaguar_base)
+ - NAB(laser)->on(laser)
+ - NAB(kinect)->on(kinect)
+ - NAB(sensor_head)->on(sensor_head)
+ - NAB(jaguar_node),NAB(jaguar_base)->ok(odometry)
+ - NAB(laser_node),NAB(laser)->ok(scan)
+ - NAB(kinect_node),NAB(kinect)->ok(image)
+ - NAB(sensor_head_node),NAB(sensor_head)->ok(sensor_head_topic)
+
+
+ - NAB(jaguar_node)->ok(odometry)
+ - NAB(laser_node)->ok(scan)
+ - NAB(kinect_node)->ok(image)
+ - NAB(sensor_head_node)->ok(sensor_head_topic)
+
+ - AB(jaguar_base)->not_on(jaguar_base)
+ - AB(laser)->not_on(laser)
+ - AB(kinect)->not_on(kinect)
+ - AB(sensor_head)->not_on(sensor_head)

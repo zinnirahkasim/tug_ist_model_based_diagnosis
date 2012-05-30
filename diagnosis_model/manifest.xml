@@ -1,0 +1,18 @@
+<package>
+  <description brief="diagnosis_model">
+
+     diagnosis_model
+
+  </description>
+  <author>Safdar Zaman</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/diagnosis_model</url>
+  <depend package="actionlib"/>
+  <depend package="rospy"/>
+  <depend package="diagnosis_msgs"/>
+  
+
+</package>
+
+

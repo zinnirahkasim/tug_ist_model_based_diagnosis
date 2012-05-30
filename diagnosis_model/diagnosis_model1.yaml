@@ -1,0 +1,10 @@
+ab: "AB"
+nab: "NAB"
+neg_prefix: "not_" 
+
+props:
+ - on(jaguar_base)
+ - ok(odometry)
+rules:
+ - NAB(jaguar_base)->on(jaguar_base)
+ - NAB(jaguar_node),on(jaguar_base)->ok(odometry)
