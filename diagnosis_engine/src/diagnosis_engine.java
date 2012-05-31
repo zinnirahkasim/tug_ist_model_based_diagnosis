@@ -1,5 +1,6 @@
 /*
 * Copyright (c).
+* May-2012. Institute from Software Technology, TU Graz, Austria,
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
@@ -325,7 +326,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
         } // else inconsistent
 
       } catch (Exception e) {
-              System.out.println("File Read Error!"+e);
+              System.out.println("ERROR!"+e);
         }
        
 	}// find_diagnosis()

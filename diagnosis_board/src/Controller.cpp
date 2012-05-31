@@ -49,11 +49,11 @@ void Controller::chnl2dev_mapping()
   chnl2dev_map[0] = "sensor_head";
   chnl2dev_map[1] = "laser_alignment";
   chnl2dev_map[2] = "pc";
-  chnl2dev_map[3] = "laser";
+  chnl2dev_map[3] = "hokuyo";
   chnl2dev_map[4] = "kinect";
   chnl2dev_map[5] = "router";
   chnl2dev_map[6] = "thermal_camera";
-  chnl2dev_map[7] = "jaguar_base";
+  chnl2dev_map[7] = "jaguar";
   chnl2dev_map[8] = "no_dev1";
   chnl2dev_map[9] = "no_dev2";
 
