@@ -20,12 +20,6 @@
     <param name="dev" value="5" />
     <param name="ws" value="10" />
  </node>
- <node pkg="diagnosis_observers" type="GObs.py" name="imudataObserver" >
-    <param name="topic" value="/imu_data" />
-    <param name="frq" value="50" />
-    <param name="dev" value="5" />
-    <param name="ws" value="10" />
- </node>
   
  <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" >
     <param name="node" value="jaguar_node" />
@@ -37,10 +31,6 @@
 
  <node pkg="diagnosis_observers" type="NObs.py" name="kinectNObserver" >
     <param name="node" value="kinect_node" />
- </node> 
-
- <node pkg="diagnosis_observers" type="NObs.py" name="imuNObserver" >
-    <param name="node" value="imu_node" />
  </node> 
 
  <node pkg="diagnosis_observers" type="HObs.py" name="HObserver" >
