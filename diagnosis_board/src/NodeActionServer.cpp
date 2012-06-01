@@ -15,12 +15,9 @@ void startnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSe
 	string command("roslaunch diagnosis_launch " + goal->parameter[0] + ".launch &");
   ROS_INFO("\nSTART NODE Server Started.");
   int k = system(command.c_str());
-  //ROS_INFO("\nSystem Call finished %d",i);
-  //ROS_INFO("\nReceived %s",goal->parameter[0].c_str());
   sleep(3);
   result_.result = i;
-  as->setSucceeded(result_,"Hello");
-  //ROS_INFO("\nResult=%d sent to the Client.",i);
+  as->setSucceeded(result_);
   ROS_INFO("\nSTART NODE Server Finished.");
   
 }
@@ -29,15 +26,12 @@ void startnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSe
 void stopnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
 {
   diagnosis_msgs::DiagnosisRepairResult result_;
-	//ROS_INFO("\n Request for Stopping the Node[%s] is received.",goal->parameter[0].c_str());
-  ROS_INFO("\nSTOP NODE Server Started.");
+	ROS_INFO("\nSTOP NODE Server Started.");
   string command("rosnode kill /" + goal->parameter[0]);
-  //ROS_INFO("\nNode[%s] Killed.",command.c_str());
   int k=system(command.c_str());
   sleep(3);
   result_.result = k;
   as->setSucceeded(result_);
-  //ROS_INFO("\nResult=STOP sent to the Client.");
   ROS_INFO("\nSTOP NODE Server Finished.");
 }
 
