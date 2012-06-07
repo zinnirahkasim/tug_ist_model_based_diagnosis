@@ -1,4 +1,0 @@
-<launch>
-   <node pkg="diagnosis_observers" type="hokyuo_node.py" name="hokyuo_node" output="log">
-   </node>
-</launch>

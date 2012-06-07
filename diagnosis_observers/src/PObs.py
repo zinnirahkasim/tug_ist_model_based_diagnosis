@@ -22,8 +22,8 @@ class Property_Observer(object):
     def start(self):
         rospy.init_node('PObs', anonymous=True)
         while not rospy.is_shutdown():
-            self.process = subprocess.Popen("ps -u %s -o rss | awk '{sum+=$1} END {print sum}'" %self.username,shell=True,stdout=subprocess.PIPE)
-            self.stdout_list = self.process.communicate()[0].split('\n')
+           	self.process = subprocess.Popen("ps -u %s -o rss | awk '{sum+=$1} END {print sum}'" %self.username,shell=True,stdout=subprocess.PIPE)
+           	self.stdout_list = self.process.communicate()[0].split('\n')
             #p = psutil.Process(os.getpid())
             #p.get_cpu_times()
             #p.get_cpu_percent(interval=1)
@@ -38,7 +38,9 @@ e.g rosrun diagnosis_observers PObs.py /tf Mem
 		sys.exit(os.EX_USAGE)        
     
 if __name__ == '__main__':
-			if len(sys.argv) < 4: 
+			print len(sys.argv)
+			if len(sys.argv) < 3: 
 				report_error()
 			pObs = Property_Observer(sys.argv)
 			pObs.start()
+

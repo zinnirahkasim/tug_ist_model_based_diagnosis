@@ -3,26 +3,26 @@ nab: "NAB"
 neg_prefix: "not_" 
 
 props:
- - on(jaguar)
- - ok(odom)
+ - on(jaguar_base)
+ - ok(odometry)
  - on(hokuyo)
  - ok(scan)
  - on(kinect)
- - ok(camera/rgb/image_color)
+ - ok(image)
 rules:
- - NAB(jaguar)->on(jaguar)
+ - NAB(jaguar_base)->on(jaguar_base)
  - NAB(hokuyo)->on(hokuyo)
  - NAB(kinect)->on(kinect)
 
- - NAB(jaguar_node),NAB(jaguar)->ok(odometry)
+ - NAB(jaguar_node),NAB(jaguar_base)->ok(odometry)
  - NAB(hokuyo_node),NAB(hokuyo)->ok(scan)
- - NAB(kinect_node),NAB(kinect)->ok(camera/rgb/image_color)
+ - NAB(kinect_node),NAB(kinect)->ok(image)
 
- - NAB(jaguar_node)->ok(odom)
+ - NAB(jaguar_node)->ok(odometry)
  - NAB(hokuyo_node)->ok(scan)
  - NAB(kinect_node)->ok(image)
 
- - AB(jaguar)->not_on(jaguar)
+ - AB(jaguar_base)->not_on(jaguar_base)
  - AB(hokuyo)->not_on(hokuyo)
  - AB(kinect)->not_on(kinect)
 

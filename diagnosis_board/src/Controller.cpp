@@ -4,11 +4,11 @@
 Controller::Controller(char frq)
 {  
     
-    //host = gethostbyname("127.0.0.1");
-    host = gethostbyname("192.168.0.70");
+    host = gethostbyname("127.0.0.1");
+    //host = gethostbyname("192.168.0.70");
     server_addr.sin_family = AF_INET;     
-    //server_addr.sin_port = htons(5000);   
-    server_addr.sin_port = htons(9760);   
+    server_addr.sin_port = htons(5000);   
+    //server_addr.sin_port = htons(9760);   
     server_addr.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(server_addr.sin_zero),8);
     pub_board_msr_ = n_.advertise<diagnosis_msgs::DBoardMeasurments>("/board_measurments",1);
@@ -38,14 +38,7 @@ void Controller::initController()
 
 void Controller::chnl2dev_mapping()
 {
-  /*chnl2dev_map[0] = "SENSOR_HEAD";
-  chnl2dev_map[1] = "LASER_LEVELING";
-  chnl2dev_map[2] = "PC";
-  chnl2dev_map[3] = "LASER_SCANNER";
-  chnl2dev_map[4] = "KINECT";
-  chnl2dev_map[5] = "ROUTER";
-  chnl2dev_map[6] = "THERMAL_CAMERA";
-  chnl2dev_map[7] = "JAGUAR_PLATFORM";*/
+
   chnl2dev_map[0] = "sensor_head";
   chnl2dev_map[1] = "laser_alignment";
   chnl2dev_map[2] = "pc";
