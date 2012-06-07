@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<launch>
+ <!-- master auto="start"/ -->
+ 
+ <node pkg="diagnosis_board" type="BoardControllerServer" name="BoardControllerServer" output="log">
+ </node>
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" output="log">
+    <param name="node" value="jaguar_node" />
+ </node> 
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="hokuyoNObserver" output="log">
+    <param name="node" value="hokuyo_node" />
+ </node> 
+
+ <node pkg="diagnosis_observers" type="GObs.py" name="odomObserver" output="log">
+    <param name="topic" value="/odom" />
+    <param name="frq" value="10" />
+    <param name="dev" value="5" />
+    <param name="ws" value="10" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="GObs.py" name="scanObserver" output="log">
+    <param name="topic" value="/scan" />
+    <param name="frq" value="20" />
+    <param name="dev" value="5" />
+    <param name="ws" value="10" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="HObs.py" name="HObserver" output="log">
+    <param name="topic" value="/board_measurments" />
+ </node>
+
+ <node pkg="diagnosis_model" 
+        type="diagnosis_model_server.py" 
+        name="DiagnosisModelServer" 
+        output="log">
+  <param name="model" value="$(find diagnosis_model)/diagnosis_model.yaml" />
+  </node>
+
+ <node pkg="diagnosis_board" 
+       type="NodeActionServer" 
+       name="NodeActionServers" 
+       output="log">
+ </node>
+
+ <node pkg="rosjava_bootstrap" 
+       type="run.py" 
+       args="diagnosis_engine diagnosis_engine" 
+       name="diagnosis_engine" 
+       output="log">
+ </node>
+
+ <rosparam param="file"> "/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/test_repair_domain.pddl" </rosparam>
+ <node pkg="rosjava_bootstrap" 
+       type="run.py" 
+       args="diagnosis_repair plannerRepair"
+       name="plannerRepair" 
+       output="log"> 
+ </node>
+
+ </launch>
+
