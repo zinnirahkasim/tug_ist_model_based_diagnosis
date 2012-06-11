@@ -1,5 +1,6 @@
 /*
-* Copyright (c).
+* Copyright (c).2012. OWNER: IST-TU-Graz Austria.
+* Authors: Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
@@ -334,24 +335,26 @@ public class plannerRepair implements NodeMain{
 						   String init="(:init ";
 							 for(int i=0;i<list.size();i++) {
                   		String parameter = list.get(i).substring(list.get(i).indexOf("(")+1,list.get(i).indexOf(")"));
-                  		co_problem = co_problem + parameter + " ";            
+                  		//co_problem = co_problem + parameter + " ";
                   		if(list.get(i).charAt(0)=='~') {
                       		String predicate = list.get(i).substring(1,list.get(i).indexOf("("));
-                      		//init = init + "(component "+parameter+")" + "(not_"+predicate+" "+parameter+")";
-                          init = init + "(not_"+predicate+" "+parameter+")";
+                          if(!predicate.equals("ok"))
+													  init = init + "(not_"+predicate+" "+parameter+")";
                   		} else {
                       		String predicate = list.get(i).substring(0,list.get(i).indexOf("("));
-                      		//init = init + "(component "+parameter+")" + "("+predicate+" "+parameter+")";               
-                          init = init + "("+predicate+" "+parameter+")";               
+                          if(!predicate.equals("ok"))
+                            init = init + "("+predicate+" "+parameter+")";               
                     		}               
 							 }
                for(int i=0;i<good.length;i++) {
                				init = init + "(good "+good[i]+")";
                				goal=goal+"(good "+good[i]+")";
+                      co_problem = co_problem + good[i] + " ";
                }
             	 for(int i=0;i<bad.length;i++) {
                   		init = init + "(bad "+bad[i]+")";
                   		goal=goal+"(good "+bad[i]+")";
+                      co_problem = co_problem + bad[i] + " ";
                }
                co_problem = co_problem + ")";
                init = init + ")";
