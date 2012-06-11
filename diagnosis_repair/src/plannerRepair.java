@@ -396,7 +396,9 @@ public class plannerRepair implements NodeMain{
 																			for (Term parameter : action) 
                                      				params.add(parameter.getImage());
 																			System.out.println("REPAIR: "+actionServer+"("+params.get(0).toString()+")");
-                                			execute_plan(actionServer, params);
+																			goal_processed = false;
+                                      while(!goal_processed)
+                                			 execute_plan(actionServer, params);
 																	}
 															}
 															
@@ -439,10 +441,12 @@ public class plannerRepair implements NodeMain{
               DiagnosisRepairResult res = (org.ros.message.diagnosis_msgs.DiagnosisRepairResult) sac.getResult();
               state = sac.getState();
               System.out.println("REPAIR "+state.toString()+".");
+              goal_processed = true;
 						}else{
-                System.out.println("Repair Action did not finish before the time out");				
+                  System.out.println("Repair Action did not finish before the time out");	
+									goal_processed = false;		
 				        }
-            goal_processed = true;
+            
         }catch(Throwable t){
            			  System.err.println(t.getMessage());
            				t.printStackTrace(System.err);
