@@ -2,8 +2,7 @@
    (:requirements :strips :typing :negative-preconditions)
    (:types node hardware)
    (:predicates
-						 (component ?c)
-             (bad ?c)
+					   (bad ?c)
 						 (good ?c)
 						 (running ?c)
              (not_running ?c)
