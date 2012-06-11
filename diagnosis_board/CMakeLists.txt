@@ -43,4 +43,7 @@ rosbuild_link_boost(BoardServer thread)
 
 rosbuild_add_executable(NodeActionServer src/NodeActionServer.cpp)
 rosbuild_add_executable(NodeActionServerC src/NodeActionServerC.cpp)
+
 rosbuild_add_executable(NodeActionClient src/NodeActionClient.cpp)
+
+rosbuild_add_executable(QtoPRY src/QtoPRY.cpp)

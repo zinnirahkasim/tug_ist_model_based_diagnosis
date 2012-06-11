@@ -4,25 +4,37 @@ neg_prefix: "not_"
 
 props:
  - on(jaguar)
- - ok(odometry)
+ - ok(odom)
  - on(hokuyo)
  - ok(scan)
- - on(kinect)
- - ok(image)
+ - on(laser_alignment)
+ - ok(imu_data)
+ - ok(map)
+ - running(laser_alignment_node)
+ - running(laser_alignment_control)
+ - running(jaguar_teleop_node)
 rules:
  - NAB(jaguar)->on(jaguar)
  - NAB(hokuyo)->on(hokuyo)
- - NAB(kinect)->on(kinect)
+ - NAB(laser_alignment)->on(laser_alignment)
+ - NAB(laser_alignment_node)->running(laser_alignment_node)
+ - NAB(laser_alignment_control)->running(laser_alignment_control)
+ - NAB(jaguar_teleop_node)->running(jaguar_teleop_node)
 
- - NAB(jaguar_node1),NAB(jaguar)->ok(odometry)
- - NAB(hokuyo_node1),NAB(hokuyo)->ok(scan)
- - NAB(kinect_node1),NAB(kinect)->ok(image)
+ - NAB(jaguar_node),NAB(jaguar)->ok(odom)
+ - NAB(hokuyo_node),NAB(hokuyo)->ok(scan)
 
- - NAB(jaguar_node1)->ok(odometry)
- - NAB(hokuyo_node1)->ok(scan)
- - NAB(kinect_node1)->ok(image)
+
+ - NAB(hokuyo_node)->ok(scan)
+ - NAB(imu_node)->ok(imu_data)
+ - NAB(hector_mapping)->ok(map)
+ - NAB(jaguar_teleop_node)->ok(cmd_vel)
+
 
  - AB(jaguar)->not_on(jaguar)
  - AB(hokuyo)->not_on(hokuyo)
- - AB(kinect)->not_on(kinect)
+ - AB(laser_alignment)->not_on(laser_alignment)
+ - AB(laser_alignment_node)->not_running(laser_alignment_node)
+ - AB(laser_alignment_control)->not_running(laser_alignment_control)
+ - AB(jaguar_teleop_node)->not_running(jaguar_teleop_node)
 

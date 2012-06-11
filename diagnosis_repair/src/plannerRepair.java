@@ -202,7 +202,7 @@ public class plannerRepair implements NodeMain{
     @Override
     public void onStart(Node node){
 					 ParameterTree prm = node.newParameterTree();
-					 domain_file_name = prm.getString("file","test_repair_doamai.pddl");
+					 domain_file_name = prm.getString("file","repair_domain.pddl");
 					 System.out.println(domain_file_name);
 					 //GraphName prmNSpace = new GraphName(prm.getString("parameter_namespace"));
            System.out.println(node.getName());
@@ -328,7 +328,7 @@ public class plannerRepair implements NodeMain{
 							 c.signalAll();
 							 list = obs_list;
                lock.unlock();
-							 String prob_text = "define (problem prob)(:domain test_repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects ";
+							 String prob_text = "define (problem repair_goal)(:domain repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects ";
 							 String co_problem="";
 						   String goal = "(:goal (and ";
 						   String init="(:init ";
@@ -356,7 +356,7 @@ public class plannerRepair implements NodeMain{
                goal=goal+"))";
                String prob = "(" + prob_text + co_problem + init + goal + ")";
 						   try{
-               		     BufferedWriter out=new BufferedWriter(new FileWriter("prob.pddl"));
+               		     BufferedWriter out=new BufferedWriter(new FileWriter("repair_goal.pddl"));
                		     out.write(prob);
                		     out.close();
                }catch(IOException e){}
@@ -371,7 +371,7 @@ public class plannerRepair implements NodeMain{
      public void get_plan(){
            try{  
 									log.info("Planner called.");
-									PDDLObject problem = _parser.parse(new File("prob.pddl"));
+									PDDLObject problem = _parser.parse(new File("repair_goal.pddl"));
 									PDDLObject pb = null;
     		      		if (_domain != null && problem != null){
                     pb = _parser.link(_domain, problem);

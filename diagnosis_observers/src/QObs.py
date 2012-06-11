@@ -160,9 +160,10 @@ class Qualitative_Observer(object):
 
     def extract_data(self,data):
 				self.data = data
-				if len(self.params)==1:
-					for f in self.data.__slots__:
-							self.data = getattr(self.data, f)
+				#print data,len(self.params)
+				#if len(self.params)==1:
+					#for f in self.data.__slots__:
+							#self.data = getattr(self.data, f)
 				c = 0   
 				while (c < len(self.params)):
 				  for f in self.data.__slots__:

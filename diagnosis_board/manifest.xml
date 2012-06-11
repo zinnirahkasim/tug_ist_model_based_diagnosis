@@ -12,6 +12,10 @@
   <depend package="diagnosis_msgs"/>
   <depend package="actionlib_msgs"/>
   <depend package="actionlib"/>
+  <depend package="geometry_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="joy"/>
+  <depend package="tf"/>
 
 </package>
 
