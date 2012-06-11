@@ -12,7 +12,6 @@
              (not_on ?o)
     )
 
-
    (:action power_up
     :parameters (?c)
                 :precondition (and (not_on ?c)(bad ?c))
@@ -37,3 +36,4 @@
                 :effect (and (bad ?c)(not_running ?c))
     )
 )
+

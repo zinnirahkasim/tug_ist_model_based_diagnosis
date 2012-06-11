@@ -335,26 +335,26 @@ public class plannerRepair implements NodeMain{
 						   String init="(:init ";
 							 for(int i=0;i<list.size();i++) {
                   		String parameter = list.get(i).substring(list.get(i).indexOf("(")+1,list.get(i).indexOf(")"));
-                  		//co_problem = co_problem + parameter + " ";
+                  		co_problem = co_problem + parameter + " ";
                   		if(list.get(i).charAt(0)=='~') {
                       		String predicate = list.get(i).substring(1,list.get(i).indexOf("("));
-                          if(!predicate.equals("ok"))
+                          //if(!predicate.equals("ok"))
 													  init = init + "(not_"+predicate+" "+parameter+")";
                   		} else {
                       		String predicate = list.get(i).substring(0,list.get(i).indexOf("("));
-                          if(!predicate.equals("ok"))
+                          //if(!predicate.equals("ok"))
                             init = init + "("+predicate+" "+parameter+")";               
                     		}               
 							 }
                for(int i=0;i<good.length;i++) {
                				init = init + "(good "+good[i]+")";
                				goal=goal+"(good "+good[i]+")";
-                      co_problem = co_problem + good[i] + " ";
+                      //co_problem = co_problem + good[i] + " ";
                }
             	 for(int i=0;i<bad.length;i++) {
                   		init = init + "(bad "+bad[i]+")";
                   		goal=goal+"(good "+bad[i]+")";
-                      co_problem = co_problem + bad[i] + " ";
+                      //co_problem = co_problem + bad[i] + " ";
                }
                co_problem = co_problem + ")";
                init = init + ")";
