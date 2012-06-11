@@ -395,10 +395,11 @@ public class plannerRepair implements NodeMain{
 																			ArrayList<String> params = new ArrayList<String>();
 																			for (Term parameter : action) 
                                      				params.add(parameter.getImage());
-																			System.out.println("REPAIR: "+actionServer+"("+params.get(0).toString()+")");
 																			goal_processed = false;
-                                      while(!goal_processed)
-                                			 execute_plan(actionServer, params);
+                                      while(!goal_processed){
+                                          System.out.println("REPAIR: "+actionServer+"("+params.get(0).toString()+")");
+                                			    execute_plan(actionServer, params);
+																			}
 																	}
 															}
 															
