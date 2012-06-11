@@ -13,17 +13,6 @@
              (not_on ?o)
     )
 
-   (:action start_node
-    :parameters (?c)
-         				:precondition (and (bad ?c)(not_running ?c))
-                :effect (good ?c)
-    )
-
-   (:action stop_node
-    :parameters (?c)
-                :precondition (and (bad ?c)(running ?c))
-                :effect (and (bad ?c)(not_running ?c))
-    )
 
    (:action power_up
     :parameters (?c)
@@ -37,4 +26,15 @@
                 :effect (and (bad ?c)(not_on ?c))
     )
 
+     (:action start_node
+    :parameters (?c)
+         				:precondition (and (bad ?c)(not_running ?c))
+                :effect (good ?c)
+    )
+
+   (:action stop_node
+    :parameters (?c)
+                :precondition (and (bad ?c)(running ?c))
+                :effect (and (bad ?c)(not_running ?c))
+    )
 )
