@@ -84,14 +84,16 @@ class Regression(object):
 				i = last_indx
 				n = 0
 				while (i >-1) & ( (t[last_indx]-t[i]) < ws ):
-							#print 'Sum_xy,',Sum_xy,'t',t[i],'s',s[i] 
+							#if(s[i]==None):
+								#continue
+							#print 'Sum_xy,',Sum_xy,'t',t[i],'s',s[i],'len(s)',len(s),'i',i 
 							Sum_xy = Sum_xy + t[i] * s[i]
 							Sum_x = Sum_x + t[i]
 							Sum_y = Sum_y + s[i]
 							Sum_xx = Sum_xx + t[i] * t[i]
 							i = i - 1
 							n = n + 1
-							
+					
 				
 				self.n = n
 				#print 'n=', self.n,'Sum_x',Sum_x,'Sum_xx',Sum_xx
@@ -100,7 +102,8 @@ class Regression(object):
 					slope = (n*Sum_xy - Sum_x * Sum_y)/(n * Sum_xx - (Sum_x * Sum_x))
 					return slope
 				else:
-					return None
+					return 0
+					#return None
 		
 		
 class Qualitative_Observer(object):

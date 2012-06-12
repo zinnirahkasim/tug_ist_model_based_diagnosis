@@ -1,5 +1,5 @@
 (define (domain repair_domain)
-   (:requirements :strips :typing :negative-preconditions)
+   (:requirements :strips :equality :typing :negative-preconditions)
    (:types node hardware)
    (:predicates
 					   (bad ?c)

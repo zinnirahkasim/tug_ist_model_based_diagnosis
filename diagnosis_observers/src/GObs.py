@@ -109,12 +109,14 @@ class General_Observer(object):
 					while not rospy.is_shutdown():
 						t = 0
 						m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
+						print 'thread called'
 						pubcode, statusMessage, topicList = m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
 							if item[0] == string:
 									t = 1
-									#if time.time() - self.prev_t > 3 :
-										#self.pub.publish(Observations(time.time(),['~ok('+self.topic_name+')']))
+									if time.time() - self.prev_t > 2 :
+										rospy.loginfo('~ok('+self.topic_name+')')
+										self.pub.publish(Observations(time.time(),['~ok('+self.topic_name+')']))
 									break
 						if t == 0:
 								t = 1

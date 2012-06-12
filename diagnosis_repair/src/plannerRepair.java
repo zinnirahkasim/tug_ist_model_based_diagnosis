@@ -205,7 +205,6 @@ public class plannerRepair implements NodeMain{
 					 ParameterTree prm = node.newParameterTree();
 					 domain_file_name = prm.getString("file","repair_domain.pddl");
 					 System.out.println(domain_file_name);
-					 //GraphName prmNSpace = new GraphName(prm.getString("parameter_namespace"));
            System.out.println(node.getName());
            _node = node;
            main_runner();
@@ -286,9 +285,11 @@ public class plannerRepair implements NodeMain{
                    } //if
                  } // for int m
 							}// synchronized
-					}catch(Exception e) {System.out.println("Error in diagnosis callback");}	
-  				} // On New Mssage
-     		 }); // Subscriber
+					}catch(Exception e){
+              System.out.println("Error whiel updating the observation list.");
+           }	
+  			} // On New Mssage
+     		}); // Subscriber
         
     }//main_runner
 

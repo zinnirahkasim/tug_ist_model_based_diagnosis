@@ -26,14 +26,18 @@
 * DAMAGE.
 */
 
+import java.util.*;
+import java.io.*;
+import java.text.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.google.common.base.Preconditions;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
-import java.util.*;
-import java.io.*;
-import java.text.*;
+
 import org.apache.commons.logging.Log;
 import org.ros.message.MessageListener;
 import java.lang.System;
@@ -87,6 +91,20 @@ public class diagnosis_engine extends Thread implements NodeMain {
  	private Publisher<org.ros.message.diagnosis_msgs.Diagnosis> publisher;
   private Publisher<org.ros.message.diagnostic_msgs.DiagnosticArray> d_pub;
   private Calendar now = Calendar.getInstance();
+      /**
+     * The cuncurrency control object.
+     */
+    private Object threadSync = new Object();
+
+    /**
+     * The lock reference for Locking.
+     */
+    protected ReentrantLock lock = new ReentrantLock(true);
+
+    /**
+     * The condition reference for locking.
+     */
+    protected Condition c = lock.newCondition(); 
 
 
 
@@ -127,7 +145,8 @@ public class diagnosis_engine extends Thread implements NodeMain {
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>(){
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
-              	String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
+              String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
+              synchronized (threadSync){  
                	for(int m=0; m<obs_msg.length; m++){
 									 boolean found = false;
                    String s = obs_msg[m];
@@ -144,10 +163,8 @@ public class diagnosis_engine extends Thread implements NodeMain {
                        else 
                               msg_list.add(s);
                   }
- 									                  
-                
-               }// for loop
-             
+              }// for loop
+            }// synchronized             
 
            } //OnNewMessage   
            } //MessageListener
@@ -217,10 +234,15 @@ public class diagnosis_engine extends Thread implements NodeMain {
   } // get_sys_model
 	void find_diagnosis(){   
     final Log log = node.getLog();
-    try{ 
+    try{
+        ArrayList<String> list = new ArrayList<String>();
+        lock.lock();
+				c.signalAll();
+				list = msg_list;
+        lock.unlock();
     		OBS="";
-    		for(int j=0; j <  msg_list.size(); ++j)
-        		OBS = OBS +  msg_list.get(j).toString() + ".";
+    		for(int j=0; j <  list.size(); ++j)
+        		OBS = OBS +  list.get(j).toString() + ".";
        
     
     		LSentence sd = parseSD();
