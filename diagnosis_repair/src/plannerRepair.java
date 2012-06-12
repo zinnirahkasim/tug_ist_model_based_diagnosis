@@ -330,7 +330,7 @@ public class plannerRepair implements NodeMain{
 							 c.signalAll();
 							 list = obs_list;
                lock.unlock();
-							 String prob_text = "define (problem repair_goal)(:domain repair_domain)(:requirements :strips :typing :negative-preconditions)(:objects ";
+							 String prob_text = "define (problem repair_goal)(:domain repair_domain)(:requirements :strips :equality :typing :negative-preconditions)(:objects ";
 							 String co_problem="";
 						   String goal = "(:goal (and ";
 						   String init="(:init ";
