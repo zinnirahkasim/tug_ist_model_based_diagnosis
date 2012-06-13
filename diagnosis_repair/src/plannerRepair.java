@@ -408,7 +408,7 @@ public class plannerRepair implements NodeMain{
 															}
 															
 															log.info("Planner finished.");
-															Thread.currentThread().sleep(3);
+															Thread.currentThread().sleep(3000);
 															plan.actions.clear();
 															executing_plan = false;
 															plan = null;
