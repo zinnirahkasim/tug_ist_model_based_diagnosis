@@ -18,7 +18,7 @@ void power_up(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSer
  
   diagnosis_msgs::DiagnosisRepairResult result_;
   char chnl = contl->get_chnl_from_map(goal->parameter[0].c_str());
-  ROS_INFO("Request for Power Up for dev %s on Channel %d is received.",goal->parameter[0].c_str(),chnl);
+  ROS_INFO("Request Call for Power Up for dev %s on Channel %d is received.",goal->parameter[0].c_str(),chnl);
   if(chnl!=-1)
   {
   char status;
@@ -27,7 +27,7 @@ void power_up(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSer
 	sleep(3);
   result_.result = 255;
   as->setSucceeded(result_);
-  ROS_INFO("Device %s on Channel %d has been powered up.",goal->parameter[0].c_str(),chnl);
+  ROS_INFO("Request Done for Power Up for dev %s on Channel %d.",goal->parameter[0].c_str(),chnl);
    }else
        ROS_INFO("Can not Power Up %s.",goal->parameter[0].c_str());
 }
@@ -37,7 +37,7 @@ void shut_down(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSe
 {
   diagnosis_msgs::DiagnosisRepairResult result_;
   char chnl = contl->get_chnl_from_map(goal->parameter[0].c_str());
-  ROS_INFO("Request for Shut down for dev %s on Channel %c is received.",goal->parameter[0].c_str(),chnl);
+  ROS_INFO("Request Call for Shut down for dev %s on Channel %c is received.",goal->parameter[0].c_str(),chnl);
   if(chnl!=-1)
   {
   char status;
@@ -48,9 +48,9 @@ void shut_down(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSe
 	sleep(3);
   result_.result = 255;
   as->setSucceeded(result_);
-  ROS_INFO("Device %s on Channel %d has been shut down.",goal->parameter[0].c_str(),chnl);
+  ROS_INFO("Request Done for Shut down for dev %s on Channel %c.",goal->parameter[0].c_str(),chnl);
   }else
-      ROS_INFO("Can not Power Up %s.",goal->parameter[0].c_str());
+      ROS_INFO("Can not Shut down Channel %s.",goal->parameter[0].c_str());
   //contl->CallMessageRequest();
 }
 
