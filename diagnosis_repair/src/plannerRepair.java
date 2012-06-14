@@ -401,9 +401,10 @@ public class plannerRepair implements NodeMain{
                                      				params.add(parameter.getImage());
 																			goal_processed = false;
                                       while(!goal_processed){
-                                          System.out.println("REPAIR: "+actionServer+"("+params.get(0).toString()+")");
+                                          log.info("Repair Called...");
                                 			    execute_plan(actionServer, params);
 																			}
+																			log.info("Repair Done...");
 																	}
 															}
 															
@@ -439,16 +440,16 @@ public class plannerRepair implements NodeMain{
             sac.sendGoal(repairGoal);
 	          
 					  SimpleClientGoalState state = sac.getState();
-	          System.out.println("Respective Repair Action Server invoked.....");
+	          log.info("Repair Action Server invoked.....");
           
 	          boolean finished_before_timeout = sac.waitForResult(10, TimeUnit.SECONDS);
 						if (finished_before_timeout) {
               DiagnosisRepairResult res = (org.ros.message.diagnosis_msgs.DiagnosisRepairResult) sac.getResult();
               state = sac.getState();
-              System.out.println("REPAIR "+state.toString()+".");
+              log.info("Result returned in time.");
               goal_processed = true;
 						}else{
-                  System.out.println("Repair Action did not finish before the time out");	
+                  log.info("Repair Action did not finish before the time out");	
 									goal_processed = false;		
 				        }
             
