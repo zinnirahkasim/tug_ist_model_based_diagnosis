@@ -1,6 +1,5 @@
 /*
-* Copyright (c).2012. OWNER: Institute for Software Technology TU-Graz Austria.
-* Authors: Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
+* Copyright (c).
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
@@ -26,24 +25,22 @@
 * DAMAGE.
 */
 
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.google.common.base.Preconditions;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
-
+import java.util.*;
+import java.io.*;
+import java.text.*;
 import org.apache.commons.logging.Log;
 import org.ros.message.MessageListener;
 import java.lang.System;
 import org.ros.message.diagnosis_msgs.Diagnosis;
 import org.ros.message.diagnosis_msgs.Observations;
 import org.ros.message.diagnostic_msgs.DiagnosticArray;
+import org.ros.message.diagnostic_msgs.KeyValue;
+import org.ros.message.diagnostic_msgs.DiagnosticStatus;
 
 import org.ros.actionlib.client.SimpleActionClient;
 import org.ros.actionlib.ActionSpec;
@@ -66,14 +63,8 @@ import dfengine.*;
 /**
  * This is a diagnosic_engine class of the Model Based Diagnostics. It assumes an
  * external roscore is already running.
+ * @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
  */
-class IllegalUserInput extends Exception {
-
-    public IllegalUserInput(String msg) {
-        super(msg);
-    }
-
-}
 
 public class diagnosis_engine extends Thread implements NodeMain {
  
@@ -90,21 +81,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
  	private Publisher<org.ros.message.diagnosis_msgs.Diagnosis> publisher;
   private Publisher<org.ros.message.diagnostic_msgs.DiagnosticArray> d_pub;
   private Calendar now = Calendar.getInstance();
-      /**
-     * The cuncurrency control object.
-     */
-    private Object threadSync = new Object();
-
-    /**
-     * The lock reference for Locking.
-     */
-    protected ReentrantLock lock = new ReentrantLock(true);
-
-    /**
-     * The condition reference for locking.
-     */
-    protected Condition c = lock.newCondition(); 
-
+  private GuiHittingSets app;
 
 
 	public diagnosis_engine()
@@ -132,6 +109,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
       this.node = node;
       String path=null;
       final Log log = node.getLog();
+      app = new GuiHittingSets();
       System.out.println("Diagnosis Engine is up.......");
       get_sys_model(node);
       publisher = node.newPublisher("/diagnosis", "diagnosis_msgs/Diagnosis");
@@ -144,8 +122,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
           new MessageListener<org.ros.message.diagnosis_msgs.Observations>(){
             @Override
             public void onNewMessage(org.ros.message.diagnosis_msgs.Observations msg) {
-              String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
-              synchronized (threadSync){  
+              	String[] obs_msg = (String[]) msg.obs.toArray(new String[0]);
                	for(int m=0; m<obs_msg.length; m++){
 									 boolean found = false;
                    String s = obs_msg[m];
@@ -162,8 +139,10 @@ public class diagnosis_engine extends Thread implements NodeMain {
                        else 
                               msg_list.add(s);
                   }
-              }// for loop
-            }// synchronized             
+ 									                  
+                
+               }// for loop
+             
 
            } //OnNewMessage   
            } //MessageListener
@@ -233,15 +212,10 @@ public class diagnosis_engine extends Thread implements NodeMain {
   } // get_sys_model
 	void find_diagnosis(){   
     final Log log = node.getLog();
-    try{
-        ArrayList<String> list = new ArrayList<String>();
-        lock.lock();
-				c.signalAll();
-				list = msg_list;
-        lock.unlock();
+    try{ 
     		OBS="";
-    		for(int j=0; j <  list.size(); ++j)
-        		OBS = OBS +  list.get(j).toString() + ".";
+    		for(int j=0; j <  msg_list.size(); ++j)
+        		OBS = OBS +  msg_list.get(j).toString() + ".";
        
     
     		LSentence sd = parseSD();
@@ -281,17 +255,29 @@ public class diagnosis_engine extends Thread implements NodeMain {
       final Diagnosis dmsg = node.getMessageFactory().newMessage("diagnosis_msgs/Diagnosis");
 
       ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>	diagArr = new                    				     				 ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
-
-        boolean consistent = checkConsistency(indepModel);
-        String gd="",bd="";
+      final DiagnosticArray d_arr_msg = node.getMessageFactory().newMessage("diagnostic_msgs/DiagnosticArray");
+      d_arr_msg.header.frame_id = "model_based_diagnosis_engine";
+       
+       boolean consistent = checkConsistency(indepModel);
         if (consistent) {
-            org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_c =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
-						ArrayList<String> good = new ArrayList<String>();  
+            ArrayList<String> good = new ArrayList<String>();  
             ArrayList<String> bad = new ArrayList<String>();
-            log.info("Consistent.");
-            for(int j=0; j < components.size(); ++j) {
-                  gd= gd+"'"+components.get(j).toString()+"'";
+            org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_c =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
+            ArrayList<DiagnosticStatus> statusArr = new ArrayList<DiagnosticStatus>();
+						log.info("Consistent.");
+            for(int j=0; j < components.size(); ++j){
+                  ArrayList<KeyValue> keyValueArr = new ArrayList<KeyValue>();
+                  final KeyValue keyValue = node.getMessageFactory().newMessage("diagnostic_msgs/KeyValue");
+            			final DiagnosticStatus status = node.getMessageFactory().newMessage("diagnostic_msgs/DiagnosticStatus");
                   good.add(components.get(j).toString());
+                  status.name = components.get(j).toString();
+                  status.level = 0;
+                  status.message = "Not Abnormal, OK";
+                  keyValue.key = "diagnosis";
+                  keyValue.value = "good";
+                  keyValueArr.add(keyValue);
+                  status.values = keyValueArr;
+                  statusArr.add(status);
             }
             diag_result_c.good = good;
          		diag_result_c.bad  = bad;
@@ -299,6 +285,8 @@ public class diagnosis_engine extends Thread implements NodeMain {
          		diagArr.add(diag_result_c);
          		dmsg.diag = diagArr;
             publisher.publish(dmsg);
+            d_arr_msg.status = statusArr;
+        	  d_pub.publish(d_arr_msg);
 
         } else {
 							 log.info("Start Diagnosis.");
@@ -315,24 +303,43 @@ public class diagnosis_engine extends Thread implements NodeMain {
 			    		ArrayList minHittingSetsAsAss = hsFM.getMinHS();
 			    		ArrayList conflictsAsAss = hsFM.getConflictsAsAss();
         
-        			for (int i = 0; i < minHittingSetsAsAss.size(); ++i) { 
-							 		org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_ic =  new org.ros.message.diagnosis_msgs.DiagnosisResults();           
-               		ArrayList<String> good1 = new ArrayList<String>();  
+        			ArrayList<DiagnosticStatus> statusArr = new ArrayList<DiagnosticStatus>();
+              
+        			
+              for (int i = 0; i < minHittingSetsAsAss.size(); ++i) { 
+							 		org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_ic =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
+                  ArrayList<String> good1 = new ArrayList<String>();  
         			 		ArrayList<String> bad1 = new ArrayList<String>();
-							 		gd="";bd="";
-							 		String res = minHittingSetsAsAss.get(i).toString();
-									log.info(res);
+                  String res = minHittingSetsAsAss.get(i).toString();
                		for(int j=0; j < components.size(); ++j) {
-                  		String comp = components.get(j).toString();
+                      ArrayList<KeyValue> keyValueArr = new ArrayList<KeyValue>();
+                      final KeyValue keyValue = node.getMessageFactory().newMessage("diagnostic_msgs/KeyValue");
+                      final DiagnosticStatus status = node.getMessageFactory().newMessage("diagnostic_msgs/DiagnosticStatus");
+                   		String comp = components.get(j).toString();
 											boolean inComponents = res.indexOf("("+comp+")") > 0;
-											if(!inComponents)
-                      		good1.add(comp);
-													
-                      else
-                   				bad1.add(comp);
-                  } // for j
+                      status.name = comp;
+                      keyValue.key = "diagnosis";
+              		    if(!inComponents)
+                      		{
+                            good1.add(comp);
+                            status.level = 0;
+                            status.message = "Not Abnormal, OK";
+                            keyValue.value = "good";
+              
+                           }
+											else
+                          {
+                   				  bad1.add(comp);
+                            status.level = 1;
+                            status.message = "Abnormal, NOT OK";
+              							keyValue.value = "bad";
+                           }
+                      keyValueArr.add(keyValue);
+                      status.values = keyValueArr;
+                      statusArr.add(status);
+									} // for j
 									log.info("Found Diagnosis.");
-									diag_result_ic.good = good1;
+                  diag_result_ic.good = good1;
           				diag_result_ic.bad  = bad1;
          					diagArr.add(diag_result_ic);	       
        				}// for i
@@ -340,14 +347,13 @@ public class diagnosis_engine extends Thread implements NodeMain {
          			dmsg.o_time =  now.getTimeInMillis();
          			dmsg.diag = diagArr;
          			publisher.publish(dmsg);
-        			final DiagnosticArray d_arr_msg = node.getMessageFactory().newMessage("diagnostic_msgs/DiagnosticArray");
-			  			d_arr_msg.header.frame_id = "Engine";
+              d_arr_msg.status = statusArr;
         			d_pub.publish(d_arr_msg);
         
         } // else inconsistent
 
       } catch (Exception e) {
-              System.out.println("ERROR!"+e);
+              System.out.println("File Read Error!"+e);
         }
        
 	}// find_diagnosis()
