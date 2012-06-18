@@ -5,8 +5,15 @@ Copyright (c).2012. OWNER: Institute for Software Technology TU-Graz Austria.
 All rights reserved.
 ***********************************************************
 
-IMPORTANT: This is very initial version of model_base_diagnosis. Its on the way to updation.
-           If you find mistake(s) or any problem please contact us. Thanks.
+NOTE: This is very initial version of model_base_diagnosis. Its on the way to updation.
+      If you find mistake(s) or any problem please contact us. Thanks.
+
+***********************************************************
+SETTING THE LOCAL ENVIRONMENT FOR model_based_diagnosis
+***********************************************************
+1. Use the current version of the rosjava from the https://rosjava.googlecode.com/hg given on http://www.ros.org/wiki/rosjava.
+2. Give local paths in manifest.xml of diagnosis_repair package for both "../model_based_diagnosis/jar/pddl4j.jar" and "../..actionlib...jar". 
+3. Export and set the path for "../model_based_diagnosis/jar/pddl4j.jar" in CLASSPATH variable too.
 
 ***********************************************************
 GENERAL INFORMATION
@@ -122,7 +129,8 @@ Step5.  1. Save the following system description in the diagnosis_model.yaml fil
 Step6.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch
 
 
-Step7.  $ roslaunch diagnosis_launch planner.launch
+Step7.  Set the repair_domain.pddl file's local path in parameter for planner given in planner.launch and execute:  
+        $ roslaunch diagnosis_launch planner.launch
 
 Now everything should be consistent. To check the system functionality just apply follwoing command:
 
