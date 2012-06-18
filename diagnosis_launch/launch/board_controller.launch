@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+ <!-- master auto="start"/ -->
+ 
+ <node pkg="diagnosis_board" type="BoardControllerServer" name="BoardControllerServer" output="log">
+ </node>
+
+</launch>
+

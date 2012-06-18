@@ -1,5 +1,5 @@
 /*
-* Copyright (c).2012. OWNER: IST-TU-Graz Austria.
+* Copyright (c).2012. OWNER: Institute for Software Technology TU-Graz Austria.
 * Authors: Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,6 @@ import java.util.Set;
 /**
  * This class implements the  planner and Repair Actions for the Model based Diagnosis.
  * 
- * @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
  * @version 1.0
  */
 public class plannerRepair implements NodeMain{

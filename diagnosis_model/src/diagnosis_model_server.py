@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 
 ##
-# Copyright (c).
+# Copyright (c). 2012. OWNER: Institute for Software Technology TU-Graz Austria.
+# Authors: Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -30,7 +31,7 @@
 # The ModelActionServer calss acts like Diagnosis Model Server. It takes YAML
 # file as parameter. The YAML file is diagnosis_model.yaml file for the diagnosis system model.
 # and publishes data on /Diagnostic_Model topic compatible for our Model Based Diagnosis.
-# @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
+
 
 import roslib; roslib.load_manifest('diagnosis_model')
 import rospy

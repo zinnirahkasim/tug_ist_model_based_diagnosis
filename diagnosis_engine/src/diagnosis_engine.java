@@ -1,6 +1,6 @@
 /*
-* Copyright (c).
-* May-2012. Institute from Software Technology, TU Graz, Austria,
+* Copyright (c).2012. OWNER: Institute for Software Technology TU-Graz Austria.
+* Authors: Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,6 @@ import dfengine.*;
 /**
  * This is a diagnosic_engine class of the Model Based Diagnostics. It assumes an
  * external roscore is already running.
- * @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
  */
 class IllegalUserInput extends Exception {
 
