@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+ <!-- master auto="start"/ -->
+ 
+ <node pkg="diagnosis_model" 
+        type="diagnosis_model_server.py" 
+        name="DiagnosisModelServer" 
+        output="log">
+  <param name="model" value="$(find diagnosis_model)/diagnosis_model.yaml" />
+  </node>
+
+ <node pkg="diagnosis_board" 
+       type="NodeActionServer" 
+       name="NodeActionServers" 
+       output="log">
+ </node>
+
+</launch>
+
