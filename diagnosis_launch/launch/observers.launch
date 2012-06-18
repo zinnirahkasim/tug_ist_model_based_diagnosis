@@ -2,9 +2,6 @@
 <launch>
  <!-- master auto="start"/ -->
  
- <node pkg="diagnosis_board" type="BoardControllerServer" name="BoardControllerServer" output="log">
- </node>
-
  <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" >
     <param name="node" value="jaguar_node" />
  </node>
