@@ -76,55 +76,27 @@ In model_based_diagnosis repositroy, there are seven packages
 
 7. Diagnosis Launch
   - contains different launch files.
-  - individual launch files running nodes, observers, action servers, diagnosis model, 
+  - individual launch files are for running nodes, observers, action servers, diagnosis model, diagnosis engine and planner.
+  - run.launch provides one launch file to run everything needed.
 
---------
-TESTING:
---------
-Following are the two examples. One simple just for quick check and the other is practical one:
-NOTE: Use the current version of the rosjava from the https://rosjava.googlecode.com/hg given on http://www.ros.org/wiki/rosjava.
--------------------------------------
-Simple EXAMPLE
--------------------------------------
-Step1.  $ roscore
+**********************************************
+OUR TESTING
+**********************************************
+Two ways.
+1. Apply only run.launch to run everything at one run:
+		$ roslaunch diagnosis_launch run.launch 
 
-Step2.  $ rosrun diagnosis_observers Triggering.py  
-      (Triggering.py publishes on topic /Topic1)
+2. Apply individual launch files to run the things one by one in differen terminals:
+   $ roslaunch diagnosis_launch board_controller.launch
+   $ roslaunch diagnosis_launch observers.launch
+   $ roslaunch diangosis_launch action_servers.launch
+   $ roslaunch diagnosis_launch diagnosis_model.launch
+   $ roslaunch diagnosis_launch diagnosis_engine.launch
+   $ roslaunch diagnosis_launch planner.launch
 
-Step3.  $ rosrun diagnosis_observers GObs.py _topic:=/Topic1 _frq:=10 _dev:=1 _ws:=10     
-
-Step4.  $ rosrun rosjava_bootstrap run.py diagnosis_engine diagnosis_engine __name:=my_daig_engine 
-      (subscribes topic /Diagnostic_Model for System Description Model)
-
-Step5.  $ rostopic pub -1 /Diagnostic_Model diagnosis_msgs/SystemDescription '{out_time: 11.1, rules: ["NAB(USB),NAB(Node1)->ok(Topic1_Frequency)","AB(USB)->n_ok(Topic1_Frequency)"], props: ["ok(Topic1_Frequency)"], AB: "AB", NAB: "NAB", neg_prefix: "n_"}'
-
-***OR***
-
-Step5.  Save following simple System Description Model in "diagnosis_observers/SD.yaml":
-
-ab: "AB"
-nab: "NAB"
-neg_prefix: "not_" 
-
-props:
- prop1: ok(Topic1_Frequency)
- 
-rules:
- rule1: NAB(USB),NAB(Node1)->ok(Topic1_Frequency)
- rule2: AB(USB)->not_ok(Topic1_Frequency)
-
-
-6.  $ rosrun diagnosis_observers sd_node.py
-			(This reads "diagnosis_observers/SD.yaml" file and publishes System Description Model on topic /Diagnostic_Model)
-
-Output:
-Consistent if the observation from GObs.py is ok.
-Not consistent if observation from GObs.py is not ok.
-Result is published on topic /Diagnosis
-
-------------------------------------------------------------
-PRACTICAL EXAMPLE
-------------------------------------------------------------
+***********************************************
+SIMPLE TESTING EXAMPLE
+***********************************************
 Step1. Bring up the core of the ROS.
        i.e $roscore
 
@@ -184,7 +156,8 @@ Step5. Now run "sd_node.py" that reads the Model from SD.yaml and publishes it o
 
 OUTPUT: If /scan and /odom give the "ok" observations then diagnosis will be "consistent" otherwise "inconsistent".
 
+
 -----------------------------------
 Thanks.
-LATER Version is under preparation.
+LATER Version will be uplaoded soon.
 -----------------------------------
