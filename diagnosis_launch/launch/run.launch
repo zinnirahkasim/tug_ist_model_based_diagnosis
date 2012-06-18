@@ -5,12 +5,37 @@
  <node pkg="diagnosis_board" type="BoardControllerServer" name="BoardControllerServer" output="log">
  </node>
 
- <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" output="log">
+ <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" >
     <param name="node" value="jaguar_node" />
- </node> 
+ </node>
 
- <node pkg="diagnosis_observers" type="NObs.py" name="hokuyoNObserver" output="log">
+ <node pkg="diagnosis_observers" type="NObs.py" name="hokuyoNObserver" >
     <param name="node" value="hokuyo_node" />
+ </node>
+<node pkg="diagnosis_observers" type="NObs.py" name="mappingNObserver">
+    <param name="node" value="hector_mapping" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="imuNObserver">
+   <param name="node" value="imu_node" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="LANObserver">
+   <param name="node" value="laser_alignment_node" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="LACNObserver">
+  <param name="node" value="laser_alignment_control" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="NObs.py" name="JTeleopNObserver">
+  <param name="node" value="jaguar_teleop_node" />
+ </node>
+
+ <node pkg="diagnosis_observers" type="HObs.py" name="HObserver" >
+    <param name="topic" value="/board_measurments" />
+ </node>
+
  </node> 
 
  <node pkg="diagnosis_observers" type="GObs.py" name="cmdvelObserver" >
@@ -45,37 +70,6 @@
     <param name="frq" value="20" />
     <param name="dev" value="5" />
     <param name="ws" value="10" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" >
-    <param name="node" value="jaguar_node" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="hokuyoNObserver" >
-    <param name="node" value="hokuyo_node" />
- </node>
-<node pkg="diagnosis_observers" type="NObs.py" name="mappingNObserver">
-    <param name="node" value="hector_mapping" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="imuNObserver">
-   <param name="node" value="imu_node" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="LANObserver">
-   <param name="node" value="laser_alignment_node" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="LACNObserver">
-  <param name="node" value="laser_alignment_control" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="JTeleopNObserver">
-  <param name="node" value="jaguar_teleop_node" />
- </node>
-
- <node pkg="diagnosis_observers" type="HObs.py" name="HObserver" >
-    <param name="topic" value="/board_measurments" />
  </node>
 
  <node pkg="diagnosis_model" 
