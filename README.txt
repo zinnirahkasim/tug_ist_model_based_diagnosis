@@ -97,67 +97,42 @@ Two ways.
 ***********************************************
 SIMPLE TESTING EXAMPLE
 ***********************************************
-Step1. Bring up the core of the ROS.
-       i.e $roscore
+Step1.  $ roscore
 
-Step1. A publisher node must be up for diagnosis. (For test you may run Triggering.py from diagnosis_observers for test puropose 
-       which publishes string data on /Topic1)
-       i.e $rosrun sicktoolbox_wrapper sicklms  (publishes on topic /scan)
-           $rosrun ROSARIA RosAria              (publishes on topic /odom)
+Step2.  $ roslaunch diagnosis_launch test_node.launch  
+      
+Step3.  $ rosrun diagnosis_observers GObs.py _topic:=/test_topic _frq:=10 _dev:=1 _ws:=10
 
-Step2. Run the observer. Each observer has its own requirments. In order to observe a topic, you need General Observer so run GObs.
-       The observations are published on the /Diagnostic_Observation with message type [diagnosis_msgs/Observations].
-       i.e $rosrun diagnosis_observers GObs.py _topic:=/scan _frq:=5 _dev:=1 _ws:=10
-           $rosrun diagnosis_observers GObs.py _topic:=/odom _frq:=10 _dev:=2 _ws:=12
+Step4.  $ rosrun diagnosis_observers NObs.py _node:=test_node
 
-           where 5,10 are the frequencies to be observerd, 1,2 are the frequency deviations and 10,12 are the window sizes.  
+Step5.  1. Save the following system description in the diagnosis_model.yaml file
 
-Step3. Now run the diagnosis engine to get the diagnosis of the system. Engine subscribes to /Diagnostic_Observation and publishes diagnosis on
-       /Diagnosis topic with message [diagnosis_msgs/Diagnosis].
-       i.e $rosrun rosjava_bootstrap run.py diagnosis_engine diagnosis_engine __name:=my_daig_engine
-        
+								ab: "AB"
+								nab: "NAB"
+								neg_prefix: "not_" 
 
-Step4. diagnosis_engine takes model on /Diagnostic_Model so we have to provide it System Description Model.
-       If System Model looks like this:
-       rules: 
-             NAB(Usb),NAB(Laser)->ok(scan_Frequency)
-			       NAB(Usb),NAB(Aria)->ok(odom_Frequency)
-             AB(Usb)->n_ok(scan_Frequency)
-             AB(Usb)->n_ok(odom_Frequency)
-       props:
-             ok(scan_Frequency)
-             ok(odom_Frequency)
-       AB:  AB
-       NAB: NAB
-       neg_prefix: n_
+								props:
+ 											prop: ok(test_topic)
+ 
+								rules:
+ 											rule: NAB(test_node)->ok(test_topic)
 
-then you can simply publish this information using following command:
-$ rostopic pub -1 /Diagnostic_Model diagnosis_msgs/SystemDescription '{out_time: 11.1, rules: ["NAB(Usb),NAB(Laser)->ok(scan_Frequency)","NAB(Usb),NAB(Aria)->ok(odom_Frequency)","AB(Usb)->n_ok(scan_Frequency)","AB(Usb)->n_ok(odom_Frequency)"], props: ["ok(scan_Frequency)","ok(odom_Frequency)"], AB: "AB", NAB: "NAB", neg_prefix: "n_"}'
-
-***OR***
-
-Step4. Give the following Model in the "diagnosis_observers/SD.yaml" file :
-
-ab: "AB"
-nab: "NAB"
-neg_prefix: "n_" 
-props:
- prop1: ok(scan_Frequency)
- prop2: ok(odom_Frequency)
-rules:
- rule1: NAB(Usb),NAB(Laser)->ok(scan_Frequency)
- rule2: NAB(Usb),NAB(Aria)->ok(odom_Frequency)
- rule3: AB(Usb)->n_ok(scan_Frequency)
- rule4: AB(Usb)->n_ok(odom_Frequency)
-
-Step5. Now run "sd_node.py" that reads the Model from SD.yaml and publishes it on topic /Diagnostic_Model.
-      i.e $rosrun diagnosis_observers SD.py
+         2. $ rosrun diagnosis_model diagnosis_model_server.py _model:=/path/diagnosis_model.yaml
+               
+Step6.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch
 
 
-OUTPUT: If /scan and /odom give the "ok" observations then diagnosis will be "consistent" otherwise "inconsistent".
+Step7.  $ roslaunch diagnosis_launch planner.launch
 
+Now everything should be consistent. To check the system functionality just apply follwoing command:
 
------------------------------------
+Step8.  $ rosnode kill /test_node
+
+This would kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
+bad[test_node] on /diagnosis topic and planner will restart the node and then again every thing will be ok.
+
+*****************IMPORTANT*****************************
+IF YOU HAVE ANY PROBLEM, JUST EMAIL TO szaman@ist.tugraz.at
 Thanks.
 LATER Version will be uplaoded soon.
------------------------------------
+*******************************************************
