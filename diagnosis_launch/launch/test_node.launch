@@ -1,0 +1,4 @@
+<launch>
+   <node pkg="diagnosis_observers" type="test_node.py" name="test_node" >
+   </node>
+</launch>
