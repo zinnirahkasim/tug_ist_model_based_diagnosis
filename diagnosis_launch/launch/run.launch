@@ -34,8 +34,6 @@
 
  <node pkg="diagnosis_observers" type="HObs.py" name="HObserver" >
     <param name="topic" value="/board_measurments" />
- </node>
-
  </node> 
 
  <node pkg="diagnosis_observers" type="GObs.py" name="cmdvelObserver" >
