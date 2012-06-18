@@ -1,21 +1,27 @@
 ***********************************************************
 model_based_diagnosis user manual
+Copyright (c).2012. OWNER: Institute for Software Technology TU-Graz Austria.
 @authors: Safdar Zaman, Gerald Steinbauer. ( {szaman, steinbauer}@ist.tugraz.at )
+All rights reserved.
 ***********************************************************
 
 IMPORTANT: This is very initial version of model_base_diagnosis. Its on the way to updation.
            If you find mistake(s) or any problem please contact us. Thanks.
 
-In model_based_diagnosis repositroy, there are three packages
-1. diagnosis_msgs
+***********************************************************
+GENERAL INFORMATION
+***********************************************************
+In model_based_diagnosis repositroy, there are seven packages
+1. Diagnosis Messages
   - Contains messages for model_based_diagnosis system.
   - Messages are 
     a) diagnosis_msgs/Diagnosis        
     b) diagnosis_msgs/Observations
     c) diagnosis_msgs/DiagnosisResults   
-    d) diagnosis_msgs/SystemDescription
+    d) diagnosis_msgs/SystemModel
+    e) diagnosis_msgs/Board
 
-2. diagnosis_observers
+2. Diagnosis Observers
   - Contains Observers which monitors the state of the node, topic or a specific value of a message.
   - Observers are
     a) General Observer (GObs)
@@ -44,11 +50,33 @@ In model_based_diagnosis repositroy, there are three packages
        syntax: rosrun diagnosis_observers PObs.py <Topic/Node> <Mem/Cpu>
        e.g: Under work.
 
+3. Diagnosis Model
+  - contains diagnosis model server node
+  - node takes diagnosis_model.yaml file as parameter
+  - Contains diagnosis_model_server node that provides model to the diagnosis engine.
 
-3. Diagnosis Engine
+
+4. Diagnosis Engine
   - Contains the java files relevant to diagnosis
   - Contains java packages for set of connected files.
   - diagnosis_engine node for execution
+  - receives diagnosis model from the diagnosis server
+
+
+5. Diagnosis Repair
+  - Contains java files relevant to planning and repair
+  - Contains java packages for set of related files.
+  - plannerRepair node for execution
+  - takes repair_domain.pddl file as parameter
+
+6. Diagnosis Board
+  - contains board controller
+  - specific to the diagnostic board made for our TEDUSAR robot
+  - publishes hardware information for ROS usage
+
+7. Diagnosis Launch
+  - contains different launch files.
+  - individual launch files running nodes, observers, action servers, diagnosis model, 
 
 --------
 TESTING:
