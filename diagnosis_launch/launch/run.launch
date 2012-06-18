@@ -83,7 +83,7 @@
        output="log">
  </node>
 
- <node pkg="rosjava_bootstrap" 
+ <node pkg="rosjava_bootstrap"
        type="run.py" 
        args="diagnosis_engine diagnosis_engine" 
        name="diagnosis_engine" 
