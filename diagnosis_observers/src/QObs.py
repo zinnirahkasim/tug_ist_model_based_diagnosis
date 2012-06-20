@@ -46,13 +46,13 @@ import time
 import thread
 
 class Regression(object):
-		def __init__(self,ws):
+		def __init__(self,ws,b):
 				self.s   = [[],[],[],[]]
 				self.t  = []
 				self.prev_value = 0
 				self.ws = ws
 				self.n = None
-				self.b = 0.0000005
+				self.b = b;
 
 		def show(self):
 				print self.s
@@ -80,15 +80,21 @@ class Regression(object):
 				self.s[3].pop()
 				self.s[3].append(r3)
 				self.remove_tails()
-				
+				#print 'r1=',r1,',r2=',r2,',r3=',r3,',b=',b
 				if r1<-self.b:
 						self.prev_value = -1
+						#rospy.info('-1');
+						#print 'Dec:r1',r1,'b=',b
 						return -1
 				elif r1>self.b:
 						self.prev_value = +1
+						#rospy.info('1');
+						#print 'Inc:r1',r1,'b=',b
 						return +1
 				elif ~(( (r2>-self.b)&(r2<self.b) ) & ( (r3>-self.b)&(r3<self.b) )):
 						self.prev_value = 0
+						#rospy.info('0');
+						#print 'cons:r2=',r2,',b=',b,',r3=',r3
 						return 0
 				else:
 						return self.prev_value
@@ -143,16 +149,17 @@ class Qualitative_Observer(object):
 					self.param_field = rospy.get_param('~field', 'pose.pose.position.x')
 					self.param_topic = rospy.get_param('~topic', '/Topic1')
 					self.param_ws = rospy.get_param('~ws', 1000)
+					self.param_b = rospy.get_param('~b', 0.0000005)
 					self.ws = float(self.param_ws)/1000.0
 					self.topic = ""
 					self.topic_type = ""
 					self.data = None
 					self.queu = [[0.0 for i in xrange(100)],[0.0 for i in xrange(100)]]
-					self.pub = rospy.Publisher('/bservations', Observations)
+					self.pub = rospy.Publisher('/observations', Observations)
 					self.started = True
 					self.curr_t = None
 					self.prev_t = time.time()
-					self.regression = Regression(self.ws)
+					self.regression = Regression(self.ws,self.param_b)
 					thread.start_new_thread(self.check_thread,(self.param_topic,2))
           
 
@@ -208,16 +215,19 @@ class Qualitative_Observer(object):
 							self.topic = self.topic[1:len(self.topic)]
 				obs_msg = []
 				if Trend == +1 :
-						print 'inc('+self.topic+'_'+self.param_field+')\n'
+						rospy.loginfo('1');
+						#print 'inc('+self.topic+'_'+self.param_field+')\n'
 						obs_msg.append('inc('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 						
 				elif Trend == -1 :
-						print 'dec('+self.topic+'_'+self.param_field+')\n'
+						rospy.loginfo('-1');
+						#print 'dec('+self.topic+'_'+self.param_field+')\n'
 						obs_msg.append('dec('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 				else:
-						print 'con('+self.topic+'_'+self.param_field+')\n'
+						rospy.loginfo('0');
+						#print 'con('+self.topic+'_'+self.param_field+')\n'
 						obs_msg.append('con('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))	
 		
