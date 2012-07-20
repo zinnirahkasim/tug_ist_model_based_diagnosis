@@ -1,2 +1,0 @@
-ok(Topic1_Frequency)
-ok(Topic2_Frequency)

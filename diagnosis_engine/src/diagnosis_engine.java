@@ -66,6 +66,14 @@ import dfengine.*;
  * @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
  */
 
+class IllegalUserInput extends Exception {
+
+    public IllegalUserInput(String msg) {
+        super(msg);
+    }
+
+}
+
 public class diagnosis_engine extends Thread implements NodeMain {
  
   private String PROP;

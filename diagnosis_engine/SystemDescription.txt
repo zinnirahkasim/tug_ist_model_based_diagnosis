@@ -1,5 +1,0 @@
-NAB(USB),NAB(Node1)->ok(Topic1_Frequency).
-NAB(USB),NAB(Node2)->ok(Topic2_Frequency).
-AB(USB)->n_ok(Topic1_Frequency).
-AB(USB)->n_ok(Topic2_Frequency).
-
