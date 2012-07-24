@@ -297,8 +297,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
         	  d_pub.publish(d_arr_msg);
 
         } else {
-							 log.info("Start Diagnosis.");
-               ArrayList diagnoses = new ArrayList();
+							 ArrayList diagnoses = new ArrayList();
 			         ArrayList conflictSets = new ArrayList();  
 			         MinHittingSetsFM  hsFM=null;
 			         try {
@@ -346,7 +345,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
                       status.values = keyValueArr;
                       statusArr.add(status);
 									} // for j
-									log.info("Found Diagnosis.");
+									log.info("Diagnosis Found.");
                   diag_result_ic.good = good1;
           				diag_result_ic.bad  = bad1;
          					diagArr.add(diag_result_ic);	       
