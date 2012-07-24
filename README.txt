@@ -86,60 +86,39 @@ In model_based_diagnosis repositroy, there are seven packages
   - individual launch files are for running nodes, observers, action servers, diagnosis model, diagnosis engine and planner.
   - run.launch provides one launch file to run everything needed.
 
-**********************************************
-OUR TESTING
-**********************************************
-Two ways.
-1. Apply only run.launch to run everything at one run:
-		$ roslaunch diagnosis_launch run.launch 
-
-2. Apply individual launch files to run the things one by one in differen terminals:
-   $ roslaunch diagnosis_launch board_controller.launch
-   $ roslaunch diagnosis_launch observers.launch
-   $ roslaunch diangosis_launch action_servers.launch
-   $ roslaunch diagnosis_launch diagnosis_model.launch
-   $ roslaunch diagnosis_launch diagnosis_engine.launch
-   $ roslaunch diagnosis_launch planner.launch
-
 ***********************************************
 SIMPLE TESTING EXAMPLE
 ***********************************************
 Step1.  $ roscore
 
 Step2.  $ roslaunch diagnosis_launch test_node.launch  
+          (check topic /test_node_topic)
       
-Step3.  $ rosrun diagnosis_observers GObs.py _topic:=/test_topic _frq:=10 _dev:=1 _ws:=10
+Step3.  $ roslaunch diagnosis_launch observers.launch  
+          (check topic /observations)
 
-Step4.  $ rosrun diagnosis_observers NObs.py _node:=test_node
-
-Step5.  1. Save the following system description in the diagnosis_model.yaml file
-
-								ab: "AB"
-								nab: "NAB"
-								neg_prefix: "not_" 
-
-								props:
- 											prop: ok(test_topic)
- 
-								rules:
- 											rule: NAB(test_node)->ok(test_topic)
-
-         2. $ rosrun diagnosis_model diagnosis_model_server.py _model:=/path/diagnosis_model.yaml
+Step4.  $ roslaunch diagnosis_launch diagnosis_model.launch 
+         (check action server for diagnosis model)
                
-Step6.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch
+Step5.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch 
+         (check topic /diagnosis)
 
+****Now everything should be consistent. To check the system functionality just apply follwoing command in separate terminal:
+Step6.  $ rosnode kill /test_node  
+          (check nodes list by "rosnode list" command)
+****This would kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
+bad[test_node] on /diagnosis topic.
 
-Step7.  Set the repair_domain.pddl file's local path in parameter for planner given in planner.launch and execute:  
-        $ roslaunch diagnosis_launch planner.launch
+----PLANNING and REPAIR-----
+Step7.  Set the path for repair_domain.pddl file in planner.launch and execute:  
+        $ roslaunch diagnosis_launch planner.launch  
+          (check "start_node", "stop_node",etc action servers)
 
-Now everything should be consistent. To check the system functionality just apply follwoing command:
-
-Step8.  $ rosnode kill /test_node
-
-This would kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
-bad[test_node] on /diagnosis topic and planner will restart the node and then again every thing will be ok.
+Step8.  $ roslaunch diagnosis_launch action_servers.launch
+**** planner will generate a plan and NodeActionServer will restart the node.
 
 *****************IMPORTANT*****************************
+THE STACK IS BEING WORKED TO REMOVE THE PROBLEMS..
 IF YOU HAVE ANY PROBLEM, JUST EMAIL TO szaman@ist.tugraz.at
 Thanks.
 LATER Version will be uplaoded soon.

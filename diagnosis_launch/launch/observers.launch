@@ -2,69 +2,15 @@
 <launch>
  <!-- master auto="start"/ -->
  
- <node pkg="diagnosis_observers" type="NObs.py" name="jaguarNObserver" >
-    <param name="node" value="jaguar_node" />
+ <node pkg="diagnosis_observers" type="NObs.py" name="TestNObserver" >
+    <param name="node" value="test_node" />
  </node>
 
- <node pkg="diagnosis_observers" type="NObs.py" name="hokuyoNObserver" >
-    <param name="node" value="hokuyo_node" />
- </node>
-<node pkg="diagnosis_observers" type="NObs.py" name="mappingNObserver">
-    <param name="node" value="hector_mapping" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="imuNObserver">
-   <param name="node" value="imu_node" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="LANObserver">
-   <param name="node" value="laser_alignment_node" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="LACNObserver">
-  <param name="node" value="laser_alignment_control" />
- </node>
-
- <node pkg="diagnosis_observers" type="NObs.py" name="JTeleopNObserver">
-  <param name="node" value="jaguar_teleop_node" />
- </node>
-
- <node pkg="diagnosis_observers" type="HObs.py" name="HObserver" >
-    <param name="topic" value="/board_measurments" />
- </node> 
-
- <node pkg="diagnosis_observers" type="GObs.py" name="cmdvelObserver" >
-  <param name="topic" value="/cmd_vel" />
-  <param name="frq" value="100" />
-  <param name="dev" value="100" />
+ <node pkg="diagnosis_observers" type="GObs.py" name="TestGObserver" >
+  <param name="topic" value="/test_node_topic" />
+  <param name="frq" value="10" />
+  <param name="dev" value="5" />
   <param name="ws" value="10" />
- </node>
-
- <node pkg="diagnosis_observers" type="GObs.py" name="imuObserver" >
-   <param name="topic" value="/imu_data" />
-   <param name="frq" value="50" />
-   <param name="dev" value="10" />
-   <param name="ws" value="10" />
- </node>
-
- <node pkg="diagnosis_observers" type="GObs.py" name="mapObserver">
-  <param name="topic" value="/map" />
-  <param name="frq" value="200" />
-  <param name="dev" value="200" />
-  <param name="ws" value="10" />
- </node>
-<node pkg="diagnosis_observers" type="GObs.py" name="odomObserver" >
-    <param name="topic" value="/odom" />
-    <param name="frq" value="10" />
-    <param name="dev" value="5" />
-    <param name="ws" value="10" />
- </node>
-
- <node pkg="diagnosis_observers" type="GObs.py" name="scanObserver" >
-    <param name="topic" value="/scan" />
-    <param name="frq" value="20" />
-    <param name="dev" value="5" />
-    <param name="ws" value="10" />
  </node>
 
 </launch>

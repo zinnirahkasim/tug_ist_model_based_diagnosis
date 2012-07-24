@@ -2,7 +2,7 @@
 <launch>
  <!-- master auto="start"/ -->
 
- <rosparam param="file"> "/home/tedusar/robotics/model_based_diagnosis/diagnosis_repair/repair_domain.pddl" </rosparam>
+ <rosparam param="file"> "/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/repair_domain.pddl" </rosparam>
  <node pkg="rosjava_bootstrap" 
        type="run.py" 
        args="diagnosis_repair plannerRepair"

@@ -52,7 +52,8 @@ class Node_Observer(object):
          
     def start(self):
 			print "NObs is up...."
-			self.param_node_name = "/%s" % (self.param_node_name)
+			if self.param_node_name[0] != '/':
+				self.param_node_name = "/%s" % (self.param_node_name)
 			r = rospy.Rate(10) # 10hz
 			while not rospy.is_shutdown():
 				found = False
@@ -60,22 +61,21 @@ class Node_Observer(object):
 				for lst in sysState:
 					for row in lst:
 						for node in row[1]:
-							 if node == self.param_node_name:
+								if node == self.param_node_name:
 									found = True
+									break
 				obs_msg = []
 				if found == True:
 					self.msg = 'running('+self.param_node_name[1:len(self.param_node_name)]+')'
 					rospy.loginfo('running('+self.param_node_name[1:len(self.param_node_name)]+')')
 					obs_msg.append(self.msg)
 					self.pub.publish(Observations(time.time(),obs_msg))
-					rospy.sleep(0.1)
 				else:
 					self.msg = '~running('+self.param_node_name[1:len(self.param_node_name)]+')'
-					#rospy.loginfo('Observer='+rospy.get_name()+',Node='+self.param_node_name[1:len(self.param_node_name)]+','+self.msg)
 					rospy.loginfo('~running('+self.param_node_name[1:len(self.param_node_name)]+')')
 					obs_msg.append(self.msg)
 					self.pub.publish(Observations(time.time(),obs_msg))
-					r.sleep()
+				r.sleep()
 
 
 if __name__ == '__main__':

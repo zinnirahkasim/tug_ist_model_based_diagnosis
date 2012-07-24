@@ -1,40 +1,9 @@
 ab: "AB"
 nab: "NAB"
-neg_prefix: "not_" 
-
+neg_prefix: "not_"
+ 
 props:
- - on(jaguar)
- - ok(odom)
- - on(hokuyo)
- - ok(scan)
- - on(laser_alignment)
- - ok(imu_data)
- - ok(map)
- - running(laser_alignment_node)
- - running(laser_alignment_control)
- - running(jaguar_teleop_node)
+  - ok(test_node_topic)
 rules:
- - NAB(jaguar)->on(jaguar)
- - NAB(hokuyo)->on(hokuyo)
- - NAB(laser_alignment)->on(laser_alignment)
- - NAB(laser_alignment_node)->running(laser_alignment_node)
- - NAB(laser_alignment_control)->running(laser_alignment_control)
- - NAB(jaguar_teleop_node)->running(jaguar_teleop_node)
-
- - NAB(jaguar_node),NAB(jaguar)->ok(odom)
- - NAB(hokuyo_node),NAB(hokuyo)->ok(scan)
-
-
- - NAB(hokuyo_node)->ok(scan)
- - NAB(imu_node)->ok(imu_data)
- - NAB(hector_mapping)->ok(map)
- - NAB(jaguar_teleop_node)->ok(cmd_vel)
-
-
- - AB(jaguar)->not_on(jaguar)
- - AB(hokuyo)->not_on(hokuyo)
- - AB(laser_alignment)->not_on(laser_alignment)
- - AB(laser_alignment_node)->not_running(laser_alignment_node)
- - AB(laser_alignment_control)->not_running(laser_alignment_control)
- - AB(jaguar_teleop_node)->not_running(jaguar_teleop_node)
+  - NAB(test_node)->ok(test_node_topic)
 

@@ -234,7 +234,7 @@ public class plannerRepair implements NodeMain{
            				e.printStackTrace(System.err);
 					 		}
 				    				
-      	//connectActionServers();
+      	connectActionServers();
 
 	      /**
   	    * Subscriber for the /diagnosis topic.
@@ -285,7 +285,7 @@ public class plannerRepair implements NodeMain{
                  } // for int m
 							}// synchronized
 					}catch(Exception e){
-              System.out.println("Error whiel updating the observation list.");
+              System.out.println("Error while updating the observation list.");
            }	
   			} // On New Mssage
      		}); // Subscriber
@@ -301,7 +301,6 @@ public class plannerRepair implements NodeMain{
      */
      public void connectActionServers(){
 			 try{
-            System.out.println("Macking Clients");
             Iterator<ActionDef> i = _domain.actionsIterator();
         		while (i.hasNext()) {
             		ActionDef a = i.next();

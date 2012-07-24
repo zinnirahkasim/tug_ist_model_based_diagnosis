@@ -71,6 +71,7 @@ class ModelActionServer(object):
       self._result.ab = self.sys_modl["ab"]
       self._result.nab = self.sys_modl["nab"]
       self._result.neg_prefix = self.sys_modl["neg_prefix"]
+      print 'HELLO',self.sys_modl["rules"]
       self._result.rules = self.sys_modl["rules"]
       self._result.props = self.sys_modl["props"]
       r = self.sys_modl["rules"]
@@ -81,9 +82,9 @@ class ModelActionServer(object):
       print "Propositions:\n",p
       no_of_props = len(p)
       print "Nos of Props:",no_of_props
-      rospy.loginfo('System Model sent successfully.')
       self._as.set_succeeded(self._result)
-
+      rospy.loginfo('System Model sent successfully.')
+      
   def report_error(self):
 				print '\nError:'
 				print 'Either \'diagnosis_model.yaml\' does not exist or the path is wrong.'

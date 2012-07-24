@@ -1,4 +1,0 @@
-<launch>
-   <node pkg="diagnosis_observers" type="sensor_head_node.py" name="sensor_head_node">
-   </node>
-</launch>
