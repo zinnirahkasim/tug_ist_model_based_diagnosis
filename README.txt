@@ -14,6 +14,7 @@ SETTING THE LOCAL ENVIRONMENT FOR model_based_diagnosis
 1. Use the current version of the rosjava from the https://rosjava.googlecode.com/hg given on http://www.ros.org/wiki/rosjava.
 2. Give local paths in manifest.xml of diagnosis_repair package for both "../model_based_diagnosis/jar/pddl4j.jar" and "../..actionlib...jar". 
 3. Export and set the path for "../model_based_diagnosis/jar/pddl4j.jar" in CLASSPATH variable too.
+4. rosmake all necessary dependencies
 
 ***********************************************************
 GENERAL INFORMATION
@@ -57,10 +58,10 @@ In model_based_diagnosis repositroy, there are seven packages
        syntax: rosrun diagnosis_observers PObs.py <Topic/Node> <Mem/Cpu>
        e.g: Under work.
 
-3. Diagnosis Model
-  - contains diagnosis model server node
-  - node takes diagnosis_model.yaml file as parameter
-  - Contains diagnosis_model_server node that provides model to the diagnosis engine.
+3. Diagnosis Model Serve
+	- action server node
+  - takes diagnosis_model.yaml file as parameter
+  - provides model to the diagnosis engine.
 
 
 4. Diagnosis Engine
@@ -117,9 +118,10 @@ Step7.  Set the path for repair_domain.pddl file in planner.launch and execute:
 Step8.  $ roslaunch diagnosis_launch action_servers.launch
 **** planner will generate a plan and NodeActionServer will restart the node.
 
-*****************IMPORTANT*****************************
-THE STACK IS BEING WORKED TO REMOVE THE PROBLEMS..
-IF YOU HAVE ANY PROBLEM, JUST EMAIL TO szaman@ist.tugraz.at
+*****************IMPORTANT*************************************
+THE STACK IS BEING WORKED AT THE MOMEN, THEREFORE YOUR FEEDBACK 
+WILL BE HIGHLY APPRECIATABLE. 
+IF YOU HAVE ANY PROBLEM, PLEASE EMAIL TO szaman@ist.tugraz.at
 Thanks.
-LATER Version will be uplaoded soon.
-*******************************************************
+Next Version will be uplaoded soon.
+***************************************************************

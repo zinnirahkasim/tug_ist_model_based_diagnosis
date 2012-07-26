@@ -248,7 +248,6 @@ class Qualitative_Observer(object):
     def report_error(self):
 				print 'rosrun diagnosis_observers QObs.py <Topic> <Field_variable> <WindowSize>'
 				print 'e.g rosrun diagnosis_observers QObs.py _topic:=/odom _field:=pose.pose.position.x _ws:=1000'
-				print 'NOTE: WindowSize is better to keep atleast 1000'
 				sys.exit(os.EX_USAGE)
 			
 if __name__=="__main__":

@@ -1,1 +1,1 @@
-(define (problem repair_goal)(:domain repair_domain)(:requirements :strips :equality :typing :negative-preconditions)(:objects test_node test_node_topic )(:init (not_running test_node)(not_ok test_node_topic)(bad test_node))(:goal (and (good test_node))))
+(define (problem repair_goal)(:domain repair_domain)(:requirements :strips :equality :typing :negative-preconditions)(:objects test_node_topic test_node )(:init (not_ok test_node_topic)(not_running test_node)(bad test_node))(:goal (and (good test_node))))
