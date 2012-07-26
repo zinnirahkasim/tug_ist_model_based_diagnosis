@@ -58,10 +58,11 @@ In model_based_diagnosis repositroy, there are seven packages
        syntax: rosrun diagnosis_observers PObs.py <Topic/Node> <Mem/Cpu>
        e.g: Under work.
 
-3. Diagnosis Model Serve
-	- action server node
+3. Diagnosis Model Server
+  - action server node
   - takes diagnosis_model.yaml file as parameter
-  - provides model to the diagnosis engine.
+  - provides model to the diagnosis engine
+  - to run it, please see "diagnosis_model.launch" in diagnosis_launch/launch
 
 
 4. Diagnosis Engine
@@ -69,20 +70,28 @@ In model_based_diagnosis repositroy, there are seven packages
   - Contains java packages for set of connected files.
   - diagnosis_engine node for execution
   - receives diagnosis model from the diagnosis server
-
+  - to run it, please see "diagnosis_engine.launch" in diagnosis_launch/launch
 
 5. Diagnosis Repair
   - Contains java files relevant to planning and repair
   - Contains java packages for set of related files.
   - plannerRepair node for execution
   - takes repair_domain.pddl file as parameter
+  - to run it, please see "planner.launch" in diagnosis_launch/launch
 
-6. Diagnosis Board
-  - contains board controller
+6. Action Servers
+  - four "start_node","stop_node","power_up" and "shutdown".
+  - are in diagnosis_board package
+  - provides services to diagnosis_repair to run/stop the nodes or switch on/off the channels
+  - to run it, please see "action_servers.launch" in diagnosis_launch/launch 
+
+7. Diagnosis Board
+  - contains board controller and action servers "start_node","stop_node","power_up" and "shutdown".
   - specific to the diagnostic board made for our TEDUSAR robot
   - publishes hardware information for ROS usage
+  - to run it, please see "board_controller.launch" in diagnosis_launch/launch
 
-7. Diagnosis Launch
+8. Diagnosis Launch
   - contains different launch files.
   - individual launch files are for running nodes, observers, action servers, diagnosis model, diagnosis engine and planner.
   - run.launch provides one launch file to run everything needed.
