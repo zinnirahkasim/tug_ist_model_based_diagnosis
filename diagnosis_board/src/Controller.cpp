@@ -202,7 +202,7 @@ void Controller::CallMessageRequest()
      int buf_len;
      p = msg->getBuffer(buf_len);
      send(sock,p,buf_len, 0);
-     printf(" d=%i, c=%i,l=%i, size=%d",*p,*(p+1),*(p+2),buf_len);
+     printf("d=%i,c=%i,l=%i,size=%d",*p,*(p+1),*(p+2),buf_len);
      delete p;
 }
 
