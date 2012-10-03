@@ -53,11 +53,15 @@ class Regression(object):
 				self.ws = ws
 				self.n = None
 				self.b = b;
+				self.choice = 'n'
+				self.value = 0
 
 		def show(self):
 				print self.s
 				
-		def find(self, value,time):
+		def find(self, value,time,ch):
+				self.choice = ch
+				self.value = value
 				self.s[0].append(value)
 				self.s[1].append(value)
 				self.s[2].append(value)
@@ -67,7 +71,10 @@ class Regression(object):
 				return trend	
 
 		def find_slope(self,b):
-				r1 = self.linear_regression(self.ws,self.s[0],self.t)
+				if self.choice == 'y':
+					r1 = self.linear_regression(self.ws,self.s[0],self.t)
+				else:
+					r1 = self.value
 				self.s[1].pop()
 				self.s[1].append(r1)
 				r2 = self.linear_regression(self.ws,self.s[1],self.t)
@@ -136,19 +143,27 @@ class Qualitative_Observer(object):
 					rospy.init_node('BinaryQObs', anonymous=True)
 					self.caller_id = '/script'
 					self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
-					self.param_field = rospy.get_param('~field', 'pose.pose.position.x')
-					self.param_topic = rospy.get_param('~topic', '/Topic1')
-					self.param_ws = rospy.get_param('~ws', 1000)
-					self.param_b = rospy.get_param('~b', 0.0000005)
+					self.param_field1 = rospy.get_param('~field1', 'pose.pose.position.x')
+					self.param_topic1 = rospy.get_param('~topic1', '/Topic1')
+					self.param_ws1 = rospy.get_param('~ws1', 1000)
+					self.param_b1 = rospy.get_param('~b1', 0.0000005)
 					self.param_field2 = rospy.get_param('~field2', 'pose.pose.position.y')
 					self.param_topic2 = rospy.get_param('~topic2', '/Topic2')
 					self.param_ws2 = rospy.get_param('~ws2', 1000)
 					self.param_b2 = rospy.get_param('~b2', 0.0000005)
-					self.th = rospy.get_param('~th', 20)
-					self.ws = float(self.param_ws)/1000.0
+					self.mismatch_thr = rospy.get_param('~thr', 20)
+					self.mode = rospy.get_param('~mode', 'LIN')
+					r1_param = rospy.get_param('~r1','yy')
+					if len(r1_param) != 2:
+						print 'r1 parameter should be nn/yy/ny/yn'
+						sys.exit(os.EX_USAGE)
+					else:
+						self.r11 = r1_param[0]
+						self.r12 = r1_param[1]
+					self.ws1 = float(self.param_ws1)/1000.0
 					self.ws2 = float(self.param_ws2)/1000.0
-					self.topic = ""
-					self.topic_type = ""
+					self.topic1 = ""
+					self.topic1_type = ""
 					self.topic2 = ""
 					self.topic2_type = ""
 					self.Trend1 = None
@@ -161,83 +176,116 @@ class Qualitative_Observer(object):
 					self.queu = [[0.0 for i in xrange(100)],[0.0 for i in xrange(100)]]
 					self.pub = rospy.Publisher('/observations', Observations)
 					self.curr_t1 = None
-					self.prev_t1 = time.time()
+					self.init_t = time.time()
+					self.prev_t = time.time()
+					self.prev_data = 0
 					self.curr_t2 = None
-					self.prev_t2 = time.time()
 					self.mismatch = 0
-					self.regression = Regression(self.ws,self.param_b)
-					self.regression2 = Regression(self.ws2,self.param_b2)
-					thread.start_new_thread(self.check_thread,(self.param_topic,self.param_topic2,0.2))
+					thread.start_new_thread(self.check_thread,(self.param_topic1,self.param_topic2,0.2))
           
 
     def start(self):
-				self.params = []
-				field=self.param_field
+				self.params1 = []
+				field=self.param_field1
 				i=field.count('.')
 				for p in xrange(i):
 					i=field.find('.')
-					self.params.append(field[0:i])
+					self.params1.append(field[0:i])
 					field = field[i+1:len(field)]
-				self.params.append(field)
-				pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
-				topic_found = False
+				self.params1.append(field)
+
+				self.params2 = []
+				field=self.param_field2
+				i=field.count('.')
+				for p in xrange(i):
+					i=field.find('.')
+					self.params2.append(field[0:i])
+					field = field[i+1:len(field)]
+				self.params2.append(field)
+
+				topic1_found = False
 				topic2_found = False
-				for item in topicList:
-					if item[0] == self.param_topic:
-						self.topic = item[0]
-						print 'topic 1 found', self.topic
-						self.topic_type = item[1]
-						topic_found = True
-					if item[0] == self.param_topic2:
-						self.topic2 = item[0]
-						self.topic_type2 = item[1]
-						topic2_found = True
-				if topic_found == True:
-					msg_class = roslib.message.get_message_class(self.topic_type)
-				else:
-					self.report_error()
-				if topic2_found == True:
-					msg_class2 = roslib.message.get_message_class(self.topic_type2)
-				else:
-					self.report_error()
-				rospy.Subscriber(self.topic, msg_class, self.call_back)
-				rospy.Subscriber(self.topic2, msg_class2, self.call_back2)
-				rospy.spin()
+				firstcheck = True
+				while firstcheck:
+					pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+					for item in topicList:
+						if item[0] == self.param_topic1:
+							self.topic1 = item[0]
+							self.topic1_type = item[1]
+							topic1_found = True
+						if item[0] == self.param_topic2:
+							self.topic2 = item[0]
+							self.topic2_type = item[1]
+							topic2_found = True
+					if topic1_found == True & topic2_found == True:
+						firstcheck = False
+						msg_class1 = roslib.message.get_message_class(self.topic1_type)
+						msg_class2 = roslib.message.get_message_class(self.topic2_type)
+						#if self.mode == 'DRV2':
+							#self.params = self.params2
+							#rospy.Subscriber(self.topic2, msg_class2, self.drv_call_back)
+							#rospy.Subscriber(self.topic1, msg_class1, self.call_back2)
+							#self.regression1 = Regression(self.ws2,self.param_b2)
+							#self.regression2 = Regression(self.ws1,self.param_b1)
+						#elif self.mode == 'DRV1':
+						if self.mode == 'DRV1':
+							rospy.Subscriber(self.topic1, msg_class1, self.drv_call_back)
+							rospy.Subscriber(self.topic2, msg_class2, self.call_back2)
+							self.regression1 = Regression(self.ws1,self.param_b1)
+							self.regression2 = Regression(self.ws2,self.param_b2)
+						else:
+							#print 'LINEAR'
+							rospy.Subscriber(self.topic1, msg_class1, self.call_back1)
+							rospy.Subscriber(self.topic2, msg_class2, self.call_back2)
+							self.regression1 = Regression(self.ws1,self.param_b1)
+							self.regression2 = Regression(self.ws2,self.param_b2)
+						thread.start_new_thread(self.BQObs_thread,(self.param_topic1,self.param_topic2,0.2))
+						rospy.spin()
+					time.sleep(1)
+
+					
         
-    def call_back(self,data):
-				self.curr_t1 = time.time() - self.prev_t1
-				self.sum1 = self.sum1 + self.extract_data(data)
+    def call_back1(self,data):
+				self.curr_t1 = time.time() - self.init_t
+				curr_data = self.extract_data(data,self.params1)
+				#rospy.loginfo(self.topic1+'='+ str(curr_data))
+				self.sum1 = self.sum1 + curr_data
 				self.num1 = self.num1 + 1
-				#print 'num1:',self.num1
-				#self.Trend1 = self.regression.find(self.data,self.curr_t)
-				#self.make_output(self.Trend1)
+
+    def drv_call_back(self,data):
+				self.curr_t1 = time.time() - self.init_t
+				curr_t = time.time()
+				delta_t = curr_t - self.prev_t
+				curr_data = self.extract_data(data,self.params1)
+				delta_data = curr_data - self.prev_data
+				self.prev_data = curr_data
+				self.prev_t = curr_t
+				drv = delta_data/delta_t
+				#rospy.loginfo(self.topic1+'='+ str(curr_data))
+				self.sum1 = self.sum1 + drv
+				self.num1 = self.num1 + 1
 
     def call_back2(self,data):
-				self.curr_t2 = time.time() - self.prev_t2
-				self.sum2 = self.sum2 + self.extract_data(data)
+				self.curr_t2 = time.time() - self.init_t
+				curr_data = self.extract_data(data,self.params2)
+				#rospy.loginfo(self.topic2+'='+ str(curr_data))
+				self.sum2 = self.sum2 + curr_data
 				self.num2 = self.num2 + 1
-				#print 'num2:',self.num2
-				#print 'data2 = ',self.extract_data(data)
-				#self.Trend2 = self.regression2.find(self.data,self.curr_t)
-				#self.make_output(self.Trend2)
 
-    def extract_data(self,data):
-				#print data,len(self.params)
-				#if len(self.params)==1:
-					#for f in self.data.__slots__:
-							#self.data = getattr(self.data, f)
+    def extract_data(self,data,params):
 				c = 0
-				l = len(self.params)   
-				while (c < l):
-					for f in data.__slots__:
-						if f == self.params[c]:
-							data = getattr(data, f)
-							break
-					c = c + 1
+				while (c < len(params)):
+				  for f in data.__slots__:
+							if f == params[c]:
+							  data = getattr(data, f)
+							  break
+				  c = c + 1
 				return data
+
+
     def publish_output(self):
-				if self.topic[0] == '/':
-							self.topic = self.topic[1:len(self.topic)]
+				if self.topic1[0] == '/':
+							self.topic1 = self.topic1[1:len(self.topic1)]
 				if self.topic2[0] == '/':
 							self.topic2 = self.topic2[1:len(self.topic2)]
 				obs_msg = []
@@ -247,14 +295,17 @@ class Qualitative_Observer(object):
 				else:
 						self.mismatch = self.mismatch + 1
 
-				if self.mismatch < self.th:
-						obs_msg.append('Matched('+self.topic+','+self.topic2+')')
+				rospy.loginfo('mismatch='+str(self.mismatch)+',thr='+str(self.mismatch_thr))
+				if self.mismatch <= self.mismatch_thr:
+						rospy.loginfo('matched('+self.topic1+','+self.topic2+')')
+						obs_msg.append('matched('+self.topic1+','+self.topic2+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 				else:
-						obs_msg.append('~Matched('+self.topic+','+self.topic2+')')
+						rospy.loginfo('~matched('+self.topic1+','+self.topic2+')')
+						obs_msg.append('~matched('+self.topic1+','+self.topic2+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 		
-    def check_thread(self,topic1,topic2,sleeptime,*args):
+    def BQObs_thread(self,topic1,topic2,sleeptime,*args):
 				while True:
 						t1 = 0
 						t2 = 0
@@ -267,24 +318,46 @@ class Qualitative_Observer(object):
 									
 						if t1 == 0:
 								t1 = 1
-								print "Topic:[" +topic1+ "] does not exist."
-								self.pub.publish(Observations(time.time(),['~Ok('+topic1[1:len(topic1)]+')']))
+								#rospy.loginfo("Topic:[" +topic1+ "] does not exist.")
+								self.pub.publish(Observations(time.time(),['~matched('+topic1[1:len(topic1)]+','+topic2[1:len(topic2)]+')']))
 						if t2 == 0:
 								t2 = 1
-								print "Topic:[" +topic2+ "] does not exist."
-								self.pub.publish(Observations(time.time(),['~Ok('+topic2[1:len(topic2)]+')']))
-						if self.num1 != 0 | self.num2 != 0:
-							avg1 = self.sum1/self.num1
-							avg2 = self.sum2/self.num2
-							self.Trend1 = self.regression.find(avg1,self.curr_t1)
-							self.Trend2 = self.regression2.find(avg2,self.curr_t2)
-							print 'self.num1=',self.num1,'self.Trend1=',self.Trend1,',self.num2=',self.num2,'self.Trend2=',self.Trend2
-						self.num1 = 0
-						self.num2 = 0
-						self.sum1 = 0.0
-						self.sum2 = 0.0
+								#rospy.loginfo("Topic:[" +topic2+ "] does not exist.")
+								self.pub.publish(Observations(time.time(),['~matched('+topic1[1:len(topic1)]+','+topic2[1:len(topic2)]+')']))
+						print('Num1='+str(self.num1)+',Num2'+str(self.num2))
+						if (self.num1 != 0) & (self.num2 != 0):
+							data1 = self.sum1/self.num1
+							data2 = self.sum2/self.num2
+							self.Trend1 = self.regression1.find(data1,self.curr_t1,self.r11)
+							self.Trend2 = self.regression2.find(data2,self.curr_t2,self.r12)
+							rospy.loginfo(self.topic1+'_avg_data='+ str(data1) +','+self.topic1+'Trend='+ str(self.Trend1) +','+self.topic2+'Trend='+str(self.Trend2)+','+self.topic2+'_avg_data='+str(data2))
+							self.num1 = 0
+							self.num2 = 0
+							self.sum1 = 0.0
+							self.sum2 = 0.0
 						self.publish_output()
 						time.sleep(sleeptime) #sleep for a specified amount of time.
+
+    def check_thread(self,topic1,topic2,sleeptime,*args):
+				try:
+					while not rospy.is_shutdown():
+						t1 = 0
+						t2 = 0
+						m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
+						pubcode, statusMessage, topicList = m.getPublishedTopics(self.caller_id, "")
+						for item in topicList:
+							if item[0] == topic1:
+									t1 = 1
+							if item[0] == topic2:
+									t2 = 1
+						if t1 == 0 | t2 == 0:
+								t1 = 1
+								self.pub.publish(Observations(time.time(),['~matched('+topic1[1:len(topic1)]+','+topic2[1:len(topic2)]+')']))
+						time.sleep(sleeptime) #sleep for a specified amount of time.
+				except:
+						 	print "An unhandled exception occured, here's the traceback!"
+							traceback.print_exc()
+
 
 def report_error():
 				print 'rosrun diagnosis_observers QObs.py <Topic> <Field_variable> <WindowSize>'
