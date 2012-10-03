@@ -3,11 +3,12 @@
  <!-- master auto="start"/ -->
 
  <rosparam param="file"> "/home/szaman/my_electric_pkgs/model_based_diagnosis/diagnosis_repair/repair_domain.pddl" </rosparam>
+ <rosparam param="excluded_nodes"> "xsens_mti" </rosparam>
  <node pkg="rosjava_bootstrap" 
        type="run.py" 
        args="diagnosis_repair plannerRepair"
        name="plannerRepair" 
-       output="log"> 
+       output="screen"> 
  </node>
 
 </launch>

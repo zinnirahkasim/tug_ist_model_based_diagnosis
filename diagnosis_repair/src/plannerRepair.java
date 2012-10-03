@@ -43,6 +43,7 @@ import org.apache.commons.logging.Log;
 import com.google.common.base.Preconditions;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
+import org.ros.node.NodeConfiguration;
 import org.ros.node.parameter.ParameterTree;
 import org.ros.namespace.GraphName;
 import org.ros.node.topic.Publisher;
@@ -84,6 +85,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 
 /**
  * This class implements the  planner and Repair Actions for the Model based Diagnosis.
@@ -91,7 +93,9 @@ import java.util.Set;
  * @version 1.0
  */
 public class plannerRepair implements NodeMain{
-
+    
+    private String[] excluded_nodes;
+    
     /**
      * The parser reference.
      */
@@ -202,8 +206,16 @@ public class plannerRepair implements NodeMain{
     @Override
     public void onStart(Node node){
 					 ParameterTree prm = node.newParameterTree();
+					 //System.out.println("HALLLLLLOOOOOOOOO"+prm.getString(node.getName()));
+					 //NodeConfiguration nodeConfiguration = node.nodeConfiguration.getNodeName();
 					 domain_file_name = prm.getString("file","repair_domain.pddl");
-					 System.out.println(domain_file_name);
+					 String param_str = prm.getString("excluded_nodes","node");
+					 excluded_nodes = param_str.split(",");
+					 for(int i=0;i<excluded_nodes.length;i++)
+							{
+								System.out.println("YES,"+excluded_nodes[i]);
+							} 
+					 System.out.println("param1="+excluded_nodes+"\n"+domain_file_name);
            System.out.println(node.getName());
            _node = node;
            main_runner();
@@ -248,9 +260,14 @@ public class plannerRepair implements NodeMain{
 		              ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults> diag = new ArrayList<org.ros.message.diagnosis_msgs.DiagnosisResults>();
     		          diag = diag_msg.diag;
     		          diag_r = diag.get(0);
-                  String[] good = (String[]) diag_r.good.toArray(new String[0]);
-									String[] bad  = (String[]) diag_r.bad.toArray(new String[0]);
-									if(bad.length>0 && !executing_plan){
+									List<String> good = (List<String>) diag_r.good;
+                  List<String> bad = (List<String>) diag_r.bad;
+									for(int i=0;i<excluded_nodes.length;i++)
+                  	if(bad.contains(excluded_nodes[i]))
+                       {bad.remove(excluded_nodes[i]);
+                        System.out.println(excluded_nodes[i]+" excluded.");}
+                 									
+									if(bad.size()>0 && !executing_plan){
 										 executing_plan = true;
 										 make_probPDDL_file(good,bad);
                    	 get_plan();
@@ -321,7 +338,7 @@ public class plannerRepair implements NodeMain{
 		 *
      * @param list good (NAB) diagnosis and list of bad (AB) diagnosis.
      */
-     public void make_probPDDL_file(String[] good, String[] bad) {
+     public void make_probPDDL_file(List<String> good, List<String> bad) {
 					 synchronized (threadSync){
 							 ArrayList<String> list = new ArrayList<String>();
 							 lock.lock();
@@ -334,6 +351,7 @@ public class plannerRepair implements NodeMain{
 						   String init="(:init ";
 							 for(int i=0;i<list.size();i++) {
                   		String parameter = list.get(i).substring(list.get(i).indexOf("(")+1,list.get(i).indexOf(")"));
+											parameter = parameter.replace(",","_");
                   		co_problem = co_problem + parameter + " ";
                   		if(list.get(i).charAt(0)=='~') {
                       		String predicate = list.get(i).substring(1,list.get(i).indexOf("("));
@@ -345,20 +363,25 @@ public class plannerRepair implements NodeMain{
                             init = init + "("+predicate+" "+parameter+")";               
                     		}               
 							 }
-               for(int i=0;i<good.length;i++) {
-               				init = init + "(good "+good[i]+")";
-               				goal=goal+"(good "+good[i]+")";
+							 Iterator good_it=good.iterator();
+							 while(good_it.hasNext()){
+											String good_str=(String)good_it.next();
+               				init = init + "(good "+good_str+")";
+               				goal=goal+"(good "+good_str+")";
                       //co_problem = co_problem + good[i] + " ";
                }
-            	 for(int i=0;i<bad.length;i++) {
-                  		init = init + "(bad "+bad[i]+")";
-                  		goal=goal+"(good "+bad[i]+")";
+							 Iterator bad_it=bad.iterator();
+            	 while(bad_it.hasNext()){
+                      String bad_str=(String)bad_it.next();
+               				init = init + "(bad "+bad_str+")";
+                  		goal=goal+"(good "+bad_str+")";
                       //co_problem = co_problem + bad[i] + " ";
                }
                co_problem = co_problem + ")";
                init = init + ")";
                goal=goal+"))";
                String prob = "(" + prob_text + co_problem + init + goal + ")";
+							 System.out.println(prob);
 						   try{
                		     BufferedWriter out=new BufferedWriter(new FileWriter("repair_goal.pddl"));
                		     out.write(prob);

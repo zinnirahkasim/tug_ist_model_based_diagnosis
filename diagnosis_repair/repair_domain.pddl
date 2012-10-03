@@ -6,6 +6,8 @@
 						 (good ?c)
 						 (running ?c)
              (not_running ?c)
+             (not_matched ?c)
+             (matched ?c)
              (ok ?c)
              (not_ok ?c)
 						 (on ?o)

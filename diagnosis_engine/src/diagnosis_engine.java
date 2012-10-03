@@ -272,7 +272,7 @@ public class diagnosis_engine extends Thread implements NodeMain {
             ArrayList<String> bad = new ArrayList<String>();
             org.ros.message.diagnosis_msgs.DiagnosisResults diag_result_c =  new org.ros.message.diagnosis_msgs.DiagnosisResults();
             ArrayList<DiagnosticStatus> statusArr = new ArrayList<DiagnosticStatus>();
-						log.info("Consistent.");
+						//log.info("Consistent.");
             for(int j=0; j < components.size(); ++j){
                   ArrayList<KeyValue> keyValueArr = new ArrayList<KeyValue>();
                   final KeyValue keyValue = node.getMessageFactory().newMessage("diagnostic_msgs/KeyValue");

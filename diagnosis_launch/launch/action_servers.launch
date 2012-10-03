@@ -5,7 +5,7 @@
  <node pkg="diagnosis_board" 
        type="NodeActionServer" 
        name="NodeActionServers" 
-       output="log">
+       output="screen">
  </node>
 
 </launch>
