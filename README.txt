@@ -14,6 +14,7 @@ SETTING THE LOCAL ENVIRONMENT FOR model_based_diagnosis
 1. Use the current version of the rosjava from the https://rosjava.googlecode.com/hg given on http://www.ros.org/wiki/rosjava.
 2. Give local paths in manifest.xml of diagnosis_repair package for both "../model_based_diagnosis/jar/pddl4j.jar" and "../..actionlib...jar". 
 3. Export and set the path for "../model_based_diagnosis/jar/pddl4j.jar" in CLASSPATH variable too.
+  like command on terminal $ export CLASSPATH=/home/../model_based_diagnosis/jar/pddl4j.jar
 4. rosmake all necessary dependencies
 
 ***********************************************************
@@ -116,17 +117,22 @@ Step5.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch
 ****Now everything should be consistent. To check the system functionality just apply follwoing command in separate terminal:
 Step6.  $ rosnode kill /test_node  
           (check nodes list by "rosnode list" command)
-****This would kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
-bad[test_node] on /diagnosis topic.
+        This will kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
+        bad[test_node] on /diagnosis topic. you can check it by "rostopic echo /diagnosis" command
+        Now to run the test node again you should
+        $ roslaunch diagnosis_launch test_node.launch
 
 ----PLANNING and REPAIR-----
-Step7.  Set the path for repair_domain.pddl file in planner.launch and execute:  
+Step7.  $ roslaunch diagnosis_launch action_servers.launch
+         (start the node action servers, planner also need them)
+
+Step8.  Set the path for repair_domain.pddl file in planner.launch and execute:  
         $ roslaunch diagnosis_launch planner.launch  
           (check "start_node", "stop_node",etc action servers)
 
-Step8.  $ roslaunch diagnosis_launch action_servers.launch
 **** planner will generate a plan and NodeActionServer will restart the node.
 
+THANKS for using this tutorial...
 *****************IMPORTANT*************************************
 THE STACK IS BEING WORKED AT THE MOMEN, THEREFORE YOUR FEEDBACK 
 WILL BE HIGHLY APPRECIATABLE. 
