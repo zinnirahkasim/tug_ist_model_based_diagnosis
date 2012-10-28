@@ -120,6 +120,7 @@ Step6.  $ rosnode kill /test_node
         This will kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
         bad[test_node] on /diagnosis topic. you can check it by "rostopic echo /diagnosis" command
         Now to run the test node again you should
+
         $ roslaunch diagnosis_launch test_node.launch
 
 ----PLANNING and REPAIR-----

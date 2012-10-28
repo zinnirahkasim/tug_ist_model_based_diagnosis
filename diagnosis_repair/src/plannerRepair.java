@@ -206,17 +206,12 @@ public class plannerRepair implements NodeMain{
     @Override
     public void onStart(Node node){
 					 ParameterTree prm = node.newParameterTree();
-					 //System.out.println("HALLLLLLOOOOOOOOO"+prm.getString(node.getName()));
 					 //NodeConfiguration nodeConfiguration = node.nodeConfiguration.getNodeName();
 					 domain_file_name = prm.getString("file","repair_domain.pddl");
 					 String param_str = prm.getString("excluded_nodes","node");
 					 excluded_nodes = param_str.split(",");
-					 for(int i=0;i<excluded_nodes.length;i++)
-							{
-								System.out.println("YES,"+excluded_nodes[i]);
-							} 
-					 System.out.println("param1="+excluded_nodes+"\n"+domain_file_name);
-           System.out.println(node.getName());
+					 //System.out.println("param1="+excluded_nodes+"\n"+domain_file_name);
+           //System.out.println(node.getName());
            _node = node;
            main_runner();
 
@@ -322,7 +317,7 @@ public class plannerRepair implements NodeMain{
         		while (i.hasNext()) {
             		ActionDef a = i.next();
             		Action op = (Action) a;
-								System.out.println(op.getName().toString());
+								//System.out.println(op.getName().toString());
                 sac = spec.buildSimpleActionClient(op.getName().toString());
 								sac.addClientPubSub(_node);
 								//mp.put(op.getName().toString(),sac);
