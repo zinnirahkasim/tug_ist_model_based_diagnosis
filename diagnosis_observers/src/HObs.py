@@ -29,9 +29,9 @@
 
 # The Hardware Observer observers the status of the hardware channels
 # and publishes the state of the channels wehether ON or OFF.
-# It publishes this trned of the vaule overs /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
+# It publishes this trned of the vaule overs /observations topic compatible for our Model Based Diagnosis.
 
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib.message; roslib.load_manifest('diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib

@@ -30,7 +30,7 @@
 
 # The ModelActionServer calss acts like Diagnosis Model Server. It takes YAML
 # file as parameter. The YAML file is diagnosis_model.yaml file for the diagnosis system model.
-# and publishes data on /Diagnostic_Model topic compatible for our Model Based Diagnosis.
+# and publishes data on /diagnosis_model topic compatible for our Model Based Diagnosis.
 
 
 import roslib; roslib.load_manifest('diagnosis_model')
@@ -47,22 +47,21 @@ class ModelActionServer(object):
   def __init__(self):
      self._feedback = diagnosis_msgs.msg.SystemModelFeedback()
      self._result   = diagnosis_msgs.msg.SystemModelResult()
-
+     
   def start(self):
     rospy.init_node('diag_model_server_node', anonymous=True)
     self.param_file = rospy.get_param('~model', 'diagnosis_model.yaml')
-    try:
-				#print self.param_file
-				file_ptr = open(self.param_file)
-    except IOError:
-        self.report_error()
-        success = False
-    self.sys_modl = yaml.load(file_ptr)
     self._as = actionlib.SimpleActionServer('diagnosis_model_server', diagnosis_msgs.msg.SystemModelAction, execute_cb=self.execute_cb, auto_start = False)
+    self.pub = rospy.Publisher('diagnosis_model', diagnosis_msgs.msg.SystemModelResult)
     print 'Diagnosis Model Server is up......'
     self._as.start()
     
   def execute_cb(self, goal):
+    try:
+	file_ptr = open(self.param_file)
+    except IOError:
+        self.report_error()
+    self.sys_modl = yaml.load(file_ptr)
     r = rospy.Rate(1)
     success = True
     rospy.loginfo('Request for System Model received:')
@@ -82,6 +81,7 @@ class ModelActionServer(object):
       print "Propositions:\n",p
       no_of_props = len(p)
       print "Nos of Props:",no_of_props
+      self.pub.publish(self._result)
       self._as.set_succeeded(self._result)
       rospy.loginfo('System Model sent successfully.')
       

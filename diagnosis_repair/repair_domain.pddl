@@ -6,7 +6,7 @@
 						 (good ?c)
 						 (running ?c)
              (not_running ?c)
-             (not_matched ?c)
+             (not_matched ?c ?d)
              (matched ?c)
              (ok ?c)
              (not_ok ?c)

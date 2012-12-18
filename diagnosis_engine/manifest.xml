@@ -8,15 +8,9 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/diagnosis_engine</url>
-  <depend package="rosjava"/>
-  <depend package="actionlib_java"/>
-  <depend package="diagnosis_msgs"/>
-  <depend package="diagnostic_msgs"/>
-  <export>
-    <rosjava-src location="src" />
-    <rosjava-pathelement location="target/" groupId="graz.tu" artifactId="graz.tu.ist.saf" version="0.0.0" built="true" />
-  </export>
-
+  <depend package="roscpp" />
+  <depend package="diagnosis_msgs" />
+  <depend package="tf"/>
 </package>
 
 

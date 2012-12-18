@@ -32,39 +32,72 @@
 # It needs topic name, proerty name.
 
 import roslib; roslib.load_manifest('diagnosis_observers')
+import commands
 import rospy
 import subprocess
 import sys
 import os
-#import psutil
+import shlex
+from diagnosis_msgs.msg import Observations
+import time
 
 class Property_Observer(object):
 
-    def __init__(self, argv):
-          self.args = argv
-          self.username = self.args[1]
-          
+		def __init__(self, argv):
+					rospy.init_node('PObs1', anonymous=True)
+					self.pub = rospy.Publisher('/observations', Observations)
+					self.node = rospy.get_param('~node', 'No_Node')
+					self.th = rospy.get_param('~th', 0.2)
+					self.dev = rospy.get_param('~dev', 0.1)
+					self.property = rospy.get_param('~property', 'Mem')
+					self.args = argv
+					if self.node[0] == '/':
+							self.node = self.node[1:len(self.node)]
          
-    def start(self):
-        rospy.init_node('PObs', anonymous=True)
-        while not rospy.is_shutdown():
-           	self.process = subprocess.Popen("ps -u %s -o rss | awk '{sum+=$1} END {print sum}'" %self.username,shell=True,stdout=subprocess.PIPE)
-           	self.stdout_list = self.process.communicate()[0].split('\n')
-            #p = psutil.Process(os.getpid())
-            #p.get_cpu_times()
-            #p.get_cpu_percent(interval=1)
-            #print "Memory Usage for user",int(self.stdout_list[0])
-            #print self.process.pid
+		def start(self):
+				#print 'node=',self.node,',property=',self.property,',threshold=',self.th,',deviation=',self.dev
+				print 'PObs is up and has started publishsing observations.......'
+				a = commands.getoutput('rosnode info /test_node')
+				a = subprocess.Popen("rosnode info /test_node" , shell=True,stdout=subprocess.PIPE)
+				parts = shlex.split(a.communicate()[0])
+				print "parts", parts
+				indx = parts.index("Pid:")
+				#print "PID==",indx
+				pid = parts[indx+1]
+				#print "item(pid)=",parts[indx+1]
+				while not rospy.is_shutdown():
+					p = subprocess.Popen("top -b -n 1 | grep -i %s" %pid, shell=True,stdout=subprocess.PIPE)
+					self.out = p.communicate()[0]
+					#print self.out
+					self.out1 = shlex.split(self.out)
+					#print self.out1[8],self.out1[9]
+					#print "out1", self.out1
+					if self.property == 'CPU':
+						self.publish_output(self.out1[8])
+					else:
+						self.publish_output(self.out1[9])
+					
+		def publish_output(self,obtained_val):
+					obs_msg = []
+					if (float(obtained_val) >= float(self.th) - float(self.dev)) | (float(obtained_val) <= float(self.th) + float(self.dev))  :
+							print 'ok('+self.property+','+self.node+')'
+							obs_msg.append('ok('+self.property+','+self.node+')')
+							self.pub.publish(Observations(time.time(),obs_msg))
+					else:
+							print '~ok('+self.property+','+self.node+')'
+							obs_msg.append('~ok('+self.property+','+self.node+')')
+							self.pub.publish(Observations(time.time(),obs_msg))
+						
+				
 
 def report_error():
 		print """
-rosrun diagnosis_observers PObs.py <Topic> <Mem/Cpu>
-e.g rosrun diagnosis_observers PObs.py /tf Mem
+rosrun diagnosis_observers PObs.py _node:=<Node_name> _property:=<Mem/Cpu> _th:=<Threshold> _dev:=<Deviation>
+e.g rosrun diagnosis_observers PObs.py _node:=openni_camera _property:=CPU _th:=.2 _dev:=.1'
 """
 		sys.exit(os.EX_USAGE)        
     
 if __name__ == '__main__':
-			print len(sys.argv)
 			if len(sys.argv) < 3: 
 				report_error()
 			pObs = Property_Observer(sys.argv)

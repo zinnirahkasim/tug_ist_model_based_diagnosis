@@ -32,7 +32,7 @@
 # and provides /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs three parameters Required frequency, frequency deviation and window size.
 
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib.message; roslib.load_manifest('diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib

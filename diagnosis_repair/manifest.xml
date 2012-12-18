@@ -7,18 +7,10 @@
   <author>Safdar Zaman</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/repair_engine</url>
-  <depend package="rosjava"/>  
-  <depend package="actionlib_java"/>
-  <depend package="actionlib_msgs"/>
-  <depend package="diagnosis_msgs"/>
- <export>
-    <rosjava-src location="src" />
-    <rosjava-pathelement location="target/" groupId="graz.tu" artifactId="target" version="0.0.0" built="true" />
-    <rosjava-pathelement location="/home/szaman/my_electric_pkgs/model_based_diagnosis/jar/pddl4j.jar" />"
-    <rosjava-pathelement location="/home/szaman/.ros/rosjava/lib/org.ros.rosjava.actionlib_java-0.0.0.jar" />"
- </export>
-
+  <url>http://ros.org/wiki/diagnosis_repair</url>
+  <depend package="roscpp" />
+  <depend package="diagnosis_msgs" />
+  <depend package="tf"/>
 </package>
 
 

@@ -3,7 +3,12 @@ nab: "NAB"
 neg_prefix: "not_"
  
 props:
-  - ok(test_node_topic)
+  - running(aria)
+  - running(laser)
+  - ok(aria_node_topic)
+  - ok(laser_node_topic)
 rules:
-  - NAB(test_node)->ok(test_node_topic)
-
+  - NAB(aria)->running(aria)
+  - NAB(laser)->running(laser)
+  - NAB(aria)->ok(aria_node_topic)
+  - NAB(laser)->ok(laser_node_topic)

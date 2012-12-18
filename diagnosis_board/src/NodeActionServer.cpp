@@ -40,7 +40,7 @@ void startnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSe
   i++;
   diagnosis_msgs::DiagnosisRepairResult result_;
 	string command("roslaunch diagnosis_launch " + goal->parameter[0] + ".launch &");
-  ROS_INFO("START NODE Server Started.");
+  ROS_INFO("START NODE Server Started. for %s",goal->parameter[0].c_str());
   int k = system(command.c_str());
   sleep(3);
   result_.result = i;
@@ -64,10 +64,9 @@ void stopnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSer
 
 
 
-
 int main( int argc, char **argv)
 {
-ros::init(argc, argv,"node_action_server");
+ros::init(argc, argv, "node_action_server_node");
 ros::NodeHandle n;
 
 switchServer pserver(n, "start_node", boost::bind(&startnode, _1, &pserver), false);

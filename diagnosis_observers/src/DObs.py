@@ -4,7 +4,7 @@
 # and provides /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib.message; roslib.load_manifest('diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib
@@ -22,7 +22,7 @@ class Diagnostic_Observer(object):
 					self.top = top
 					self.topic = ""
 					self.topic_type = ""
-					self.pub = rospy.Publisher('/Diagnostic_Observation', Observations)
+					self.pub = rospy.Publisher('/observations', Observations)
 					self.param_dev_node = rospy.get_param('~dev_node', 'hokuyo_node')
 					thread.start_new_thread(self.check_topic,(self.top,2))
          
@@ -70,7 +70,8 @@ class Diagnostic_Observer(object):
     def check_topic(self,top,sleeptime,*args):
 				while True:
 						t = 0
-						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
+						m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
+						pubcode, statusMessage, topicList = m.getPublishedTopics(self.caller_id, "")
 						for item in topicList:
 							if item[0] == top:
 									self.Topic = True

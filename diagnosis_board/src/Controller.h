@@ -48,7 +48,7 @@ public:
 private:
    void create_threads();
    ros::NodeHandle n_;
-	 ros::Publisher pub_board_msr_;
+   ros::Publisher pub_board_msr_;
    diagnosis_msgs::DBoardMeasurments board_msr;
    int sock, bytes_recieved;  
    unsigned char send_data[255],recv_data[255];

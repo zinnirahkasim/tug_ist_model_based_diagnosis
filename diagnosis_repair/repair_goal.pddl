@@ -1,8 +1,0 @@
-(define (problem repair_goal)(:domain repair_domain)
-(:requirements :strips :equality :typing :negative-preconditions)
-(:objects transform gmapping p2os_driver sicklms scan odom tf yaw_odom imu_data )
-(:init (running transform)(running gmapping)(running p2os_driver)(running sicklms)(ok scan)(ok odom)(ok tf)
-(not_matched yaw_odom imu_data)
-(good p2os_driver)(good sicklms)
-(good transform)(bad gmapping))
-(:goal (and (good p2os_driver)(good sicklms)(good transform)(good gmapping))))

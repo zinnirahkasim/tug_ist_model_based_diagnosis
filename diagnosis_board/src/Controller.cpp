@@ -31,11 +31,11 @@
 Controller::Controller(char frq)
 {  
     
-    //host = gethostbyname("127.0.0.1");
-    host = gethostbyname("192.168.0.70");
+    host = gethostbyname("127.0.0.1");
+    //host = gethostbyname("192.168.0.70");
     server_addr.sin_family = AF_INET;     
-    //server_addr.sin_port = htons(5000);   
-    server_addr.sin_port = htons(9760);   
+    server_addr.sin_port = htons(5000);   
+    //server_addr.sin_port = htons(9760);   
     server_addr.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(server_addr.sin_zero),8);
     pub_board_msr_ = n_.advertise<diagnosis_msgs::DBoardMeasurments>("/board_measurments",1);
