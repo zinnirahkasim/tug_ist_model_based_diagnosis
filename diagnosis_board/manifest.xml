@@ -16,7 +16,6 @@
   <depend package="nav_msgs"/>
   <depend package="sensor_msgs"/>
   <depend package="std_msgs"/>
-  <depend package="joy"/>
   <depend package="tf"/>
 
 </package>
