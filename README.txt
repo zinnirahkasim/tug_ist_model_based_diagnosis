@@ -98,6 +98,15 @@ In model_based_diagnosis repositroy, there are seven packages
   - run.launch provides one launch file to run everything needed.
 
 ***********************************************
+COMPILING STACK and SETTING UP ENVIRONMENT
+***********************************************
+1. rosmake every packages (diagnosis_msgs, diagnosis_board, diagnosis_engine, diagnosis_repair)
+2. diagnosis_model and diagnois observers have already executable python codes
+3. set CLASSPATH="/home/../diagnosis_engine/java/:/home/../diagnosis_repair/java/:/home/../diagnosis_repair/java/pddl4j.jar"
+
+
+
+***********************************************
 SIMPLE TESTING EXAMPLE
 ***********************************************
 Step1.  $ roscore
