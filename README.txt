@@ -126,27 +126,19 @@ Step5.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch
          (check topic /diagnosis)
 
 Step6.  $ roslaunch diagnosis_launch action_servers.launch
+          (check start stop action server topics)
 
-
+Step7.  $ roslaunch diagnosis_launch diagnosis_repair.launch
+          (check the same start stop action server topics)
 
 ****Now everything should be consistent. To check the system functionality just apply follwoing command in separate terminal:
-Step6.  $ rosnode kill /test_node  
+Step6.  $ rosnode kill /aria  
           (check nodes list by "rosnode list" command)
         This will kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
-        bad[test_node] on /diagnosis topic. you can check it by "rostopic echo /diagnosis" command
-        Now to run the test node again you should
+        bad[test_node] on /diagnosis topic. you can check it by "rostopic echo /diagnosis" command. Repair engine will
+	execute start action server to start aria node. Again /diagnosis topic will publish new diagnosis after start of
+	aria node 
 
-        $ roslaunch diagnosis_launch test_node.launch
-
-----PLANNING and REPAIR-----
-Step7.  $ roslaunch diagnosis_launch action_servers.launch
-         (start the node action servers, planner also need them)
-
-Step8.  Set the path for repair_domain.pddl file in planner.launch and execute:  
-        $ roslaunch diagnosis_launch planner.launch  
-          (check "start_node", "stop_node",etc action servers)
-
-**** planner will generate a plan and NodeActionServer will restart the node.
 
 THANKS for using this tutorial...
 *****************IMPORTANT*************************************
