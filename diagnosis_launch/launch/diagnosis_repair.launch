@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+ <node pkg="diagnosis_repair" type="diagnosis_repair" name="diagnosis_repair" />
+ <node pkg="diagnosis_repair" type="diagnosis_planner.sh" name="diagnosis_planner" args="$(find diagnosis_repair)/repair_domain.pddl" />
+
+</launch>
