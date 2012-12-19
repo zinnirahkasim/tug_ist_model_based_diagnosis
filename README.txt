@@ -100,20 +100,22 @@ In model_based_diagnosis repositroy, there are seven packages
 ***********************************************
 COMPILING STACK and SETTING UP ENVIRONMENT
 ***********************************************
-1. rosmake every packages (diagnosis_msgs, diagnosis_board, diagnosis_engine, diagnosis_repair)
-2. diagnosis_model and diagnois observers have already executable python codes
-3. set CLASSPATH="/home/../diagnosis_engine/java/:/home/../diagnosis_repair/java/:/home/../diagnosis_repair/java/pddl4j.jar"
+1. rosmake the packages packages
+2. make directory names "classes/" inside "../diagnosis_repair/java/"
+3. set CLASSPATH="/home/../diagnosis_engine/java/:/home/../diagnosis_repair/java/classes/:/home/../diagnosis_repair/java/source/pddl4j.jar"
+4. execute sh file from terminal: rosrun diagnosis_repair compile_java_diagnosis_repair.sh
 
 
 
 ***********************************************
 SIMPLE TESTING EXAMPLE
 ***********************************************
-Step1.  $ roscore
-
-Step2.  $ roslaunch diagnosis_launch test_node.launch  
-          (check topic /test_node_topic)
+Step1.  $ roslaunch diagnosis_launch aria.launch  
+          (check topic /aria_node_topic)
       
+Step2.  $ roslaunch diagnosis_launch laser.launch  
+          (check topic /laser_node_topic)
+
 Step3.  $ roslaunch diagnosis_launch observers.launch  
           (check topic /observations)
 
@@ -122,6 +124,10 @@ Step4.  $ roslaunch diagnosis_launch diagnosis_model.launch
                
 Step5.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch 
          (check topic /diagnosis)
+
+Step6.  $ roslaunch diagnosis_launch action_servers.launch
+
+
 
 ****Now everything should be consistent. To check the system functionality just apply follwoing command in separate terminal:
 Step6.  $ rosnode kill /test_node  
