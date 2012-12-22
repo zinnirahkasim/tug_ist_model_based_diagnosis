@@ -2,110 +2,15 @@
 model_based_diagnosis user manual
 Copyright (c).2012. OWNER: Institute for Software Technology TU-Graz Austria.
 @authors: Safdar Zaman, Gerald Steinbauer. ( {szaman, steinbauer}@ist.tugraz.at )
+Please write to us if you have any question or if there is any problem.
 All rights reserved.
-***********************************************************
-
-NOTE: This is very initial version of model_base_diagnosis. Its on the way to updation.
-      If you find mistake(s) or any problem please contact us. Thanks.
-
-***********************************************************
-SETTING THE LOCAL ENVIRONMENT FOR model_based_diagnosis
-***********************************************************
-1. Use the current version of the rosjava from the https://rosjava.googlecode.com/hg given on http://www.ros.org/wiki/rosjava.
-2. Give local paths in manifest.xml of diagnosis_repair package for both "../model_based_diagnosis/jar/pddl4j.jar" and "../..actionlib...jar". 
-3. Export and set the path for "../model_based_diagnosis/jar/pddl4j.jar" in CLASSPATH variable too.
-  like command on terminal $ export CLASSPATH=/home/../model_based_diagnosis/jar/pddl4j.jar
-4. rosmake all necessary dependencies
-
-***********************************************************
-GENERAL INFORMATION
-***********************************************************
-In model_based_diagnosis repositroy, there are seven packages
-1. Diagnosis Messages
-  - Contains messages for model_based_diagnosis system.
-  - Messages are 
-    a) diagnosis_msgs/Diagnosis        
-    b) diagnosis_msgs/Observations
-    c) diagnosis_msgs/DiagnosisResults   
-    d) diagnosis_msgs/SystemModel
-    e) diagnosis_msgs/Board
-
-2. Diagnosis Observers
-  - Contains Observers which monitors the state of the node, topic or a specific value of a message.
-  - Observers are
-    a) General Observer (GObs)
-    This Observer observers the topic, if it is running with required frequency.
-       Syntax:  rosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>
-       e.g:     rosrun diagnosis_observers GObs.py _topic:=scan _frq:=10 _dev:=1 _ws:=10
-    
-    b) Diagnostic Observer (DObs)
-    This Observer observes data published on "/diagnostics" topic (ROS Diagnostics).
-       Syntax: rosrun diagnosis_observers DObs.py <device_node_name>
-       e.g:    rosrun diagnosis_observers DObs.py _dev_node:=hokuyo_node
-       "hokuyo_node" is the device node name being published on /diagnositcs topic.
-
-    c) Qualitative Observer (QObs)
-    This Observer observers the pattern(Inc, Dec, Const) of some value published on the topic. 
-       syntax: rosrun diagnosis_observers QObs.py <Topic> <Field_heirarichy> <WindowSize>
-       e.g:    rosrun diagnosis_observers QObs.py _topic:=/odom _field:=pose.pose.position.x _ws:=1000
-
-    d) Multiple Observer (MObs)
-    This Observer observers trigging of a topic. It checks if the topic triggers in specific time interval when it gets triggered.
-       syntax: rosrun diagnosis_observers MObs.py <Topic_Triggering> <Topic_ToBeTriggered> <Time_milisec>
-       e.g:    rosrun diagnosis_observers MObs.py _in_topic:=Topic1 _out_topic:=Topic2 _tm:=500
-
-    e) Property Observer (PObs)
-    This Observer observes the properties like (Memory, CPU usage) by a particular topic/node.
-       syntax: rosrun diagnosis_observers PObs.py <Topic/Node> <Mem/Cpu>
-       e.g: Under work.
-
-3. Diagnosis Model Server
-  - action server node
-  - takes diagnosis_model.yaml file as parameter
-  - provides model to the diagnosis engine
-  - to run it, please see "diagnosis_model.launch" in diagnosis_launch/launch
-
-
-4. Diagnosis Engine
-  - Contains the java files relevant to diagnosis
-  - Contains java packages for set of connected files.
-  - diagnosis_engine node for execution
-  - receives diagnosis model from the diagnosis server
-  - to run it, please see "diagnosis_engine.launch" in diagnosis_launch/launch
-
-5. Diagnosis Repair
-  - Contains java files relevant to planning and repair
-  - Contains java packages for set of related files.
-  - plannerRepair node for execution
-  - takes repair_domain.pddl file as parameter
-  - to run it, please see "planner.launch" in diagnosis_launch/launch
-
-6. Action Servers
-  - four "start_node","stop_node","power_up" and "shutdown".
-  - are in diagnosis_board package
-  - provides services to diagnosis_repair to run/stop the nodes or switch on/off the channels
-  - to run it, please see "action_servers.launch" in diagnosis_launch/launch 
-
-7. Diagnosis Board
-  - contains board controller and action servers "start_node","stop_node","power_up" and "shutdown".
-  - specific to the diagnostic board made for our TEDUSAR robot
-  - publishes hardware information for ROS usage
-  - to run it, please see "board_controller.launch" in diagnosis_launch/launch
-
-8. Diagnosis Launch
-  - contains different launch files.
-  - individual launch files are for running nodes, observers, action servers, diagnosis model, diagnosis engine and planner.
-  - run.launch provides one launch file to run everything needed.
-
-***********************************************
-COMPILING STACK and SETTING UP ENVIRONMENT
-***********************************************
-1. rosmake the packages packages
-2. make directory names "classes/" inside "../diagnosis_repair/java/"
-3. set CLASSPATH="/home/../diagnosis_engine/java/:/home/../diagnosis_repair/java/classes/:/home/../diagnosis_repair/java/source/pddl4j.jar"
-4. execute sh file from terminal: rosrun diagnosis_repair compile_java_diagnosis_repair.sh
-
-
+**********************************************************************
+SETTING UP CLASSPATH VARIABLE and COMPILATION (ONLY ONCE)
+**********************************************************************
+1. set CLASSPATH to "/home/.../diagnosis_repair/java/source/pddl4j.jar"
+2. rosmake all the packages
+3. execute "rosrun diagnosis_engine compile_4_java.sh"
+4. execute "rosrun diagnosis_repair compile_4_java.sh"
 
 ***********************************************
 SIMPLE TESTING EXAMPLE
@@ -122,7 +27,7 @@ Step3.  $ roslaunch diagnosis_launch observers.launch
 Step4.  $ roslaunch diagnosis_launch diagnosis_model.launch 
          (check action server for diagnosis model)
                
-Step5.  $ roslaunch	diagnosis_launch diagnosis_enigne.launch 
+Step5.  $ roslaunch   diagnosis_launch diagnosis_enigne.launch 
          (check topic /diagnosis)
 
 Step6.  $ roslaunch diagnosis_launch action_servers.launch
@@ -140,7 +45,6 @@ Step6.  $ rosnode kill /aria
 	aria node 
 
 
-THANKS for using this tutorial...
 *****************IMPORTANT*************************************
 THE STACK IS BEING WORKED AT THE MOMEN, THEREFORE YOUR FEEDBACK 
 WILL BE HIGHLY APPRECIATABLE. 
