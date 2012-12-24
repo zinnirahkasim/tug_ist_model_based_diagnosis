@@ -7,7 +7,7 @@ All rights reserved.
 **********************************************************************
 SETTING UP CLASSPATH VARIABLE and COMPILATION (ONLY ONCE)
 **********************************************************************
-1. set CLASSPATH to "/home/.../diagnosis_repair/java/source/pddl4j.jar"
+1. export CLASSPATH="/home/.../diagnosis_repair/java/classes/:/home/.../diagnosis_repair/java/source/pddl4j.jar"
 2. rosmake all the packages
 3. execute "rosrun diagnosis_engine compile_4_java.sh"
 4. execute "rosrun diagnosis_repair compile_4_java.sh"
