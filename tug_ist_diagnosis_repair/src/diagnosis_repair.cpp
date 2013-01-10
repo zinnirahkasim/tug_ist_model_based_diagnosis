@@ -26,7 +26,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 ##
-# Diagnosis Repair is a TCP protocol based client that interacts with diagnosis_planner for repair.
+# Diagnosis Repair is a TCP protocol based client that interacts with tug_ist_diagnosis_planner for repair.
 
 */
 
@@ -44,13 +44,13 @@
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
-#include <diagnosis_msgs/Observations.h>
-#include <diagnosis_msgs/Diagnosis.h>
-#include <diagnosis_msgs/DiagnosisResults.h>
-#include <diagnosis_msgs/DiagnosisRepairAction.h>
-#include <diagnosis_msgs/DiagnosisRepairGoal.h>
-#include <diagnosis_msgs/DiagnosisRepairResult.h>
-typedef actionlib::SimpleActionClient<diagnosis_msgs::DiagnosisRepairAction> Node_client;
+#include <tug_ist_diagnosis_msgs/Observations.h>
+#include <tug_ist_diagnosis_msgs/Diagnosis.h>
+#include <tug_ist_diagnosis_msgs/DiagnosisResults.h>
+#include <tug_ist_diagnosis_msgs/DiagnosisRepairAction.h>
+#include <tug_ist_diagnosis_msgs/DiagnosisRepairGoal.h>
+#include <tug_ist_diagnosis_msgs/DiagnosisRepairResult.h>
+typedef actionlib::SimpleActionClient<tug_ist_diagnosis_msgs::DiagnosisRepairAction> Node_client;
 using std::vector;
 using namespace std;
 class Diagnosis_Repair_Client
@@ -67,8 +67,8 @@ protected:
          struct sockaddr_in server_addr;  
          char *send_data;
          vector<std::string> obs_list;
-         diagnosis_msgs::DiagnosisRepairGoal goal;
-	 diagnosis_msgs::DiagnosisRepairResult result;
+         tug_ist_diagnosis_msgs::DiagnosisRepairGoal goal;
+	 tug_ist_diagnosis_msgs::DiagnosisRepairResult result;
          Node_client strn,stpn;
          bool executing_plan;
          map<string,Node_client> ac_map;
@@ -208,7 +208,7 @@ public:
 	}while(!receive_end);
   }
 
-  void observationsCB(const diagnosis_msgs::ObservationsConstPtr & obs_msg){
+  void observationsCB(const tug_ist_diagnosis_msgs::ObservationsConstPtr & obs_msg){
                 for(int o=0;o<obs_msg->obs.size();o++){
                    std::string s = obs_msg->obs[o].c_str();
                    if (std::find(obs_list.begin(), obs_list.end(), s) != obs_list.end()){
@@ -236,8 +236,8 @@ public:
 
   }
 
-  void diagnosisCB(const diagnosis_msgs::DiagnosisConstPtr & diag_msg){
-           vector<diagnosis_msgs::DiagnosisResults> diag_results;
+  void diagnosisCB(const tug_ist_diagnosis_msgs::DiagnosisConstPtr & diag_msg){
+           vector<tug_ist_diagnosis_msgs::DiagnosisResults> diag_results;
            diag_results = diag_msg->diag;
            vector<std::string> good,bad;
            good = diag_results[0].good;

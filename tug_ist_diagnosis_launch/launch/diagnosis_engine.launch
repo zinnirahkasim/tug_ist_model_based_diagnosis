@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <launch>
- <node pkg="diagnosis_engine" type="diagnosis_engine.sh" name="diagnosis_engine" args="127.0.0.1 10000"/>
- <node pkg="diagnosis_engine" type="diagnosis_engine_controller" name="diagnosis_engine_controller" />
+ <node pkg="tug_ist_diagnosis_engine" type="diagnosis_engine.sh" name="diagnosis_engine" args="127.0.0.1 10000"/>
+ <node pkg="tug_ist_diagnosis_engine" type="diagnosis_engine_controller" name="diagnosis_engine_controller" />
 </launch>

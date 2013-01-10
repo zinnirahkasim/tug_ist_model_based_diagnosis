@@ -33,10 +33,10 @@
 # and publishes data on /diagnosis_model topic compatible for our Model Based Diagnosis.
 
 
-import roslib; roslib.load_manifest('diagnosis_model')
+import roslib; roslib.load_manifest('tug_ist_diagnosis_model')
 import rospy
 import actionlib
-import diagnosis_msgs.msg
+import tug_ist_diagnosis_msgs.msg
 import time
 import sys
 import os
@@ -45,14 +45,14 @@ import yaml
 class ModelActionServer(object):
 
   def __init__(self):
-     self._feedback = diagnosis_msgs.msg.SystemModelFeedback()
-     self._result   = diagnosis_msgs.msg.SystemModelResult()
+     self._feedback = tug_ist_diagnosis_msgs.msg.SystemModelFeedback()
+     self._result   = tug_ist_diagnosis_msgs.msg.SystemModelResult()
      
   def start(self):
     rospy.init_node('diag_model_server_node', anonymous=True)
     self.param_file = rospy.get_param('~model', 'diagnosis_model.yaml')
-    self._as = actionlib.SimpleActionServer('diagnosis_model_server', diagnosis_msgs.msg.SystemModelAction, execute_cb=self.execute_cb, auto_start = False)
-    self.pub = rospy.Publisher('diagnosis_model', diagnosis_msgs.msg.SystemModelResult)
+    self._as = actionlib.SimpleActionServer('diagnosis_model_server', tug_ist_diagnosis_msgs.msg.SystemModelAction, execute_cb=self.execute_cb, auto_start = False)
+    self.pub = rospy.Publisher('diagnosis_model', tug_ist_diagnosis_msgs.msg.SystemModelResult)
     print 'Diagnosis Model Server is up......'
     self._as.start()
     
@@ -88,9 +88,9 @@ class ModelActionServer(object):
   def report_error(self):
 				print '\nError:'
 				print 'Either \'diagnosis_model.yaml\' does not exist or the path is wrong.'
-				print 'Syntax: rosrun diagnosis_model diagnosis_model_server.py <Path_of_the_Yaml_file_parameter>'
-				print 'e.g. rosrun diagnosis_model diagnosis_model_server.py _model:=path_to_file/diagnosis_model.yaml'
-				print 'NOTE: \'diagnosis_model\' directory already contains \'diagnosis_model.yaml\' .'
+				print 'Syntax: rosrun tug_ist_diagnosis_model diagnosis_model_server.py <Path_of_the_Yaml_file_parameter>'
+				print 'e.g. rosrun tug_ist_diagnosis_model diagnosis_model_server.py _model:=path_to_file/diagnosis_model.yaml'
+				print 'NOTE: \'tug_ist_diagnosis_model\' directory already contains \'diagnosis_model.yaml\' .'
 				sys.exit(os.EX_USAGE)						
       
 if __name__ == '__main__':

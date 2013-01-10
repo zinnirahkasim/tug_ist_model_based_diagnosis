@@ -4,12 +4,12 @@
 # and provides /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # @authors Safdar Zaman, Gerald Steinbauer. (szaman@ist.tugraz.at, steinbauer@ist.tugraz.at)
 
-import roslib.message; roslib.load_manifest('diagnosis_observers')
+import roslib.message; roslib.load_manifest('tug_ist_diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib
 import os
-from diagnosis_msgs.msg import Observations
+from tug_ist_diagnosis_msgs.msg import Observations
 import thread
 import time
 
@@ -85,8 +85,8 @@ class Diagnostic_Observer(object):
 
 					
     def report_error(self):
-			print 'rosrun diagnosis_observers DObs.py <device_node_name>'
-			print 'e.g rosrun diagnosis_observers DObs.py _dev_node:=hokuyo_node'
+			print 'rosrun tug_ist_diagnosis_observers DObs.py <device_node_name>'
+			print 'e.g rosrun tug_ist_diagnosis_observers DObs.py _dev_node:=hokuyo_node'
 			sys.exit(os.EX_USAGE)
 
 

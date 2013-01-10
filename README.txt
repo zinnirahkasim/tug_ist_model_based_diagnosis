@@ -7,33 +7,33 @@ All rights reserved.
 **********************************************************************
 SETTING UP CLASSPATH VARIABLE and COMPILATION (ONLY ONCE)
 **********************************************************************
-1. export CLASSPATH="/home/.../diagnosis_repair/java/classes/:/home/.../diagnosis_repair/java/source/pddl4j.jar"
+1. export CLASSPATH="/home/.../tug_ist_diagnosis_repair/java/classes/:/home/.../tug_ist_diagnosis_repair/java/source/pddl4j.jar"
 2. rosmake all the packages
-3. execute "rosrun diagnosis_engine compile_4_java.sh"
-4. execute "rosrun diagnosis_repair compile_4_java.sh"
+3. execute "rosrun tug_ist_diagnosis_engine compile_4_java.sh"
+4. execute "rosrun tug_ist_diagnosis_repair compile_4_java.sh"
 
 ***********************************************
 SIMPLE TESTING EXAMPLE
 ***********************************************
-Step1.  $ roslaunch diagnosis_launch aria.launch  
+Step1.  $ roslaunch tug_ist_diagnosis_launch aria.launch  
           (check topic /aria_node_topic)
       
-Step2.  $ roslaunch diagnosis_launch laser.launch  
+Step2.  $ roslaunch tug_ist_diagnosis_launch laser.launch  
           (check topic /laser_node_topic)
 
-Step3.  $ roslaunch diagnosis_launch observers.launch  
+Step3.  $ roslaunch tug_ist_diagnosis_launch observers.launch  
           (check topic /observations)
 
-Step4.  $ roslaunch diagnosis_launch diagnosis_model.launch 
+Step4.  $ roslaunch tug_ist_diagnosis_launch diagnosis_model.launch 
          (check action server for diagnosis model)
                
-Step5.  $ roslaunch   diagnosis_launch diagnosis_enigne.launch 
+Step5.  $ roslaunch tug_ist_diagnosis_launch diagnosis_engine.launch 
          (check topic /diagnosis)
 
-Step6.  $ roslaunch diagnosis_launch action_servers.launch
+Step6.  $ roslaunch tug_ist_diagnosis_launch action_servers.launch
           (check start stop action server topics)
 
-Step7.  $ roslaunch diagnosis_launch diagnosis_repair.launch
+Step7.  $ roslaunch tug_ist_diagnosis_launch diagnosis_repair.launch
           (check the same start stop action server topics)
 
 ****Now everything should be consistent. To check the system functionality just apply follwoing command in separate terminal:

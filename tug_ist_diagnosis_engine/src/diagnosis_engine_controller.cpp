@@ -26,7 +26,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 ##
-# Diagnosis Engine Cotroller is a TCP protocole based client that interact with diagnosis_engine.
+# Diagnosis Engine Cotroller is a TCP protocole based client that interact with tug_ist_diagnosis_engine.
 
 */
 #include <sys/socket.h>
@@ -43,10 +43,10 @@
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
-#include <diagnosis_msgs/SystemModelAction.h>
-#include <diagnosis_msgs/Observations.h>
-#include <diagnosis_msgs/Diagnosis.h>
-#include <diagnosis_msgs/DiagnosisResults.h>
+#include <tug_ist_diagnosis_msgs/SystemModelAction.h>
+#include <tug_ist_diagnosis_msgs/Observations.h>
+#include <tug_ist_diagnosis_msgs/Diagnosis.h>
+#include <tug_ist_diagnosis_msgs/DiagnosisResults.h>
 #include <time.h>
 
 #define POST_SD_HEADER "POST sessionA ADD_SENTENCES SD ATP\r\nNumber-Rules: "
@@ -56,7 +56,7 @@
 
 const int NUM_SECONDS = 1;
 
-typedef actionlib::SimpleActionClient<diagnosis_msgs::SystemModelAction> modelClient;
+typedef actionlib::SimpleActionClient<tug_ist_diagnosis_msgs::SystemModelAction> modelClient;
 using std::vector;
 class Diagnosis_Client
 {
@@ -90,13 +90,13 @@ public:
 
     Diagnosis_Client(ros::NodeHandle nh)
     {      nh_ = nh;
-           diag_pub = nh_.advertise<diagnosis_msgs::Diagnosis>("/diagnosis", 100); 
+           diag_pub = nh_.advertise<tug_ist_diagnosis_msgs::Diagnosis>("/diagnosis", 100); 
            mdl_sub = nh_.subscribe("/diagnosis_model", 1, &Diagnosis_Client::modelCB, this);
            obs_sub = nh_.subscribe("/observations", 1, &Diagnosis_Client::observationsCB, this);
            ROS_INFO("\nWaiting for the Diagnosis Model Action Server.......");
            modelClient mc("diagnosis_model_server", true);
-           diagnosis_msgs::SystemModelGoal goal;
-  	   diagnosis_msgs::SystemModelResult result;
+           tug_ist_diagnosis_msgs::SystemModelGoal goal;
+  	   tug_ist_diagnosis_msgs::SystemModelResult result;
   	   goal.goal = 1;
            mc.waitForServer();
            mc.sendGoal(goal);
@@ -190,7 +190,7 @@ public:
 
   }
 
-  void make_false_rule(diagnosis_msgs::SystemModelResult model) {
+  void make_false_rule(tug_ist_diagnosis_msgs::SystemModelResult model) {
            char a[32];
            FALSE_RULES = "";
            for(int p=0;p<no_of_props;p++){
@@ -204,7 +204,7 @@ public:
          
   }
   
-  void make_SD_rules(diagnosis_msgs::SystemModelResult model){
+  void make_SD_rules(tug_ist_diagnosis_msgs::SystemModelResult model){
            char a[32];
            sprintf(a, "%d", no_of_rules);
            std::string str="";
@@ -221,7 +221,7 @@ public:
            recieve_from_server();
            
   }
-   void observationsCB(const diagnosis_msgs::ObservationsConstPtr & obs_msg){
+   void observationsCB(const tug_ist_diagnosis_msgs::ObservationsConstPtr & obs_msg){
 		this_time = clock();
                 for(int o=0;o<obs_msg->obs.size();o++){
                    std::string s = obs_msg->obs[o].c_str();
@@ -266,7 +266,7 @@ public:
       }
   }
 
-  void modelCB(const diagnosis_msgs::SystemModelResultConstPtr & mdl_msg){
+  void modelCB(const tug_ist_diagnosis_msgs::SystemModelResultConstPtr & mdl_msg){
            disconnect_to_Server();
            connect_to_Server();
            no_of_rules = mdl_msg->rules.size();
@@ -285,7 +285,7 @@ public:
       }
   }
 
-  void getCOMP(diagnosis_msgs::SystemModelResult model){
+  void getCOMP(tug_ist_diagnosis_msgs::SystemModelResult model){
       size_t found_start, found_end;
       for(int r=0;r<no_of_rules;r++){
               std::string rule = model.rules[r].c_str();
@@ -311,9 +311,9 @@ public:
   }
 
   void publishDiag(vector<std::string> diag_vec){
-       vector<diagnosis_msgs::DiagnosisResults> diag_results;
-       diagnosis_msgs::DiagnosisResults diag_result;
-       diagnosis_msgs::Diagnosis diagnosis;
+       vector<tug_ist_diagnosis_msgs::DiagnosisResults> diag_results;
+       tug_ist_diagnosis_msgs::DiagnosisResults diag_result;
+       tug_ist_diagnosis_msgs::Diagnosis diagnosis;
        vector<std::string> good,bad;
        bool diag_found = false;
        for (int v=0; v<diag_vec.size(); v++){

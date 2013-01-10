@@ -38,7 +38,7 @@ Controller::Controller(unsigned char frq)
     //server_addr.sin_port = htons(9760);   
     server_addr.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(server_addr.sin_zero),8);
-    pub_board_msr_ = n_.advertise<diagnosis_msgs::DBoardMeasurments>("/board_measurments",1);
+    pub_board_msr_ = n_.advertise<tug_ist_diagnosis_msgs::DBoardMeasurments>("/board_measurments",1);
     initFrq = frq;
     
 }
@@ -110,8 +110,8 @@ void Controller::processBuffer(unsigned char *buf,char command)
      int channels = *buf;
      buf++;
      board_msr.o_time = 111.11;
-     diagnosis_msgs::Channel channel;
-     std::vector<diagnosis_msgs::Channel> msr_vector;
+     tug_ist_diagnosis_msgs::Channel channel;
+     std::vector<tug_ist_diagnosis_msgs::Channel> msr_vector;
      for(int chnl=0;chnl<channels;chnl++)
       { 
         if(command==2)

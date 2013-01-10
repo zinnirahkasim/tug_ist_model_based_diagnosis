@@ -26,20 +26,20 @@
 * DAMAGE.
 */
 #include <actionlib/server/simple_action_server.h>
-#include <diagnosis_msgs/DiagnosisRepairAction.h>
+#include <tug_ist_diagnosis_msgs/DiagnosisRepairAction.h>
 #include <string>
 #include <stdlib.h>
 int i;
 using namespace std;
 
-typedef actionlib::SimpleActionServer<diagnosis_msgs::DiagnosisRepairAction> switchServer;
+typedef actionlib::SimpleActionServer<tug_ist_diagnosis_msgs::DiagnosisRepairAction> switchServer;
 
 
-void startnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
+void startnode(const tug_ist_diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
 { 
   i++;
-  diagnosis_msgs::DiagnosisRepairResult result_;
-	string command("roslaunch diagnosis_launch " + goal->parameter[0] + ".launch &");
+  tug_ist_diagnosis_msgs::DiagnosisRepairResult result_;
+	string command("roslaunch tug_ist_diagnosis_launch " + goal->parameter[0] + ".launch &");
   ROS_INFO("START NODE Server Started. for %s",goal->parameter[0].c_str());
   int k = system(command.c_str());
   sleep(3);
@@ -50,9 +50,9 @@ void startnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSe
 }
 
 
-void stopnode(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
+void stopnode(const tug_ist_diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
 {
-  diagnosis_msgs::DiagnosisRepairResult result_;
+  tug_ist_diagnosis_msgs::DiagnosisRepairResult result_;
 	ROS_INFO("STOP NODE Server Started.");
   string command("rosnode kill /" + goal->parameter[0]);
   int k=system(command.c_str());

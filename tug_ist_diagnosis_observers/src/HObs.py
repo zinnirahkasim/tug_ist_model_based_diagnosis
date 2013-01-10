@@ -31,12 +31,12 @@
 # and publishes the state of the channels wehether ON or OFF.
 # It publishes this trned of the vaule overs /observations topic compatible for our Model Based Diagnosis.
 
-import roslib.message; roslib.load_manifest('diagnosis_observers')
+import roslib.message; roslib.load_manifest('tug_ist_diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib
 import os
-from diagnosis_msgs.msg import Observations
+from tug_ist_diagnosis_msgs.msg import Observations
 import thread
 import time
 import traceback
@@ -114,7 +114,7 @@ class Hardware_Observer(object):
     					
     def report_error(self):
 			print 'Incorrect Command:'
-			print 'use [rosrun diagnosis_observers HObs.py]'
+			print 'use [rosrun tug_ist_diagnosis_observers HObs.py]'
 			sys.exit(os.EX_USAGE)
 
     def throws():

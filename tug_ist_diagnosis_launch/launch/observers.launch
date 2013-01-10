@@ -2,22 +2,22 @@
 <launch>
  <!-- master auto="start"/ -->
  
- <node pkg="diagnosis_observers" type="NObs.py" name="ariaNObserver" >
+ <node pkg="tug_ist_diagnosis_observers" type="NObs.py" name="ariaNObserver" >
     <param name="node" value="aria" />
  </node>
- <node pkg="diagnosis_observers" type="NObs.py" name="laserNObserver1" >
+ <node pkg="tug_ist_diagnosis_observers" type="NObs.py" name="laserNObserver1" >
     <param name="node" value="laser" />
  </node>
  
 
- <node pkg="diagnosis_observers" type="GObs.py" name="ariaGObserver" >
+ <node pkg="tug_ist_diagnosis_observers" type="GObs.py" name="ariaGObserver" >
   <param name="topic" value="/aria_node_topic" />
   <param name="frq" value="10" />
   <param name="dev" value="5" />
   <param name="ws" value="10" />
  </node>
 
- <node pkg="diagnosis_observers" type="GObs.py" name="laserGObserver" >
+ <node pkg="tug_ist_diagnosis_observers" type="GObs.py" name="laserGObserver" >
   <param name="topic" value="/laser_node_topic" />
   <param name="frq" value="10" />
   <param name="dev" value="5" />

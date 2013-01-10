@@ -1,13 +1,12 @@
 <package>
-  <description brief="diagnosis_msgs">
-
-     diagnosis_msgs
+  <description brief="DIAGNOSIS MSGS">
+This package contains all neccessary message types required for diagnosis.
 
   </description>
   <author>Safdar Zaman</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/diagnosis_msgs</url>
+  <url>http://ros.org/wiki/tug_ist_diagnosis_msgs</url>
   <depend package="actionlib"/>
   <depend package="actionlib_msgs"/>
 

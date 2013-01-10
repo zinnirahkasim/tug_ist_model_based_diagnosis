@@ -1,15 +1,15 @@
 <package>
-  <description brief="diagnosis_repair">
+  <description brief="DIAGNOSIS REPAIR">
 
-     diagnosis_repair
+This package provides repair. It used PDDL based planner that makes a plan for the action.
 
   </description>
   <author>Safdar Zaman</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/diagnosis_repair</url>
+  <url>http://ros.org/wiki/tug_ist_diagnosis_repair</url>
   <depend package="roscpp" />
-  <depend package="diagnosis_msgs" />
+  <depend package="tug_ist_diagnosis_msgs" />
   <depend package="tf"/>
 </package>
 

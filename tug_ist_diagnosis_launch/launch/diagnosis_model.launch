@@ -2,11 +2,11 @@
 <launch>
  <!-- master auto="start"/ -->
  
- <node pkg="diagnosis_model" 
+ <node pkg="tug_ist_diagnosis_model" 
         type="diagnosis_model_server.py" 
         name="DiagnosisModelServer" 
         output="log">
-  <param name="model" value="$(find diagnosis_model)/diagnosis_model.yaml" />
+  <param name="model" value="$(find tug_ist_diagnosis_model)/diagnosis_model.yaml" />
   </node>
 
 </launch>

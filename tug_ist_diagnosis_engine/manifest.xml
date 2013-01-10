@@ -1,15 +1,15 @@
 <package>
-  <description brief="diagnosis_engine">
-
-     diagnosis_engine
+  <description brief="DIAGNOSIS ENGINE">
+This package provides a diagnosis engiene. It works as model based diagnosis engine.
+It takes model from model server and provides diagnosis.
 
   </description>
   <author>Safdar Zaman</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/diagnosis_engine</url>
+  <url>http://ros.org/wiki/tug_ist_diagnosis_engine</url>
   <depend package="roscpp" />
-  <depend package="diagnosis_msgs" />
+  <depend package="tug_ist_diagnosis_msgs" />
   <depend package="tf"/>
 </package>
 

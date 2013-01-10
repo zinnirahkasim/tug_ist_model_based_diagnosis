@@ -31,13 +31,13 @@
 # and provides /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs three parameters Trigerring topic, trigerred topic and time (ms).
 
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib; roslib.load_manifest('tug_ist_diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib
 import os
 from std_msgs.msg import String
-from diagnosis_msgs.msg import Observations
+from tug_ist_diagnosis_msgs.msg import Observations
 import time
 import thread
 
@@ -147,8 +147,8 @@ class Multiple_Observer_Triggered(object):
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 
     def report_error(self):
-				print 'rosrun diagnosis_observers MObs.py <Topic_Triggering> <Topic_ToBeTriggered> <Time_milisec>'
-				print 'e.g rosrun diagnosis_observers MObs.py _in_topic:=Topic1 _out_topic:=Topic2 _tm:=500'
+				print 'rosrun tug_ist_diagnosis_observers MObs.py <Topic_Triggering> <Topic_ToBeTriggered> <Time_milisec>'
+				print 'e.g rosrun tug_ist_diagnosis_observers MObs.py _in_topic:=Topic1 _out_topic:=Topic2 _tm:=500'
 				sys.exit(os.EX_USAGE)
 
 

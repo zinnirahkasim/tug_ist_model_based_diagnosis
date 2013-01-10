@@ -33,12 +33,12 @@
 # It publishes this trned of the vaule overs /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs topic name, vaule name in the message with all fields seperated by space, window size(miliseconds).
 
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib; roslib.load_manifest('tug_ist_diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib
 import os
-from diagnosis_msgs.msg import Observations
+from tug_ist_diagnosis_msgs.msg import Observations
 import time
 import numpy as np
 import math
@@ -246,8 +246,8 @@ class Qualitative_Observer(object):
 						time.sleep(sleeptime) #sleep for a specified amount of time.		
 
     def report_error(self):
-				print 'rosrun diagnosis_observers QObs.py <Topic> <Field_variable> <WindowSize>'
-				print 'e.g rosrun diagnosis_observers QObs.py _topic:=/odom _field:=pose.pose.position.x _ws:=1000'
+				print 'rosrun tug_ist_diagnosis_observers QObs.py <Topic> <Field_variable> <WindowSize>'
+				print 'e.g rosrun tug_ist_diagnosis_observers QObs.py _topic:=/odom _field:=pose.pose.position.x _ws:=1000'
 				sys.exit(os.EX_USAGE)
 			
 if __name__=="__main__":

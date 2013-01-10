@@ -28,23 +28,23 @@
 
 #include "Controller.h"
 #include <actionlib/server/simple_action_server.h>
-#include <diagnosis_msgs/DiagnosisRepairAction.h>
-#include <diagnosis_msgs/BoardAction.h>
+#include <tug_ist_diagnosis_msgs/DiagnosisRepairAction.h>
+#include <tug_ist_diagnosis_msgs/BoardAction.h>
 #include <string>
 #include <stdlib.h>
 
 using namespace std;
 
-typedef actionlib::SimpleActionServer<diagnosis_msgs::BoardAction> boardServer;
-typedef actionlib::SimpleActionServer<diagnosis_msgs::DiagnosisRepairAction> switchServer;
+typedef actionlib::SimpleActionServer<tug_ist_diagnosis_msgs::BoardAction> boardServer;
+typedef actionlib::SimpleActionServer<tug_ist_diagnosis_msgs::DiagnosisRepairAction> switchServer;
 
 Controller *contl;
 
 
-void power_up(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
+void power_up(const tug_ist_diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
 {
  
-  diagnosis_msgs::DiagnosisRepairResult result_;
+  tug_ist_diagnosis_msgs::DiagnosisRepairResult result_;
   char chnl = contl->get_chnl_from_map(goal->parameter[0].c_str());
   ROS_INFO("Request Call for Power Up for dev %s on Channel %d is received.",goal->parameter[0].c_str(),chnl);
   if(chnl!=-1)
@@ -61,9 +61,9 @@ void power_up(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSer
 }
 
 
-void shut_down(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
+void shut_down(const tug_ist_diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchServer* as)
 {
-  diagnosis_msgs::DiagnosisRepairResult result_;
+  tug_ist_diagnosis_msgs::DiagnosisRepairResult result_;
   char chnl = contl->get_chnl_from_map(goal->parameter[0].c_str());
   ROS_INFO("Request Call for Shut down for dev %s on Channel %c is received.",goal->parameter[0].c_str(),chnl);
   if(chnl!=-1)
@@ -84,7 +84,7 @@ void shut_down(const diagnosis_msgs::DiagnosisRepairGoalConstPtr& goal, switchSe
 
 
 
-void execute(const diagnosis_msgs::BoardGoalConstPtr& goal, boardServer* as)
+void execute(const tug_ist_diagnosis_msgs::BoardGoalConstPtr& goal, boardServer* as)
 {
 
   int i;

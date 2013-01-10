@@ -14,8 +14,8 @@
 #include <queue>
 #include <map>
 #include "Message.h"
-#include <diagnosis_msgs/DBoardMeasurments.h>
-#include <diagnosis_msgs/Channel.h>
+#include <tug_ist_diagnosis_msgs/DBoardMeasurments.h>
+#include <tug_ist_diagnosis_msgs/Channel.h>
 
 //typedef actionlib::SimpleActionServer<diagnosis_board::BoardAction> boardServer;
 
@@ -49,7 +49,7 @@ private:
    void create_threads();
    ros::NodeHandle n_;
    ros::Publisher pub_board_msr_;
-   diagnosis_msgs::DBoardMeasurments board_msr;
+   tug_ist_diagnosis_msgs::DBoardMeasurments board_msr;
    int sock, bytes_recieved;  
    unsigned char send_data[255],recv_data[255];
    unsigned char buffer[255];

@@ -1,16 +1,16 @@
 <package>
-  <description brief="diagnosis_model">
+  <description brief="DIAGNOSIS MODEL">
 
-     diagnosis_model
+This package provides diagnosis model. Diagnosis Model is a description of the correct system behavior.
 
   </description>
   <author>Safdar Zaman</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/diagnosis_model</url>
+  <url>http://ros.org/wiki/tug_ist_diagnosis_model</url>
   <depend package="actionlib"/>
   <depend package="rospy"/>
-  <depend package="diagnosis_msgs"/>
+  <depend package="tug_ist_diagnosis_msgs"/>
   
 
 </package>

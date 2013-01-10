@@ -31,14 +31,14 @@
 # It publishes this property over /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs topic name, proerty name.
 
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib; roslib.load_manifest('tug_ist_diagnosis_observers')
 import commands
 import rospy
 import subprocess
 import sys
 import os
 import shlex
-from diagnosis_msgs.msg import Observations
+from tug_ist_diagnosis_msgs.msg import Observations
 import time
 
 class Property_Observer(object):
@@ -92,8 +92,8 @@ class Property_Observer(object):
 
 def report_error():
 		print """
-rosrun diagnosis_observers PObs.py _node:=<Node_name> _property:=<Mem/Cpu> _th:=<Threshold> _dev:=<Deviation>
-e.g rosrun diagnosis_observers PObs.py _node:=openni_camera _property:=CPU _th:=.2 _dev:=.1'
+rosrun tug_ist_diagnosis_observers PObs.py _node:=<Node_name> _property:=<Mem/Cpu> _th:=<Threshold> _dev:=<Deviation>
+e.g rosrun tug_ist_diagnosis_observers PObs.py _node:=openni_camera _property:=CPU _th:=.2 _dev:=.1'
 """
 		sys.exit(os.EX_USAGE)        
     

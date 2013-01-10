@@ -31,12 +31,12 @@
 # The Node Observer (NObs) observers the given node 
 # and publishes the state of this not either running or not running.
 
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib; roslib.load_manifest('tug_ist_diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib
 import os
-from diagnosis_msgs.msg import Observations
+from tug_ist_diagnosis_msgs.msg import Observations
 import time
 
 class Node_Observer(object):

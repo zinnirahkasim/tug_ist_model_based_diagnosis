@@ -1,18 +1,19 @@
 <package>
-  <description brief="diagnosis_observers">
+  <description brief="DIAGNOSIS OBSERVERS">
 
-     diagnosis_observers
+This package provides all oservers. An observer is a software entity that observers particular 
+property of the system or part of the system.
 
   </description>
   <author>Safdar Zaman</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/diagnosis_observers</url>
+  <url>http://ros.org/wiki/tug_ist_diagnosis_observers</url>
   <depend package="roslib"/>
   <depend package="rospy"/>
   <depend package="rosgraph"/>
   <depend package="std_msgs"/>
-  <depend package="diagnosis_msgs"/>
+  <depend package="tug_ist_diagnosis_msgs"/>
   <depend package="rostopic"/>
   <depend package="diagnostic_msgs"/>
  

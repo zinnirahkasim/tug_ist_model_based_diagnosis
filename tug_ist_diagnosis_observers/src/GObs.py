@@ -32,13 +32,13 @@
 # and provides /Diagnosic_Observation topic compatible for our Model Based Diagnosis.
 # It needs three parameters Required frequency, frequency deviation and window size.
 
-import roslib.message; roslib.load_manifest('diagnosis_observers')
+import roslib.message; roslib.load_manifest('tug_ist_diagnosis_observers')
 import rospy
 import sys
 import xmlrpclib
 import os
 from std_msgs.msg import String
-from diagnosis_msgs.msg import Observations
+from tug_ist_diagnosis_msgs.msg import Observations
 import time
 from array import array
 import thread
@@ -162,8 +162,8 @@ class General_Observer(object):
 								raise RuntimeError('this is the error message')
 												
     def report_error(self):
-				print '\nrosrun diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>'
-				print 'e.g rosrun diagnosis_observers GObs.py _topic:=scan _frq:=10 _dev:=1 _ws:=10'
+				print '\nrosrun tug_ist_diagnosis_observers GObs.py <Topic_name> <Frequency> <FreqDeviation> <WindowSize>'
+				print 'e.g rosrun tug_ist_diagnosis_observers GObs.py _topic:=scan _frq:=10 _dev:=1 _ws:=10'
 				sys.exit(os.EX_USAGE)
         
 if __name__ == '__main__':

@@ -1,13 +1,13 @@
 <package>
-  <description brief="diagnosis_launch">
+  <description brief="DIAGNOSIS LAUNCH">
 
-     diagnosis_launch
+This package includes all launch files necessary for the diagnosis.
 
   </description>
   <author>Safdar Zaman</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/diagnosis_launch</url>
+  <url>http://ros.org/wiki/tug_ist_diagnosis_launch</url>
 
 </package>
 

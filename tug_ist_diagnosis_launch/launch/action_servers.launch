@@ -2,7 +2,7 @@
 <launch>
  <!-- master auto="start"/ -->
  
- <node pkg="diagnosis_board" 
+ <node pkg="tug_ist_diagnosis_board" 
        type="NodeActionServer" 
        name="NodeActionServers" 
        output="screen">

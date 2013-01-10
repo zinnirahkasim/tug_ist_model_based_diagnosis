@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest('diagnosis_observers')
+import roslib; roslib.load_manifest('tug_ist_diagnosis_observers')
 import rospy
 from std_msgs.msg import String
 def test_node():
