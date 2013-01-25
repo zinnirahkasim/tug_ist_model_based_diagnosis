@@ -28,13 +28,13 @@
 
 #include "Controller.h"
 
-Controller::Controller(unsigned char frq)
+Controller::Controller(unsigned char frq, string ip, int port)
 {  
-    
+    //printf("Port = %d",port);
     host = gethostbyname("127.0.0.1");
     //host = gethostbyname("192.168.0.70");
     server_addr.sin_family = AF_INET;     
-    server_addr.sin_port = htons(5000);   
+    server_addr.sin_port = htons(port);   
     //server_addr.sin_port = htons(9760);   
     server_addr.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(server_addr.sin_zero),8);

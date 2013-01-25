@@ -164,8 +164,8 @@ while(true)
     
     take_boardMeasurments(); 
     send(connected,(void*)&nbuffer,BUFF_SIZE, 0);
-    sleep(1/b_frq);
-    printf("Broadcast FRQ = %d ",b_frq);
+    sleep(1);
+    //printf("Broadcast FRQ = %d ",b_frq);
  }
 
 
@@ -251,11 +251,11 @@ int main()
                    {
                     printf("\n RECIEVED from Client:\ndelim = %i, command = %i,length = %d, BroadCastFrequency = %d" ,*recv_data, *(&recv_data[1]), *(&recv_data[2]), *((unsigned char *)&recv_data[4]));
 		    b_frq = *((unsigned char *)&recv_data[4]);
-                    int a = b_frq;
-		    float b = 1/a;
-                    printf("Broadcast FRQ = %d, a=%d, Sleep(%f) ",b_frq,a,b);
-                    //broadcaster.interrupt();
-                    //broadcaster = boost::thread(BoradcastWithFrq);
+                    //int a = b_frq;
+		    //float b = 1/a;
+                    //printf("Broadcast FRQ = %d, a=%d, Sleep(%f) ",b_frq,a,b);
+                    broadcaster.interrupt();
+                    broadcaster = boost::thread(BoradcastWithFrq);
                     //take_boardMeasurments();
                    }
               else if(command==3)

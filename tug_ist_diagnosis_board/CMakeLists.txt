@@ -44,6 +44,9 @@ rosbuild_add_executable(virtual_diagnosis_board src/Board.cpp)
 rosbuild_link_boost(virtual_diagnosis_board thread)
 rosbuild_add_executable(NodeActionServer src/NodeActionServer.cpp)
 
+rosbuild_add_executable(board_simulator src/main2.cpp src/Client.cpp)
+
+
 
 
 

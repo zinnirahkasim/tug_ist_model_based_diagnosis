@@ -32,7 +32,7 @@ class Controller
 {
 public:
    Controller();
-   Controller(unsigned char);
+   Controller(unsigned char, string, int);
    ~Controller();
    friend void* run_recv_Thread(void*);
    void recv_Thread();
