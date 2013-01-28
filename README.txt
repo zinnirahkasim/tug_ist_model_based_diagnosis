@@ -48,11 +48,15 @@ Step6.  $ rosnode kill /aria
 	execute start action server to start aria node. Again /diagnosis topic will publish new diagnosis after start of
 	aria node 
 
-
-*****************IMPORTANT*************************************
-THE STACK IS BEING WORKED AT THE MOMENT, THEREFORE YOUR FEEDBACK 
+*****************USER EXTENSION**************************************************
+User can use the system for its own runnning system as:
+1. Put your nodes and topics in observers.launch in tug_ist_diagnosis_launch pkg
+2. Change diagnosis_model.yaml in tug_ist_diagnosis_model pkg
+3. Run everything as above
+*****************IMPORTANT*******************************************************
+THE STACK IS STILL UNDER WORK AT THE MOMENT, THEREFORE YOUR FEEDBACK 
 WILL BE HIGHLY APPRECIATED. 
 IF YOU HAVE ANY QUESTION, PLEASE EMAIL TO szaman@ist.tugraz.at
 Thanks.
 Next Version will be uploaded soon.
-***************************************************************
+*****************************************************************
