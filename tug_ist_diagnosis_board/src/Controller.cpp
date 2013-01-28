@@ -23,7 +23,8 @@
 Controller::Controller(unsigned char frq, string ip, int port)
 {  
     //printf("Port = %d",port);
-    host = gethostbyname("127.0.0.1");
+    //host = gethostbyname("127.0.0.1");
+    host = gethostbyname(ip.c_str());
     //host = gethostbyname("192.168.0.70");
     server_addr.sin_family = AF_INET;     
     server_addr.sin_port = htons(port);   
@@ -43,11 +44,11 @@ Controller::~Controller()
 void Controller::initController()
 {
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-         perror("Socket");
+         perror("Socketerror:");
          exit(1);
     }
   if (connect(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1) {
-            perror("Connect");
+            perror("Connecterror:");
             exit(1);
     }
   create_threads();
