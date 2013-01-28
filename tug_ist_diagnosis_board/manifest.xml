@@ -4,8 +4,8 @@ This package includes board controller, vurtual board, board simulator. It origi
 hardware diagnosis board which is responsible of controlling all connected hardware sensors to robot system.
 
   </description>
-  <author>Safdar Zaman</author>
-  <license>BSD</license>
+  <author>Safdar Zaman, Gerald Steinbauer</author>
+  <license>GPLv3</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tug_ist_diagnosis_board</url>
   <depend package="roscpp"/>

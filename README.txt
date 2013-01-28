@@ -1,5 +1,6 @@
 ***********************************************************
-model_based_diagnosis user manual
+tug_ist_model_based_diagnosis user manual
+GNU General Public License:
 Copyright (c).2012. OWNER: Institute for Software Technology TU-Graz Austria.
 @authors: Safdar Zaman, Gerald Steinbauer. ( {szaman, steinbauer}@ist.tugraz.at )
 Please write to us if you have any question or if there is any problem.
@@ -7,14 +8,17 @@ All rights reserved.
 **********************************************************************
 SETTING UP CLASSPATH VARIABLE and COMPILATION (ONLY ONCE)
 **********************************************************************
-1. export CLASSPATH="/home/.../tug_ist_diagnosis_repair/java/classes/:/home/.../tug_ist_diagnosis_repair/java/source/pddl4j.jar"
-2. rosmake all the packages
+1. In .bashrc file write forllowing export command:
+   export CLASSPATH="/home/.../tug_ist_diagnosis_repair/java/classes/:/home/.../tug_ist_diagnosis_repair/java/source/pddl4j.jar"
+2. rosmake the packages namely tug_ist_diagnosis_{board,engine,repair}.
 3. execute "rosrun tug_ist_diagnosis_engine compile_4_java.sh"
 4. execute "rosrun tug_ist_diagnosis_repair compile_4_java.sh"
 
 ***********************************************
 SIMPLE TESTING EXAMPLE
 ***********************************************
+Note :  Please open separate terminal for each Step
+
 Step1.  $ roslaunch tug_ist_diagnosis_launch aria.launch  
           (check topic /aria_node_topic)
       
@@ -46,9 +50,9 @@ Step6.  $ rosnode kill /aria
 
 
 *****************IMPORTANT*************************************
-THE STACK IS BEING WORKED AT THE MOMEN, THEREFORE YOUR FEEDBACK 
-WILL BE HIGHLY APPRECIATABLE. 
-IF YOU HAVE ANY PROBLEM, PLEASE EMAIL TO szaman@ist.tugraz.at
+THE STACK IS BEING WORKED AT THE MOMENT, THEREFORE YOUR FEEDBACK 
+WILL BE HIGHLY APPRECIATED. 
+IF YOU HAVE ANY QUESTION, PLEASE EMAIL TO szaman@ist.tugraz.at
 Thanks.
-Next Version will be uplaoded soon.
+Next Version will be uploaded soon.
 ***************************************************************

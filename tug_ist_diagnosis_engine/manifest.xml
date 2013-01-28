@@ -4,8 +4,8 @@ This package provides a diagnosis engiene. It works as model based diagnosis eng
 It takes model from model server and provides diagnosis.
 
   </description>
-  <author>Safdar Zaman</author>
-  <license>BSD</license>
+  <author>Safdar Zaman, Gerald Steinbauer</author>
+  <license>GPLv3</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tug_ist_diagnosis_engine</url>
   <depend package="roscpp" />

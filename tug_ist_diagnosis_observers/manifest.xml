@@ -5,8 +5,8 @@ This package provides all oservers. An observer is a software entity that observ
 property of the system or part of the system.
 
   </description>
-  <author>Safdar Zaman</author>
-  <license>BSD</license>
+  <author>Safdar Zaman, Gerald Steinbaue</author>
+  <license>GPLv3</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tug_ist_diagnosis_observers</url>
   <depend package="roslib"/>
