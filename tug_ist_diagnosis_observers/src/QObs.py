@@ -60,33 +60,23 @@ class Regression(object):
 
 		def find_slope(self,b):
 				r1 = self.linear_regression(self.ws,self.s[0],self.t)
-				#print 'R1=',r1 
 				self.s[1].pop()
 				self.s[1].append(r1)
 				r2 = self.linear_regression(self.ws,self.s[1],self.t)
-				#print 'R2=',r2 
 				self.s[2].pop()
 				self.s[2].append(r2)
 				r3 = self.linear_regression(self.ws,self.s[2],self.t)
-				#print 'R3=',r3 
 				self.s[3].pop()
 				self.s[3].append(r3)
 				self.remove_tails()
-				#print 'r1=',r1,',r2=',r2,',r3=',r3,',b=',b
 				if r1<-self.b:
 						self.prev_value = -1
-						#rospy.info('-1');
-						#print 'Dec:r1',r1,'b=',b
 						return -1
 				elif r1>self.b:
 						self.prev_value = +1
-						#rospy.info('1');
-						#print 'Inc:r1',r1,'b=',b
 						return +1
 				elif ~(( (r2>-self.b)&(r2<self.b) ) & ( (r3>-self.b)&(r3<self.b) )):
 						self.prev_value = 0
-						#rospy.info('0');
-						#print 'cons:r2=',r2,',b=',b,',r3=',r3
 						return 0
 				else:
 						return self.prev_value
@@ -110,9 +100,6 @@ class Regression(object):
 				i = last_indx
 				n = 0
 				while (i >-1) & ( (t[last_indx]-t[i]) < ws ):
-							#if(s[i]==None):
-								#continue
-							#print 'Sum_xy,',Sum_xy,'t',t[i],'s',s[i],'len(s)',len(s),'i',i 
 							Sum_xy = Sum_xy + t[i] * s[i]
 							Sum_x = Sum_x + t[i]
 							Sum_y = Sum_y + s[i]
@@ -122,14 +109,11 @@ class Regression(object):
 					
 				
 				self.n = n
-				#print 'n=', self.n,'Sum_x',Sum_x,'Sum_xx',Sum_xx
-				#print 'n * Sum_xx - (Sum_x * Sum_x)',n * Sum_xx - (Sum_x * Sum_x)
 				if (n * Sum_xx - (Sum_x * Sum_x)) <> 0 :
 					slope = (n*Sum_xy - Sum_x * Sum_y)/(n * Sum_xx - (Sum_x * Sum_x))
 					return slope
 				else:
 					return 0
-					#return None
 		
 		
 class Qualitative_Observer(object):
@@ -164,7 +148,6 @@ class Qualitative_Observer(object):
 					self.params.append(field[0:i])
 					field = field[i+1:len(field)]
 				self.params.append(field)
-				#print self.params, len(self.params)
 				pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")
 				topic_found = False
 				for item in topicList:
@@ -181,19 +164,12 @@ class Qualitative_Observer(object):
         
     def call_back(self,data):
 				self.curr_t = time.time() - self.prev_t
-				#print self.params
 				self.extract_data(data)
-				#print 'SELFDATA',self.data
 				Trend = self.regression.find(self.data,self.curr_t)
-				#print "Trend=", Trend
 				self.make_output(Trend)
 
     def extract_data(self,data):
 				self.data = data
-				#print data,len(self.params)
-				#if len(self.params)==1:
-					#for f in self.data.__slots__:
-							#self.data = getattr(self.data, f)
 				c = 0   
 				while (c < len(self.params)):
 				  for f in self.data.__slots__:
@@ -201,30 +177,25 @@ class Qualitative_Observer(object):
 							  self.data = getattr(self.data, f)
 							  break
 				  c = c + 1
-				#print 'VALUE',self.data
     def make_output(self, Trend):
 				if self.topic[0] == '/':
 							self.topic = self.topic[1:len(self.topic)]
 				obs_msg = []
 				if Trend == +1 :
 						rospy.loginfo('1');
-						#print 'inc('+self.topic+'_'+self.param_field+')\n'
 						obs_msg.append('inc('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 						
 				elif Trend == -1 :
 						rospy.loginfo('-1');
-						#print 'dec('+self.topic+'_'+self.param_field+')\n'
 						obs_msg.append('dec('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))
 				else:
 						rospy.loginfo('0');
-						#print 'con('+self.topic+'_'+self.param_field+')\n'
 						obs_msg.append('con('+self.topic+'_'+self.param_field+')')
 						self.pub.publish(Observations(time.time(),obs_msg))	
 		
     def check_thread(self,string,sleeptime,*args):
-				#loop =  True
 				while True:
 						t = 0
 						pubcode, statusMessage, topicList = self.m.getPublishedTopics(self.caller_id, "")

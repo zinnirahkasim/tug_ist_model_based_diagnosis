@@ -36,8 +36,6 @@
 #include <tug_ist_diagnosis_msgs/DBoardMeasurments.h>
 #include <tug_ist_diagnosis_msgs/Channel.h>
 
-//typedef actionlib::SimpleActionServer<diagnosis_board::BoardAction> boardServer;
-
 using namespace std;
 typedef queue<Message> MSGQUEUE;
 struct d

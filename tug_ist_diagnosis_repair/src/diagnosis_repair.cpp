@@ -76,7 +76,7 @@ public:
            stpn.waitForServer();
            connect_to_Server();
            send_data = "upload domain_file\r\n\r\n\r\n";
-           send(sock,send_data,strlen(send_data), 0);//send_query_to_server(data);
+           send(sock,send_data,strlen(send_data), 0);
 	   ROS_INFO("\nupload domain_file command sent and now wait for recieve.......");
            recieve_from_server();
            
@@ -138,13 +138,7 @@ public:
         	bool finished_before_timeout = stpn.waitForResult(ros::Duration(30.0));
 		if(finished_before_timeout)
 	    		executing_plan = false;
-        }/*
-                goal.parameter = params;
-	        strn.sendGoal(goal);
-        	bool finished_before_timeout = strn.waitForResult(ros::Duration(30.0));
-		if(finished_before_timeout)
-	    		executing_plan = false;
- */
+        }
         
   }  
 
@@ -201,7 +195,7 @@ public:
                 for(int o=0;o<obs_msg->obs.size();o++){
                    std::string s = obs_msg->obs[o].c_str();
                    if (std::find(obs_list.begin(), obs_list.end(), s) != obs_list.end()){
-  			// FOUND BUT DO NOTHING 
+  			// DO NOTHING 
 		   } 
                    else {
                        std::string ns = "@";
@@ -220,8 +214,6 @@ public:
                    
                  
                }// for loop
-           //for (int i=0; i<obs_list.size(); i++)
-    	        //ROS_INFO("---List ITEM = %s,%d,",obs_list[i].c_str(),obs_list.size());
 
   }
 
@@ -242,8 +234,6 @@ public:
   string make_problem_file_str(vector<std::string> good,vector<std::string> bad){
           vector<std::string> ob_list;
           ob_list = obs_list; 
-          //for (int i=0; i<bad.size(); i++)
-    	        //ROS_INFO("---BAD ITEM = %s,%d,",bad[i].c_str(),bad.size());
           std::string prob_text = "define (problem repair_problem)(:domain repair_domain)\r\n(:requirements :strips :equality :typing :negative-preconditions)\r\n(:objects ";
 	  std::string co_problem="";
 	  std::string goal = "(:goal (and ";

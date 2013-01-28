@@ -60,7 +60,6 @@ class ModelActionServer(object):
       self._result.ab = self.sys_modl["ab"]
       self._result.nab = self.sys_modl["nab"]
       self._result.neg_prefix = self.sys_modl["neg_prefix"]
-      print 'HELLO',self.sys_modl["rules"]
       self._result.rules = self.sys_modl["rules"]
       self._result.props = self.sys_modl["props"]
       r = self.sys_modl["rules"]

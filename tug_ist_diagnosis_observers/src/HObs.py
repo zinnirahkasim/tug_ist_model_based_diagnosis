@@ -40,7 +40,6 @@ class Hardware_Observer(object):
 					rospy.init_node('HObs', anonymous=True)
 					self.caller_id = '/script'
 					self.m = xmlrpclib.ServerProxy(os.environ['ROS_MASTER_URI'])
-					#self.top = top
 					self.topic = ""
 					self.topic_type = ""
 					self.pub = rospy.Publisher('/observations', Observations)
@@ -73,12 +72,9 @@ class Hardware_Observer(object):
 						while (j<len(att)):
 							if att[j].status == 1:
 									obs_msg.append('on('+att[j].dev_connected+')')
-									#rospy.loginfo('on('+att[j].dev_connected+')')
 							else:
 									obs_msg.append('~on('+att[j].dev_connected+')')
-									#rospy.loginfo('~on('+att[j].dev_connected+')')
 							j = j + 1
-						#print "------------------------"
 						self.pub.publish(Observations(time.time(),obs_msg))
 						
 
@@ -96,7 +92,6 @@ class Hardware_Observer(object):
 						if t == 0:
 								t = 1
 								print "Topic:[" +top+ "] does not exist."
-								#self.pub.publish(Observations(time.time(),['~ok('+self.param_dev_node+')']))
 						time.sleep(sleeptime) #sleep for a specified amount of time.
 			except:
 					 	print "An unhandled exception occured, here's the traceback!"

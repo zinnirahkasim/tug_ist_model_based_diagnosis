@@ -311,7 +311,6 @@ public:
                 diag_found = true;
                 for (int i=0; i<comp_list.size(); i++){
     	       		size_t found = diag.find(comp_list[i].c_str());
-                        //ROS_INFO("%s is found(%d) in %s",diag.c_str(),int(found),comp_list[i].c_str());
                         if(int(found)>-1){
                   		bad.push_back(comp_list[i].c_str());
                		}
@@ -351,8 +350,6 @@ public:
                   diag+=recv_data[i];
           diag_vec.push_back(diag.c_str());
       }
-     //for (int i=0; i<diag_vec.size(); i++)
-    	      //ROS_INFO("---List ITEM = [%s],",diag_vec[i].c_str()); 
      publishDiag(diag_vec);
   }
 

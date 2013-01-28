@@ -88,10 +88,6 @@ class General_Observer(object):
 						avg_delta_t = self.average_delta_t()
 						calculated_freq = 1/avg_delta_t
 						diff_freq = abs(self.param_frq - calculated_freq )
-						#print '\nRequired_Frequency : ', self.param_frq
-						#print 'Delta_Frequency : ', self.param_dev
-						#print 'Calculated Frequency : ', calculated_freq
-						#print 'Window Size :', self.param_ws
 						self.make_output(diff_freq)
 						self.prev_t = curr_t
 		
@@ -134,10 +130,7 @@ class General_Observer(object):
 									break
 						if t == 0:
 								t = 1
-								#print "Topic:[" +string+ "] does not exist."
-								#print "Node does not exist."
 								self.msg = '~ok('+self.topic_name+')'
-								#rospy.loginfo('Observer='+rospy.get_name()+',Topic=\\'+self.topic_name+','+self.msg)
 								rospy.loginfo('~ok('+self.topic_name+')')
 								self.pub.publish(Observations(time.time(),[self.msg]))
 						time.sleep(sleeptime) #sleep for a specified amount of time.

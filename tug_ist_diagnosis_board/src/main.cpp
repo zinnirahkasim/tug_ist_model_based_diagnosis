@@ -109,13 +109,11 @@ int main( int argc, char **argv)
 {
 ros::init(argc, argv,"board_controller");
 ros::NodeHandle n("~");
-int initfrq,port;
+int port;
 string ip; 
-n.param<int>("initfrq", initfrq, 127);
 n.param<int>("port", port, 5000);
 n.param<string>("ip", ip, "127.0.0.1");
 unsigned char frq = initfrq;
-ROS_INFO("%d Board Controller trying to Connect....",initfrq);
 contl = new Controller(200,ip,port);
 
 boardServer bserver(n, "board_server", boost::bind(&execute, _1, &bserver), false);

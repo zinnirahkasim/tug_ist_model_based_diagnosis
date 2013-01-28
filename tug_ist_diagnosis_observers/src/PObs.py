@@ -49,23 +49,17 @@ class Property_Observer(object):
 							self.node = self.node[1:len(self.node)]
          
 		def start(self):
-				#print 'node=',self.node,',property=',self.property,',threshold=',self.th,',deviation=',self.dev
 				print 'PObs is up and has started publishsing observations.......'
 				a = commands.getoutput('rosnode info /test_node')
 				a = subprocess.Popen("rosnode info /test_node" , shell=True,stdout=subprocess.PIPE)
 				parts = shlex.split(a.communicate()[0])
 				print "parts", parts
 				indx = parts.index("Pid:")
-				#print "PID==",indx
 				pid = parts[indx+1]
-				#print "item(pid)=",parts[indx+1]
 				while not rospy.is_shutdown():
 					p = subprocess.Popen("top -b -n 1 | grep -i %s" %pid, shell=True,stdout=subprocess.PIPE)
 					self.out = p.communicate()[0]
-					#print self.out
 					self.out1 = shlex.split(self.out)
-					#print self.out1[8],self.out1[9]
-					#print "out1", self.out1
 					if self.property == 'CPU':
 						self.publish_output(self.out1[8])
 					else:

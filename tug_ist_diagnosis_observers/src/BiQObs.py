@@ -104,9 +104,6 @@ class Regression(object):
 				i = last_indx
 				n = 0
 				while (i >-1) & ( (t[last_indx]-t[i]) < ws ):
-							#if(s[i]==None):
-								#continue
-							#print 'Sum_xy,',Sum_xy,'t',t[i],'s',s[i],'len(s)',len(s),'i',i 
 							Sum_xy = Sum_xy + t[i] * s[i]
 							Sum_x = Sum_x + t[i]
 							Sum_y = Sum_y + s[i]
@@ -116,14 +113,11 @@ class Regression(object):
 					
 				
 				self.n = n
-				#print 'n=', self.n,'Sum_x',Sum_x,'Sum_xx',Sum_xx
-				#print 'n * Sum_xx - (Sum_x * Sum_x)',n * Sum_xx - (Sum_x * Sum_x)
 				if (n * Sum_xx - (Sum_x * Sum_x)) <> 0 :
 					slope = (n*Sum_xy - Sum_x * Sum_y)/(n * Sum_xx - (Sum_x * Sum_x))
 					return slope
 				else:
 					return 0
-					#return None
 		
 		
 class Qualitative_Observer(object):
@@ -210,20 +204,12 @@ class Qualitative_Observer(object):
 						firstcheck = False
 						msg_class1 = roslib.message.get_message_class(self.topic1_type)
 						msg_class2 = roslib.message.get_message_class(self.topic2_type)
-						#if self.mode == 'DRV2':
-							#self.params = self.params2
-							#rospy.Subscriber(self.topic2, msg_class2, self.drv_call_back)
-							#rospy.Subscriber(self.topic1, msg_class1, self.call_back2)
-							#self.regression1 = Regression(self.ws2,self.param_b2)
-							#self.regression2 = Regression(self.ws1,self.param_b1)
-						#elif self.mode == 'DRV1':
 						if self.mode == 'DRV1':
 							rospy.Subscriber(self.topic1, msg_class1, self.drv_call_back)
 							rospy.Subscriber(self.topic2, msg_class2, self.call_back2)
 							self.regression1 = Regression(self.ws1,self.param_b1)
 							self.regression2 = Regression(self.ws2,self.param_b2)
 						else:
-							#print 'LINEAR'
 							rospy.Subscriber(self.topic1, msg_class1, self.call_back1)
 							rospy.Subscriber(self.topic2, msg_class2, self.call_back2)
 							self.regression1 = Regression(self.ws1,self.param_b1)
@@ -237,7 +223,6 @@ class Qualitative_Observer(object):
     def call_back1(self,data):
 				self.curr_t1 = time.time() - self.init_t
 				curr_data = self.extract_data(data,self.params1)
-				#rospy.loginfo(self.topic1+'='+ str(curr_data))
 				self.sum1 = self.sum1 + curr_data
 				self.num1 = self.num1 + 1
 
@@ -250,14 +235,12 @@ class Qualitative_Observer(object):
 				self.prev_data = curr_data
 				self.prev_t = curr_t
 				drv = delta_data/delta_t
-				#rospy.loginfo(self.topic1+'='+ str(curr_data))
 				self.sum1 = self.sum1 + drv
 				self.num1 = self.num1 + 1
 
     def call_back2(self,data):
 				self.curr_t2 = time.time() - self.init_t
 				curr_data = self.extract_data(data,self.params2)
-				#rospy.loginfo(self.topic2+'='+ str(curr_data))
 				self.sum2 = self.sum2 + curr_data
 				self.num2 = self.num2 + 1
 
@@ -307,11 +290,9 @@ class Qualitative_Observer(object):
 									
 						if t1 == 0:
 								t1 = 1
-								#rospy.loginfo("Topic:[" +topic1+ "] does not exist.")
 								self.pub.publish(Observations(time.time(),['~matched('+topic1[1:len(topic1)]+','+topic2[1:len(topic2)]+')']))
 						if t2 == 0:
 								t2 = 1
-								#rospy.loginfo("Topic:[" +topic2+ "] does not exist.")
 								self.pub.publish(Observations(time.time(),['~matched('+topic1[1:len(topic1)]+','+topic2[1:len(topic2)]+')']))
 						print('Num1='+str(self.num1)+',Num2'+str(self.num2))
 						if (self.num1 != 0) & (self.num2 != 0):
