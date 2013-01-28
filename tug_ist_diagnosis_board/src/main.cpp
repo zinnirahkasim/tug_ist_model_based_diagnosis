@@ -113,7 +113,6 @@ int port;
 string ip; 
 n.param<int>("port", port, 5000);
 n.param<string>("ip", ip, "127.0.0.1");
-unsigned char frq = initfrq;
 contl = new Controller(200,ip,port);
 
 boardServer bserver(n, "board_server", boost::bind(&execute, _1, &bserver), false);
