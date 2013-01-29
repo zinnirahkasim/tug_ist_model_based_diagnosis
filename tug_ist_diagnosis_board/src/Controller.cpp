@@ -98,7 +98,7 @@ void Controller::processBuffer(unsigned char *buf,char command)
      std::vector<float> curr;
      int channels = *buf;
      buf++;
-     board_msr.o_time = 111.11;
+     board_msr.o_time = ros::Time::now().toSec();;
      tug_ist_diagnosis_msgs::Channel channel;
      std::vector<tug_ist_diagnosis_msgs::Channel> msr_vector;
      for(int chnl=0;chnl<channels;chnl++)

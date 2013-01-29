@@ -8,7 +8,7 @@ All rights reserved.
 **********************************************************************
 SETTING UP CLASSPATH VARIABLE and COMPILATION (ONLY ONCE)
 **********************************************************************
-1. In .bashrc file write forllowing export command:
+1. In .bashrc file write following export command with correct path:
    export CLASSPATH="/home/.../tug_ist_diagnosis_repair/java/classes/:/home/.../tug_ist_diagnosis_repair/java/source/pddl4j.jar"
 2. rosmake the packages namely tug_ist_diagnosis_{board,engine,repair}.
 3. execute "rosrun tug_ist_diagnosis_engine compile_4_java.sh"
@@ -44,9 +44,9 @@ Step7.  $ roslaunch tug_ist_diagnosis_launch diagnosis_repair.launch
 Step6.  $ rosnode kill /aria  
           (check nodes list by "rosnode list" command)
         This will kill the node, observers will publish not ok on /observations topic, diagnosis engine will publish 
-        bad[test_node] on /diagnosis topic. you can check it by "rostopic echo /diagnosis" command. Repair engine will
+        bad and good diagnosis on /diagnosis topic. you can check it by "rostopic echo /diagnosis" command. Repair engine will
 	execute start action server to start aria node. Again /diagnosis topic will publish new diagnosis after start of
-	aria node 
+	aria node. 
 
 *****************USER EXTENSION**************************************************
 User can use the system for its own runnning system as:
