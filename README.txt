@@ -9,7 +9,7 @@ All rights reserved.
 SETTING UP CLASSPATH VARIABLE and COMPILATION (ONLY ONCE)
 **********************************************************************
 1. In .bashrc file write following export command with correct path:
-   export CLASSPATH="/home/.../tug_ist_diagnosis_repair/java/classes/:/home/.../tug_ist_diagnosis_repair/java/source/pddl4j.jar"
+   export CLASSPATH="$(rospack find tug_ist_diagnosis_repair)/java/classes/:$(rospack find tug_ist_diagnosis_repair)/java/source/pddl4j.jar"
 2. execute "rosmake tug_ist_diagnosis_board tug_ist_diagnosis_engine tug_ist_diagnosis_repair"
 3. execute "rosrun tug_ist_diagnosis_engine compile_4_java.sh"
 4. execute "rosrun tug_ist_diagnosis_repair compile_4_java.sh"
