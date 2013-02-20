@@ -1,0 +1,14 @@
+ab: "AB"
+nab: "NAB"
+neg_prefix: "not_"
+ 
+props:
+  - inc(base_velocity_x_QObserver)
+  - dec(base_velocity_x_QObserver)
+  - cons(base_velocity_x_QObserver)
+  - ok(base_velocity_x_QObserver)
+rules:
+  - NAB(base_velocity_x_QObserver)->inc(base_velocity_x_QObserver)
+  - NAB(base_velocity_x_QObserver)->dec(base_velocity_x_QObserver)
+  - NAB(base_velocity_x_QObserver)->cons(base_velocity_x_QObserver)
+  - NAB(base_velocity_x_QObserver)->ok(base_velocity_x_QObserver)

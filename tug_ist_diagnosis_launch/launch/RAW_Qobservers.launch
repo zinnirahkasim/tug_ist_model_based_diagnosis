@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+ <!-- master auto="start"/ -->
+ 
+
+
+ <node pkg="tug_ist_diagnosis_observers" type="QObs.py" name="base_velocity_x_QObserver" >
+  <param name="topic" value="/odom" />
+  <param name="field" value="twist.twist.linear.x" />
+  <param name="ws" value="100" />
+  <param name="b" value="0.0005" />
+ </node>
+
+
+</launch>
+
